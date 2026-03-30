@@ -1,0 +1,336 @@
+'use client';
+
+import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
+
+const CalendarIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+
+const ClipboardIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+    <line x1="9" y1="12" x2="15" y2="12" />
+    <line x1="9" y1="16" x2="12" y2="16" />
+  </svg>
+);
+
+const TargetIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="6" />
+    <circle cx="12" cy="12" r="2" />
+  </svg>
+);
+
+const MessageIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
+const AwardIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+    <circle cx="12" cy="8" r="6" />
+    <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+  </svg>
+);
+
+const steps = [
+  {
+    number: '01',
+    title: 'Book Consultation',
+    description: 'Schedule a free call with our team to discuss your goals and current situation.',
+    icon: <CalendarIcon />,
+  },
+  {
+    number: '02',
+    title: 'Complete Onboarding',
+    description: 'Answer our detailed questionnaire about fitness goals, dietary preferences, and lifestyle.',
+    icon: <ClipboardIcon />,
+  },
+  {
+    number: '03',
+    title: 'Get Your Plan',
+    description: 'Receive a personalized meal and workout plan tailored to your specific needs.',
+    icon: <TargetIcon />,
+  },
+  {
+    number: '04',
+    title: 'Weekly Check-ins',
+    description: 'Connect with your trainer every week to track progress and adjust your plan.',
+    icon: <MessageIcon />,
+  },
+  {
+    number: '05',
+    title: 'Transform & Track',
+    description: 'Monitor your transformation with real results and celebrate your milestones.',
+    icon: <AwardIcon />,
+  },
+];
+
+export default function HowItWorksSection() {
+  return (
+    <>
+      <style>{`
+        @keyframes floatOrb1 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33%       { transform: translate(28px, -18px) scale(1.06); }
+          66%       { transform: translate(-18px, 14px) scale(0.95); }
+        }
+        @keyframes floatOrb2 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          40%       { transform: translate(-22px, 26px) scale(1.08); }
+          70%       { transform: translate(18px, -12px) scale(0.93); }
+        }
+        @keyframes floatOrb3 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50%       { transform: translate(12px, 22px) scale(1.05); }
+        }
+        .hiw-orb-1 { animation: floatOrb1 20s ease-in-out infinite; }
+        .hiw-orb-2 { animation: floatOrb2 26s ease-in-out infinite; }
+        .hiw-orb-3 { animation: floatOrb3 22s ease-in-out infinite; }
+
+        .hiw-card {
+          background: rgba(255, 255, 255, 0.055);
+          backdrop-filter: blur(24px) saturate(160%);
+          -webkit-backdrop-filter: blur(24px) saturate(160%);
+          border: 1px solid rgba(255, 255, 255, 0.11);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.09),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+            0 8px 32px rgba(0, 0, 0, 0.5),
+            0 2px 8px rgba(0, 0, 0, 0.3);
+          transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                      border-color 0.4s ease,
+                      box-shadow 0.4s ease,
+                      background 0.4s ease;
+        }
+        .hiw-card:hover {
+          transform: translateY(-8px);
+          background: rgba(255, 255, 255, 0.075);
+          border-color: rgba(201, 168, 76, 0.28);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.12),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+            0 20px 50px rgba(0, 0, 0, 0.6),
+            0 0 0 1px rgba(201, 168, 76, 0.08);
+        }
+
+        .hiw-cta-btn {
+          color: #C9A84C;
+          border: 1px solid rgba(201, 168, 76, 0.38);
+          background: transparent;
+          transition: background 0.35s ease, border-color 0.35s ease, color 0.35s ease;
+        }
+        .hiw-cta-btn:hover {
+          background: rgba(201, 168, 76, 0.07);
+          border-color: rgba(201, 168, 76, 0.65);
+        }
+      `}</style>
+
+      <section
+        id="how-it-works"
+        className="relative overflow-hidden py-28"
+        style={{ background: '#0B0B0B' }}
+      >
+        {/* Radial gold atmosphere */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            background:
+              'radial-gradient(circle at 62% 38%, rgba(201,168,76,0.07) 0%, transparent 58%)',
+          }}
+        />
+
+        {/* Secondary cool-dark gradient for depth */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            background:
+              'radial-gradient(circle at 20% 80%, rgba(0,0,0,0.6) 0%, transparent 55%)',
+          }}
+        />
+
+        {/* Floating gold orbs */}
+        <div
+          className="hiw-orb-1 absolute top-[18%] left-[8%] w-72 h-72 rounded-full pointer-events-none z-0"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)',
+            filter: 'blur(45px)',
+          }}
+        />
+        <div
+          className="hiw-orb-2 absolute top-[45%] right-[10%] w-96 h-96 rounded-full pointer-events-none z-0"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%)',
+            filter: 'blur(55px)',
+          }}
+        />
+        <div
+          className="hiw-orb-3 absolute bottom-[20%] left-[42%] w-56 h-56 rounded-full pointer-events-none z-0"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%)',
+            filter: 'blur(38px)',
+          }}
+        />
+
+        {/* Subtle grain texture */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            backgroundSize: '200px 200px',
+          }}
+        />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+          {/* Section Header */}
+          <AnimateOnScroll className="text-center mb-20">
+            <div
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 mb-7 rounded-full"
+              style={{
+                background: 'rgba(201,168,76,0.06)',
+                border: '1px solid rgba(201,168,76,0.18)',
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: '#C9A84C' }}
+              />
+              <span
+                className="text-xs font-semibold tracking-[0.2em] uppercase"
+                style={{ color: '#C9A84C' }}
+              >
+                The Process
+              </span>
+            </div>
+
+            <h2 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]">
+              Your Journey{' '}
+              <span
+                style={{
+                  background:
+                    'linear-gradient(135deg, #C9A84C 0%, #E8C76A 50%, #C9A84C 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                Starts Here
+              </span>
+            </h2>
+
+            <p className="text-white/45 max-w-lg mx-auto text-base leading-relaxed tracking-wide">
+              Five carefully designed steps to guide you from where you are
+              to where you want to be.
+            </p>
+          </AnimateOnScroll>
+
+          {/* Steps */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 mb-20 relative">
+            {steps.map((step, idx) => (
+              <AnimateOnScroll key={idx} delay={idx * 110} className="relative">
+                <div className="hiw-card rounded-2xl p-8 h-full relative overflow-hidden group">
+
+                  {/* Hover gradient overlay */}
+                  <div
+                    className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background:
+                        'linear-gradient(145deg, rgba(201,168,76,0.05) 0%, transparent 55%)',
+                    }}
+                  />
+
+                  {/* Ghost number — background */}
+                  <div
+                    className="absolute -top-1 -right-1 text-[6rem] font-black select-none pointer-events-none leading-none"
+                    style={{
+                      color: 'transparent',
+                      WebkitTextStroke: '1px rgba(201,168,76,0.10)',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {step.number}
+                  </div>
+
+                  {/* Icon */}
+                  <div
+                    className="relative z-10 w-10 h-10 p-2 rounded-xl mb-5"
+                    style={{
+                      color: '#C9A84C',
+                      background: 'rgba(201,168,76,0.08)',
+                      border: '1px solid rgba(201,168,76,0.14)',
+                    }}
+                  >
+                    {step.icon}
+                  </div>
+
+                  {/* Step label */}
+                  <p
+                    className="relative z-10 text-[10px] font-bold tracking-[0.18em] uppercase mb-2"
+                    style={{ color: 'rgba(201,168,76,0.45)' }}
+                  >
+                    Step {step.number}
+                  </p>
+
+                  {/* Title */}
+                  <h3 className="relative z-10 text-[15px] font-bold text-white mb-3 leading-snug tracking-tight">
+                    {step.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="relative z-10 text-white/40 text-[13px] leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              </AnimateOnScroll>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <AnimateOnScroll className="text-center">
+            <p
+              className="mb-7 text-xs tracking-[0.22em] uppercase"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
+            >
+              Ready to transform?
+            </p>
+            <a
+              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hiw-cta-btn inline-flex items-center gap-3 px-10 py-4 text-xs font-semibold tracking-[0.16em] uppercase rounded-lg"
+            >
+              Book Free Consultation
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </a>
+          </AnimateOnScroll>
+
+        </div>
+      </section>
+    </>
+  );
+}

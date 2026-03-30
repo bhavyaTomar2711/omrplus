@@ -1,6 +1,6 @@
 # OMR+ Platform — Project Brain 🧠
 
-**MANDATORY**: Always read this file before processing any prompt. This is the source of truth for the project.
+> **⚠️ MANDATORY**: Always read this file before processing **ANY** prompt. This is the source of truth. No exceptions.
 
 ---
 
@@ -328,6 +328,82 @@ Refer to these documents for any ambiguity. They are the source of truth.
 
 ---
 
+## 📦 Skills Reference & Conditional Routing
+
+**All skills installed globally at `~/.claude/skills/`. Load based on task type:**
+
+### 🎨 **UI/UX & Design Tasks** → Load `ui-ux-pro-max-skill` ⭐ PRIMARY
+- **Path:** `~/.claude/skills/ui-ux-pro-max-skill`
+- **When:** Building UI components, designing layouts, frontend work, dashboard design
+- **What:** 67 UI styles, 96 color palettes, 57 font pairings, component templates
+- **For OMR+:** Use extensively for client/trainer/admin dashboards, marketing pages
+
+### 📄 **File Generation** → Load `anthropic/skills`
+- **Path:** `~/.claude/skills/skills`
+- **When:** Need to generate PDF/Word/Excel/Slides, invoices, reports
+- **For OMR+:** Invoice PDFs, body check reports, admin exports
+
+### 🔌 **External API Integrations** → Load `awesome-claude-skills`
+- **Path:** `~/.claude/skills/awesome-claude-skills`
+- **When:** Stripe integration, WhatsApp API, email notifications, third-party services
+- **For OMR+:** Stripe payment integration, webhook handlers, SMS/email services
+
+### 🚀 **Frontend & Next.js** → Load `agent-skills (Vercel)`
+- **Path:** `~/.claude/skills/agent-skills`
+- **When:** Vercel deployment, Next.js features, performance optimization
+- **For OMR+:** Deployment to Vercel, Next.js configuration
+
+### 💻 **AI Component Generation** → Use **21st.dev** (local installation)
+- **Setup:** `npx @21st-dev/cli@latest init` (use your free 21st.dev API key)
+- **When:** Rapidly scaffolding React components from descriptions
+- **For OMR+:** Component prototyping, dashboard layouts
+
+### 🤖 **Advanced Agents** → Check `superpowers`
+- **When:** Complex autonomous workflows, multi-step operations
+- **For OMR+:** Batch user operations, data migrations
+
+---
+
+## 🔧 Workflow Guidelines
+
+### 1. **Plan Mode Default** — Non-trivial tasks ALWAYS start here
+- 3+ steps → use plan mode
+- Architectural decisions → use plan mode
+- Multiple file changes → use plan mode
+- **If blocked:** Stop immediately, re-plan instead of pushing through
+
+### 2. **Subagent Strategy** — Offload liberally
+- Use Explore agent for deep codebase understanding
+- Use general-purpose agents for research + parallel tasks
+- One focused task per subagent
+- Keep main context clean for implementation
+
+### 3. **Verification Before Done** — Never mark complete without proof
+- Demonstrate it works (tests, logs, behavior)
+- Diff changes when relevant
+- Run tests, check errors
+- Ask: "Would a staff engineer approve this?"
+
+### 4. **Autonomous Bug Fixing** — No hand-holding needed
+- Fix bugs immediately when reported
+- Point at logs/errors, then resolve
+- Zero context-switching from user
+- Go fix failing tests without being told how
+
+### 5. **Demand Elegance (Balanced)** — When it matters
+- For non-trivial changes: ask "more elegant way?"
+- If fix feels hacky: implement elegant solution instead
+- Skip for simple, obvious fixes — don't over-engineer
+- Challenge your work before presenting
+
+### 6. **Task Tracking** — Use TodoWrite for complex work
+- Write plan with checkable items
+- Mark items complete as you go (not in batch)
+- Explain changes at each step
+- Document results in review section
+
+---
+
 ## 🎯 Success Criteria
 
 Platform is complete when:
@@ -370,6 +446,45 @@ Re-read before:
 
 ---
 
+---
+
+## 📦 Dependencies to Install
+
+**Already installed:**
+- next@16.2.1, react@19.2.4, typescript, tailwindcss@4
+
+**Still needed (in priority order):**
+
+```bash
+# i18n & Bilingual
+npm install next-intl
+
+# Supabase (backend + auth + realtime)
+npm install @supabase/supabase-js
+
+# Forms & Validation
+npm install react-hook-form zod @hookform/resolvers
+
+# Payments (Stripe)
+npm install stripe @stripe/react-js
+
+# UI Utilities
+npm install tailwindcss-rtl  # For RTL support
+npm install clsx             # classname utility
+
+# Charts (Progress tracking)
+npm install recharts
+
+# State Management
+npm install zustand
+
+# Utilities
+npm install date-fns         # Date formatting with locale support
+npm install js-cookie        # Cookie management
+```
+
+---
+
 **Last Updated**: 2026-03-30
-**Version**: v1.0
-**Status**: Development in Progress
+**Version**: v1.1 (Enhanced with Skills Reference & Workflow Guidelines)
+**Status**: Development in Progress — Phase 1 Foundation Ready
