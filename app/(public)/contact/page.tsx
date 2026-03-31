@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import Select from '@/components/ui/Select';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
@@ -63,6 +64,18 @@ export default function ContactPage() {
           border-color: rgba(201,168,76,0.45);
           background: rgba(255,255,255,0.06);
         }
+        select.contact-input {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          padding-right: 2.5rem;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6.5L11 1' stroke='%23C9A84C' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 0.9rem center;
+          background-size: 12px 8px;
+          cursor: pointer;
+        }
+        select.contact-input option { background: #111; color: rgba(255,255,255,0.82); }
         .contact-label {
           display: block; font-size: 0.67rem; font-weight: 600;
           letter-spacing: 0.15em; text-transform: uppercase;
@@ -253,14 +266,18 @@ export default function ContactPage() {
                         </div>
                         <div>
                           <label className="contact-label">Subject</label>
-                          <select className="contact-input" value={form.subject} onChange={update('subject')} required style={{ cursor: 'pointer' }}>
-                            <option value="" disabled>Select a topic</option>
-                            <option value="program">Program Inquiry</option>
-                            <option value="consultation">Free Consultation</option>
-                            <option value="pricing">Pricing Question</option>
-                            <option value="technical">Technical Support</option>
-                            <option value="other">Other</option>
-                          </select>
+                          <Select
+                            value={form.subject}
+                            onChange={v => setForm(prev => ({ ...prev, subject: v }))}
+                            placeholder="Select a topic"
+                            options={[
+                              { value: 'program', label: 'Program Inquiry' },
+                              { value: 'consultation', label: 'Free Consultation' },
+                              { value: 'pricing', label: 'Pricing Question' },
+                              { value: 'technical', label: 'Technical Support' },
+                              { value: 'other', label: 'Other' },
+                            ]}
+                          />
                         </div>
                       </div>
 

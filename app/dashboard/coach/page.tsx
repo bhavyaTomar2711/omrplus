@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import DashboardShell, { NavItem } from '@/components/dashboard/DashboardShell';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
+import Select from '@/components/ui/Select';
 
-/* ─── Nav Items ──────────────────────────────────────── */
+/* ─── Nav ─────────────────────────────────────────────── */
 const navItems: NavItem[] = [
   {
     id: 'overview', label: 'Overview',
@@ -16,7 +18,7 @@ const navItems: NavItem[] = [
   },
   {
     id: 'meal-builder', label: 'Meal Plans',
-    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5M12 8.25V6.75" /></svg>,
+    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5M6 10.608v6.137a2.587 2.587 0 0 0 2.587 2.587h6.826A2.587 2.587 0 0 0 18 16.745v-6.137M6 10.608H4.5m13.5 0H19.5" /></svg>,
   },
   {
     id: 'workout-builder', label: 'Workout Plans',
@@ -32,182 +34,793 @@ const navItems: NavItem[] = [
   },
 ];
 
-/* ─── Mock clients ───────────────────────────────────── */
-const mockClients = [
-  { id: 'c1', name: 'Ahmed Al-Rashid', email: 'ahmed@example.com', goal: 'Fat Loss', plan: 'Full Coaching', weight: 88.5, targetWeight: 80, startDate: 'Feb 1', streak: 14, status: 'active' },
-  { id: 'c2', name: 'Sara Ibrahim', email: 'sara@example.com', goal: 'Muscle Building', plan: 'Full Coaching', weight: 62.0, targetWeight: 65, startDate: 'Feb 15', streak: 7, status: 'active' },
-  { id: 'c3', name: 'Khalid Mohammed', email: 'khalid@example.com', goal: 'Summer Body', plan: 'Elite Coaching', weight: 91.0, targetWeight: 82, startDate: 'Mar 1', streak: 5, status: 'active' },
-  { id: 'c4', name: 'Nour Hassan', email: 'nour@example.com', goal: 'Workout Plan', plan: 'Plan Only', weight: 70.0, targetWeight: 68, startDate: 'Mar 15', streak: 0, status: 'inactive' },
-];
+/* ─── Types ───────────────────────────────────────────── */
+interface ClientProfile {
+  id: string;
+  full_name: string | null;
+  email: string;
+  goal?: string;
+  weight?: number;
+  onboarding_completed: boolean;
+  subscription_status?: string;
+  assigned_at: string;
+}
 
-/* ─── Overview Tab ───────────────────────────────────── */
-function CoachOverview({ onNavigate }: { onNavigate: (tab: string) => void }) {
+interface MealPlan {
+  id: string;
+  client_id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  created_at: string;
+}
+
+interface MealPlanItem {
+  id?: string;
+  meal_type: string;
+  food_name: string;
+  grams: number;
+  calories: number | null;
+  notes: string | null;
+}
+
+interface WorkoutPlan {
+  id: string;
+  client_id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  created_at: string;
+}
+
+interface WorkoutDay {
+  id?: string;
+  day_number: number;
+  day_label: string;
+  focus: string | null;
+  exercises: WorkoutExercise[];
+}
+
+interface WorkoutExercise {
+  id?: string;
+  exercise_name: string;
+  sets: number | null;
+  reps: string | null;
+  rest_seconds: number | null;
+  notes: string | null;
+  sort_order: number;
+}
+
+interface ProgressLog {
+  id: string;
+  client_id: string;
+  logged_at: string;
+  weight_kg: number | null;
+  notes: string | null;
+  client_name?: string;
+}
+
+interface ChatMessage {
+  id: string;
+  thread_id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
+}
+
+/* ─── Overview ────────────────────────────────────────── */
+function OverviewTab({
+  clients,
+  onNavigate,
+}: {
+  clients: ClientProfile[];
+  onNavigate: (tab: string) => void;
+}) {
+  const active = clients.filter(c => c.subscription_status === 'active').length;
+
   const stats = [
-    { label: 'Total Clients', value: '4', sub: '+1 this month', color: 'rgba(201,168,76,0.08)', border: 'rgba(201,168,76,0.2)' },
-    { label: 'Active Plans', value: '7', sub: '4 meal + 3 workout', color: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)' },
-    { label: 'Unread Messages', value: '3', sub: 'From 2 clients', color: 'rgba(100,180,255,0.08)', border: 'rgba(100,180,255,0.2)' },
-    { label: 'Avg Client Progress', value: '−1.8 kg', sub: 'This month', color: 'rgba(80,200,120,0.08)', border: 'rgba(80,200,120,0.2)' },
+    {
+      label: 'Total Clients',
+      value: String(clients.length),
+      sub: 'Assigned to you',
+      bg: 'rgba(201,168,76,0.06)',
+      border: 'rgba(201,168,76,0.2)',
+      icon: (
+        <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Active Members',
+      value: String(active),
+      sub: 'With active subscription',
+      bg: 'rgba(74,222,128,0.04)',
+      border: 'rgba(74,222,128,0.18)',
+      icon: (
+        <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Onboarded',
+      value: String(clients.filter(c => c.onboarding_completed).length),
+      sub: 'Completed questionnaire',
+      bg: 'rgba(255,255,255,0.03)',
+      border: 'rgba(255,255,255,0.08)',
+      icon: (
+        <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Pending Setup',
+      value: String(clients.filter(c => !c.onboarding_completed).length),
+      sub: 'Need onboarding',
+      bg: 'rgba(255,200,80,0.04)',
+      border: 'rgba(255,200,80,0.18)',
+      icon: (
+        <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      ),
+    },
   ];
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white mb-1">Coach Dashboard</h2>
-        <p className="text-white/35 text-sm">Manage your clients, build plans, and track progress.</p>
+      <div className="mb-7">
+        <div className="ds-gold-pill mb-3">
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C9A84C', flexShrink: 0, display: 'inline-block' }} />
+          Coach Portal
+        </div>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: 'white', marginBottom: '0.35rem' }}>
+          Welcome back
+        </h2>
+        <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>
+          Here&apos;s a summary of your coaching activity.
+        </p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '1rem', marginBottom: '2rem' }}>
         {stats.map(s => (
-          <div key={s.label} className="ds-card p-5" style={{ background: s.color, borderColor: s.border }}>
-            <p className="text-2xl font-bold text-white">{s.value}</p>
-            <p className="text-sm text-white/55 mt-0.5">{s.label}</p>
-            <p className="text-xs text-white/30 mt-1">{s.sub}</p>
+          <div key={s.label} className="ds-stat" style={{ background: s.bg, borderColor: s.border }}>
+            <div className="ds-stat-icon" style={{ background: s.bg, borderColor: s.border }}>{s.icon}</div>
+            <div className="ds-stat-value">{s.value}</div>
+            <div className="ds-stat-label">{s.label}</div>
+            <div className="ds-stat-sub">{s.sub}</div>
           </div>
         ))}
       </div>
 
-      {/* Recent clients */}
-      <div className="ds-card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-white">Recent Clients</h3>
-          <button onClick={() => onNavigate('clients')} className="text-xs" style={{ color: '#C9A84C' }}>View all →</button>
+      <div className="ds-card" style={{ padding: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+          <div>
+            <p className="ds-section-title">Assigned Clients</p>
+            <p className="ds-section-sub">Your current roster</p>
+          </div>
+          <button className="ds-btn-gold" onClick={() => onNavigate('clients')}>
+            View All
+          </button>
         </div>
-        <div className="space-y-3">
-          {mockClients.slice(0, 3).map(c => (
-            <div key={c.id} className="flex items-center gap-3 py-2">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)' }}>
-                <span className="text-xs font-bold" style={{ color: '#C9A84C' }}>{c.name[0]}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{c.name}</p>
-                <p className="text-xs text-white/35">{c.goal} · {c.plan}</p>
-              </div>
-              <div className="text-right text-xs">
-                <p className="text-white/55">{c.weight} kg</p>
-                <p className="text-white/30">{c.streak}d streak</p>
-              </div>
-              <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full ${c.status === 'active' ? 'text-green-400' : 'text-white/30'}`}
-                style={{ background: c.status === 'active' ? 'rgba(80,200,120,0.1)' : 'rgba(255,255,255,0.05)', border: c.status === 'active' ? '1px solid rgba(80,200,120,0.2)' : '1px solid rgba(255,255,255,0.08)' }}>
-                {c.status}
-              </span>
+
+        {clients.length === 0 ? (
+          <div className="ds-empty">
+            <div className="ds-empty-icon">
+              <svg style={{ width: 22, height: 22 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z" />
+              </svg>
             </div>
-          ))}
-        </div>
+            <p>No clients assigned yet</p>
+            <small>Ask the admin to assign clients to your profile.</small>
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table className="ds-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Goal</th>
+                  <th>Status</th>
+                  <th>Assigned</th>
+                </tr>
+              </thead>
+              <tbody>
+                {clients.slice(0, 5).map(c => {
+                  const initials = c.full_name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() ?? 'U';
+                  return (
+                    <tr key={c.id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <div style={{
+                            width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)',
+                            fontSize: 11, fontWeight: 700, color: '#C9A84C',
+                          }}>{initials}</div>
+                          <div>
+                            <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.82rem', fontWeight: 500 }}>
+                              {c.full_name ?? 'Unnamed'}
+                            </p>
+                            <p style={{ color: 'rgba(255,255,255,0.28)', fontSize: '0.7rem' }}>{c.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>{c.goal ?? '—'}</td>
+                      <td>
+                        <span className={c.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'}>
+                          {c.subscription_status ?? 'no plan'}
+                        </span>
+                      </td>
+                      <td style={{ color: 'rgba(255,255,255,0.32)', fontSize: '0.75rem' }}>
+                        {new Date(c.assigned_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-/* ─── Clients Tab ────────────────────────────────────── */
-function ClientsTab({ onNavigate }: { onNavigate: (tab: string, clientId?: string) => void }) {
-  const [addMode, setAddMode] = useState(false);
-  const [email, setEmail] = useState('');
-  const [selectedClient, setSelectedClient] = useState<typeof mockClients[0] | null>(null);
-  const [adding, setAdding] = useState(false);
-  const [addSuccess, setAddSuccess] = useState(false);
+/* ─── Clients Tab ─────────────────────────────────────── */
+function ClientsTab({
+  clients,
+  onOpenChat,
+  onBuildMeal,
+  onBuildWorkout,
+}: {
+  clients: ClientProfile[];
+  onOpenChat: (clientId: string) => void;
+  onBuildMeal: (clientId: string) => void;
+  onBuildWorkout: (clientId: string) => void;
+}) {
+  const [selected, setSelected] = useState<ClientProfile | null>(null);
+  const [onboarding, setOnboarding] = useState<Record<string, string> | null>(null);
 
-  const handleAddClient = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAdding(true);
-    // In production: supabase query to find user by email and assign to coach
-    await new Promise(r => setTimeout(r, 800));
-    setAdding(false);
-    setAddSuccess(true);
-    setEmail('');
-    setTimeout(() => { setAddSuccess(false); setAddMode(false); }, 2500);
+  const openClient = async (c: ClientProfile) => {
+    setSelected(c);
+    const { data } = await supabase
+      .from('onboarding_responses')
+      .select('*')
+      .eq('user_id', c.id)
+      .single();
+    setOnboarding(data ?? null);
   };
 
-  if (selectedClient) {
+  if (selected) {
+    const initials = selected.full_name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() ?? 'U';
     return (
       <div>
-        <button onClick={() => setSelectedClient(null)} className="flex items-center gap-2 text-sm text-white/40 hover:text-white/70 mb-5 transition-colors">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <button
+          className="ds-btn-outline"
+          style={{ marginBottom: '1.5rem' }}
+          onClick={() => { setSelected(null); setOnboarding(null); }}
+        >
+          <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
           Back to Clients
         </button>
 
-        <div className="grid lg:grid-cols-3 gap-5">
-          {/* Profile */}
-          <div className="lg:col-span-1 ds-card p-6">
-            <div className="text-center mb-5">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3"
-                style={{ background: 'rgba(201,168,76,0.1)', border: '2px solid rgba(201,168,76,0.3)' }}>
-                <span className="text-2xl font-bold" style={{ color: '#C9A84C' }}>{selectedClient.name[0]}</span>
-              </div>
-              <h3 className="font-bold text-white">{selectedClient.name}</h3>
-              <p className="text-xs text-white/35">{selectedClient.email}</p>
+        <div className="ds-card" style={{ padding: '2rem', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '1.5rem' }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(201,168,76,0.1)', border: '2px solid rgba(201,168,76,0.3)',
+              fontSize: 18, fontWeight: 700, color: '#C9A84C', flexShrink: 0,
+            }}>{initials}</div>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'white' }}>{selected.full_name ?? 'Unnamed'}</h3>
+              <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{selected.email}</p>
+              <span className={selected.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'} style={{ marginTop: 6, display: 'inline-block' }}>
+                {selected.subscription_status ?? 'no subscription'}
+              </span>
             </div>
-            <div className="space-y-3">
-              {[
-                { label: 'Goal', value: selectedClient.goal },
-                { label: 'Plan', value: selectedClient.plan },
-                { label: 'Current Weight', value: `${selectedClient.weight} kg` },
-                { label: 'Target Weight', value: `${selectedClient.targetWeight} kg` },
-                { label: 'Start Date', value: selectedClient.startDate },
-                { label: 'Active Streak', value: `${selectedClient.streak} days` },
-              ].map(item => (
-                <div key={item.label} className="flex justify-between text-sm">
-                  <span className="text-white/35">{item.label}</span>
-                  <span className="text-white/75 font-medium">{item.value}</span>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button className="ds-btn-gold" onClick={() => { onOpenChat(selected.id); setSelected(null); setOnboarding(null); }}>
+              <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+              </svg>
+              Message
+            </button>
+            <button className="ds-btn-outline" onClick={() => { onBuildMeal(selected.id); setSelected(null); setOnboarding(null); }}>
+              Build Meal Plan
+            </button>
+            <button className="ds-btn-outline" onClick={() => { onBuildWorkout(selected.id); setSelected(null); setOnboarding(null); }}>
+              Build Workout Plan
+            </button>
+          </div>
+        </div>
+
+        {onboarding && (
+          <div className="ds-card" style={{ padding: '1.75rem' }}>
+            <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>Onboarding Responses</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '1rem' }}>
+              {Object.entries(onboarding)
+                .filter(([k]) => !['id', 'user_id', 'created_at', 'updated_at'].includes(k))
+                .map(([key, val]) => (
+                  <div key={key} style={{ padding: '0.9rem 1rem', background: 'rgba(255,255,255,0.025)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
+                      {key.replace(/_/g, ' ')}
+                    </p>
+                    <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.72)' }}>{String(val) || '—'}</p>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
+        <div>
+          <p className="ds-section-title">My Clients</p>
+          <p className="ds-section-sub">{clients.length} client{clients.length !== 1 ? 's' : ''} assigned to you</p>
+        </div>
+      </div>
+
+      {clients.length === 0 ? (
+        <div className="ds-empty">
+          <div className="ds-empty-icon">
+            <svg style={{ width: 22, height: 22 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z" />
+            </svg>
+          </div>
+          <p>No clients yet</p>
+          <small>The admin will assign clients to your account.</small>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gap: '0.85rem' }}>
+          {clients.map(c => {
+            const initials = c.full_name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() ?? 'U';
+            return (
+              <div
+                key={c.id}
+                className="ds-card"
+                style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer', transition: 'border-color 0.2s' }}
+                onClick={() => openClient(c)}
+              >
+                <div style={{
+                  width: 42, height: 42, borderRadius: '50%', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.22)',
+                  fontSize: 14, fontWeight: 700, color: '#C9A84C',
+                }}>{initials}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: '0.88rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                    {c.full_name ?? 'Unnamed Client'}
+                  </p>
+                  <p style={{ fontSize: '0.73rem', color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{c.email}</p>
                 </div>
-              ))}
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
+                  {c.onboarding_completed
+                    ? <span className="ds-badge-green">Onboarded</span>
+                    : <span className="ds-badge-gray">Not onboarded</span>}
+                  <span className={c.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gold'}>
+                    {c.subscription_status ?? 'no plan'}
+                  </span>
+                </div>
+                <svg style={{ width: 16, height: 16, color: 'rgba(255,255,255,0.2)', flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Meal Builder ────────────────────────────────────── */
+function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfile[]; preselectedClientId: string | null }) {
+  const [selectedClientId, setSelectedClientId] = useState(preselectedClientId ?? '');
+  const [plans, setPlans] = useState<MealPlan[]>([]);
+  const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
+  const [editPlan, setEditPlan] = useState<MealPlan | null>(null);
+  const [items, setItems] = useState<MealPlanItem[]>([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [newItem, setNewItem] = useState<MealPlanItem>({ meal_type: 'breakfast', food_name: '', grams: 0, calories: null, notes: null });
+
+  const mealTypes = ['breakfast', 'morning_snack', 'lunch', 'afternoon_snack', 'dinner'];
+
+  useEffect(() => {
+    if (preselectedClientId) setSelectedClientId(preselectedClientId);
+  }, [preselectedClientId]);
+
+  useEffect(() => {
+    if (!selectedClientId) return;
+    supabase.from('meal_plans').select('*').eq('client_id', selectedClientId).order('created_at', { ascending: false })
+      .then(({ data }) => setPlans(data ?? []));
+  }, [selectedClientId]);
+
+  const openEdit = async (plan: MealPlan) => {
+    setEditPlan(plan);
+    setTitle(plan.title);
+    setDescription(plan.description ?? '');
+    const { data } = await supabase.from('meal_plan_items').select('*').eq('meal_plan_id', plan.id).order('meal_type');
+    setItems(data ?? []);
+    setView('edit');
+  };
+
+  const savePlan = async () => {
+    if (!selectedClientId || !title.trim()) return;
+    setSaving(true);
+    if (view === 'create') {
+      const { data: plan, error } = await supabase.from('meal_plans').insert({
+        client_id: selectedClientId,
+        coach_id: (await supabase.auth.getUser()).data.user?.id,
+        title: title.trim(),
+        description: description.trim() || null,
+        status: 'active',
+      }).select().single();
+      if (!error && plan) {
+        if (items.length > 0) {
+          await supabase.from('meal_plan_items').insert(items.map(i => ({ meal_plan_id: plan.id, meal_type: i.meal_type, food_name: i.food_name, quantity_g: i.grams, calories: i.calories, notes: i.notes })));
+        }
+        const { data: updated } = await supabase.from('meal_plans').select('*').eq('client_id', selectedClientId).order('created_at', { ascending: false });
+        setPlans(updated ?? []);
+        setView('list'); setTitle(''); setDescription(''); setItems([]);
+      }
+    } else if (editPlan) {
+      await supabase.from('meal_plans').update({ title: title.trim(), description: description.trim() || null }).eq('id', editPlan.id);
+      await supabase.from('meal_plan_items').delete().eq('meal_plan_id', editPlan.id);
+      if (items.length > 0) {
+        await supabase.from('meal_plan_items').insert(items.map(i => ({ meal_plan_id: editPlan.id, meal_type: i.meal_type, food_name: i.food_name, quantity_g: i.grams, calories: i.calories, notes: i.notes })));
+      }
+      const { data: updated } = await supabase.from('meal_plans').select('*').eq('client_id', selectedClientId).order('created_at', { ascending: false });
+      setPlans(updated ?? []);
+      setView('list'); setTitle(''); setDescription(''); setItems([]); setEditPlan(null);
+    }
+    setSaving(false);
+  };
+
+  const addItem = () => {
+    if (!newItem.food_name.trim()) return;
+    setItems(prev => [...prev, { ...newItem }]);
+    setNewItem({ meal_type: newItem.meal_type, food_name: '', grams: 0, calories: null, notes: null });
+  };
+
+  const deletePlan = async (id: string) => {
+    await supabase.from('meal_plan_items').delete().eq('meal_plan_id', id);
+    await supabase.from('meal_plans').delete().eq('id', id);
+    setPlans(prev => prev.filter(p => p.id !== id));
+  };
+
+  if (view === 'create' || view === 'edit') {
+    return (
+      <div>
+        <button className="ds-btn-outline" style={{ marginBottom: '1.5rem' }}
+          onClick={() => { setView('list'); setTitle(''); setDescription(''); setItems([]); setEditPlan(null); }}>
+          <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          </svg>
+          Back
+        </button>
+
+        <div className="ds-card" style={{ padding: '1.75rem', marginBottom: '1.25rem' }}>
+          <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>
+            {view === 'create' ? 'New Meal Plan' : 'Edit Meal Plan'}
+          </p>
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            <div>
+              <label className="ds-label">Plan Title</label>
+              <input className="ds-input" placeholder="e.g. Week 1 Cut Plan" value={title} onChange={e => setTitle(e.target.value)} />
             </div>
-            <div className="ds-divider" />
-            <div className="flex flex-col gap-2">
-              <button onClick={() => onNavigate('meal-builder')} className="ds-btn-gold w-full justify-center text-xs">
-                Build Meal Plan
-              </button>
-              <button onClick={() => onNavigate('workout-builder')} className="ds-btn-outline w-full justify-center text-xs">
-                Build Workout Plan
-              </button>
-              <button onClick={() => onNavigate('messages')} className="ds-btn-outline w-full justify-center text-xs">
-                Message Client
-              </button>
+            <div>
+              <label className="ds-label">Description (optional)</label>
+              <textarea className="ds-input" placeholder="Notes about this plan..." value={description}
+                onChange={e => setDescription(e.target.value)}
+                style={{ minHeight: 72, resize: 'vertical' }} />
             </div>
           </div>
+        </div>
 
-          {/* Onboarding & Stats */}
-          <div className="lg:col-span-2 space-y-5">
-            <div className="ds-card p-6">
-              <h4 className="font-semibold text-white mb-4">Onboarding Answers</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                {[
-                  { label: 'Fitness Goal', value: selectedClient.goal },
-                  { label: 'Activity Level', value: 'Moderately Active (3–5x/week)' },
-                  { label: 'Experience', value: 'Intermediate' },
-                  { label: 'Dietary Restrictions', value: 'Halal only' },
-                  { label: 'Health Conditions', value: 'None reported' },
-                  { label: 'Height', value: '178 cm' },
-                  { label: 'Age', value: '29' },
-                  { label: 'Gender', value: 'Male' },
-                ].map(item => (
-                  <div key={item.label}>
-                    <p className="text-[10px] uppercase tracking-wider text-white/25 mb-1">{item.label}</p>
-                    <p className="text-sm text-white/70">{item.value}</p>
-                  </div>
-                ))}
-              </div>
+        <div className="ds-card" style={{ padding: '1.75rem', marginBottom: '1.25rem' }}>
+          <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>Meal Items</p>
+          {items.map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '0.5rem', padding: '0.7rem 1rem', background: 'rgba(255,255,255,0.025)', borderRadius: 10 }}>
+              <span className="ds-badge-gold" style={{ textTransform: 'capitalize', whiteSpace: 'nowrap' }}>{item.meal_type.replace(/_/g, ' ')}</span>
+              <span style={{ flex: 1, fontSize: '0.83rem', color: 'rgba(255,255,255,0.72)' }}>{item.food_name}</span>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.38)', whiteSpace: 'nowrap' }}>{item.grams}g</span>
+              {item.calories && <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.28)', whiteSpace: 'nowrap' }}>{item.calories} kcal</span>}
+              <button onClick={() => setItems(prev => prev.filter((_, i) => i !== idx))}
+                style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.6)', cursor: 'pointer', padding: 0 }}>
+                <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
+          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 80px 80px', gap: '0.6rem', marginTop: '1rem' }}>
+            <Select
+              value={newItem.meal_type}
+              onChange={v => setNewItem(p => ({ ...p, meal_type: v }))}
+              options={mealTypes.map(t => ({ value: t, label: t.replace(/_/g, ' ') }))}
+              placeholder=""
+            />
+            <input className="ds-input" placeholder="Food name" value={newItem.food_name} onChange={e => setNewItem(p => ({ ...p, food_name: e.target.value }))} />
+            <input className="ds-input" type="number" placeholder="g" value={newItem.grams || ''} onChange={e => setNewItem(p => ({ ...p, grams: Number(e.target.value) }))} />
+            <input className="ds-input" type="number" placeholder="kcal" value={newItem.calories ?? ''} onChange={e => setNewItem(p => ({ ...p, calories: e.target.value ? Number(e.target.value) : null }))} />
+          </div>
+          <button className="ds-btn-outline" style={{ marginTop: '0.75rem' }} onClick={addItem}>
+            + Add Item
+          </button>
+        </div>
 
-            <div className="ds-card p-6">
-              <h4 className="font-semibold text-white mb-4">Recent Progress Logs</h4>
-              <div className="space-y-2">
-                {[
-                  { date: 'Mar 30', weight: selectedClient.weight, notes: 'Feeling good' },
-                  { date: 'Mar 27', weight: selectedClient.weight + 0.7, notes: '' },
-                  { date: 'Mar 24', weight: selectedClient.weight + 1.5, notes: '' },
-                ].map((log, i) => (
-                  <div key={i} className="flex items-center gap-4 py-2 border-b border-white/05 last:border-0 text-sm">
-                    <span className="text-white/35 w-16">{log.date}</span>
-                    <span className="font-semibold text-white">{log.weight} kg</span>
-                    <span className="text-white/30 flex-1">{log.notes || '—'}</span>
-                  </div>
-                ))}
+        <button className="ds-btn-gold" disabled={saving || !title.trim()} onClick={savePlan}>
+          {saving ? 'Saving…' : 'Save Plan'}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <p className="ds-section-title">Meal Plans</p>
+          <p className="ds-section-sub">Build and assign meal plans to clients</p>
+        </div>
+        {selectedClientId && (
+          <button className="ds-btn-gold" onClick={() => setView('create')}>
+            <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            New Plan
+          </button>
+        )}
+      </div>
+
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label className="ds-label">Select Client</label>
+        <Select
+          value={selectedClientId}
+          onChange={setSelectedClientId}
+          placeholder="— choose a client —"
+          options={clients.map(c => ({ value: c.id, label: c.full_name ?? c.email }))}
+        />
+      </div>
+
+      {selectedClientId && plans.length === 0 ? (
+        <div className="ds-empty">
+          <div className="ds-empty-icon">
+            <svg style={{ width: 22, height: 22 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513" />
+            </svg>
+          </div>
+          <p>No meal plans yet</p>
+          <small>Create the first plan for this client.</small>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gap: '0.85rem' }}>
+          {plans.map(plan => (
+            <div key={plan.id} className="ds-card" style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className="ds-icon-box">
+                <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513" />
+                </svg>
               </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: '0.88rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{plan.title}</p>
+                {plan.description && <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.32)', marginTop: 2 }}>{plan.description}</p>}
+                <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.22)', marginTop: 3 }}>
+                  Created {new Date(plan.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              <span className={plan.status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'}>{plan.status}</span>
+              <button className="ds-btn-outline" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => openEdit(plan)}>Edit</button>
+              <button
+                style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 4 }}
+                onClick={() => deletePlan(plan.id)}
+              >
+                <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Workout Builder ─────────────────────────────────── */
+function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientProfile[]; preselectedClientId: string | null }) {
+  const [selectedClientId, setSelectedClientId] = useState(preselectedClientId ?? '');
+  const [plans, setPlans] = useState<WorkoutPlan[]>([]);
+  const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
+  const [editPlan, setEditPlan] = useState<WorkoutPlan | null>(null);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [days, setDays] = useState<WorkoutDay[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (preselectedClientId) setSelectedClientId(preselectedClientId);
+  }, [preselectedClientId]);
+
+  useEffect(() => {
+    if (!selectedClientId) return;
+    supabase.from('workout_plans').select('*').eq('client_id', selectedClientId).order('created_at', { ascending: false })
+      .then(({ data }) => setPlans(data ?? []));
+  }, [selectedClientId]);
+
+  const addDay = () => {
+    const num = days.length + 1;
+    setDays(prev => [...prev, {
+      day_number: num,
+      day_label: `Day ${num}`,
+      focus: null,
+      exercises: [],
+    }]);
+  };
+
+  const updateDay = (idx: number, field: keyof WorkoutDay, value: string) => {
+    setDays(prev => prev.map((d, i) => i === idx ? { ...d, [field]: value } : d));
+  };
+
+  const addExercise = (dayIdx: number) => {
+    setDays(prev => prev.map((d, i) => i === dayIdx ? {
+      ...d,
+      exercises: [...d.exercises, {
+        exercise_name: '',
+        sets: null,
+        reps: null,
+        rest_seconds: null,
+        notes: null,
+        sort_order: d.exercises.length,
+      }],
+    } : d));
+  };
+
+  const updateExercise = (dayIdx: number, exIdx: number, field: string, value: string | number | null) => {
+    setDays(prev => prev.map((d, i) => i === dayIdx ? {
+      ...d,
+      exercises: d.exercises.map((e, j) => j === exIdx ? { ...e, [field]: value } : e),
+    } : d));
+  };
+
+  const openEdit = async (plan: WorkoutPlan) => {
+    setEditPlan(plan);
+    setTitle(plan.title);
+    setDescription(plan.description ?? '');
+    const { data: planDays } = await supabase.from('workout_plan_days').select('*').eq('workout_plan_id', plan.id).order('day_number');
+    const loadedDays: WorkoutDay[] = [];
+    for (const d of planDays ?? []) {
+      const { data: exs } = await supabase.from('workout_exercises').select('*').eq('workout_day_id', d.id).order('sort_order');
+      loadedDays.push({ ...d, exercises: exs ?? [] });
+    }
+    setDays(loadedDays);
+    setView('edit');
+  };
+
+  const savePlan = async () => {
+    if (!selectedClientId || !title.trim()) return;
+    setSaving(true);
+    const coachId = (await supabase.auth.getUser()).data.user?.id;
+
+    let planId: string;
+    if (view === 'create') {
+      const { data: plan, error } = await supabase.from('workout_plans').insert({
+        client_id: selectedClientId, coach_id: coachId, title: title.trim(),
+        description: description.trim() || null, status: 'active',
+      }).select().single();
+      if (error || !plan) { setSaving(false); return; }
+      planId = plan.id;
+    } else if (editPlan) {
+      await supabase.from('workout_plans').update({ title: title.trim(), description: description.trim() || null }).eq('id', editPlan.id);
+      // delete old days (cascade deletes exercises)
+      await supabase.from('workout_plan_days').delete().eq('workout_plan_id', editPlan.id);
+      planId = editPlan.id;
+    } else { setSaving(false); return; }
+
+    for (const day of days) {
+      const { data: dayRow } = await supabase.from('workout_plan_days').insert({
+        workout_plan_id: planId, day_number: day.day_number,
+        day_label: day.day_label, focus: day.focus || null,
+      }).select().single();
+      if (dayRow && day.exercises.length > 0) {
+        await supabase.from('workout_exercises').insert(
+          day.exercises.map((e, idx) => ({ exercise_name: e.exercise_name, sets: e.sets, reps: e.reps, rest_seconds: e.rest_seconds, notes: e.notes, workout_day_id: dayRow.id, sort_order: idx }))
+        );
+      }
+    }
+
+    const { data: updated } = await supabase.from('workout_plans').select('*').eq('client_id', selectedClientId).order('created_at', { ascending: false });
+    setPlans(updated ?? []);
+    setView('list'); setTitle(''); setDescription(''); setDays([]); setEditPlan(null);
+    setSaving(false);
+  };
+
+  const deletePlan = async (id: string) => {
+    await supabase.from('workout_plans').delete().eq('id', id);
+    setPlans(prev => prev.filter(p => p.id !== id));
+  };
+
+  if (view === 'create' || view === 'edit') {
+    return (
+      <div>
+        <button className="ds-btn-outline" style={{ marginBottom: '1.5rem' }}
+          onClick={() => { setView('list'); setTitle(''); setDescription(''); setDays([]); setEditPlan(null); }}>
+          <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          </svg>
+          Back
+        </button>
+
+        <div className="ds-card" style={{ padding: '1.75rem', marginBottom: '1.25rem' }}>
+          <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>
+            {view === 'create' ? 'New Workout Plan' : 'Edit Workout Plan'}
+          </p>
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            <div>
+              <label className="ds-label">Plan Title</label>
+              <input className="ds-input" placeholder="e.g. 4-Week Strength Program" value={title} onChange={e => setTitle(e.target.value)} />
+            </div>
+            <div>
+              <label className="ds-label">Description (optional)</label>
+              <textarea className="ds-input" placeholder="Overview of this program..." value={description}
+                onChange={e => setDescription(e.target.value)} style={{ minHeight: 72, resize: 'vertical' }} />
             </div>
           </div>
+        </div>
+
+        {days.map((day, dayIdx) => (
+          <div key={dayIdx} className="ds-card" style={{ padding: '1.5rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+              <input className="ds-input" placeholder="Day label (e.g. Push Day)" value={day.day_label}
+                onChange={e => updateDay(dayIdx, 'day_label', e.target.value)} style={{ flex: 1, minWidth: 140 }} />
+              <input className="ds-input" placeholder="Focus (e.g. Chest & Shoulders)" value={day.focus ?? ''}
+                onChange={e => updateDay(dayIdx, 'focus', e.target.value)} style={{ flex: 1, minWidth: 140 }} />
+              <button onClick={() => setDays(prev => prev.filter((_, i) => i !== dayIdx))}
+                style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: '4px 8px' }}>Remove day</button>
+            </div>
+            {day.exercises.map((ex, exIdx) => (
+              <div key={exIdx} style={{ display: 'grid', gridTemplateColumns: '2fr 80px 90px 100px 1fr auto', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'center' }}>
+                <input className="ds-input" placeholder="Exercise name" value={ex.exercise_name}
+                  onChange={e => updateExercise(dayIdx, exIdx, 'exercise_name', e.target.value)} />
+                <input className="ds-input" type="number" placeholder="Sets" value={ex.sets ?? ''}
+                  onChange={e => updateExercise(dayIdx, exIdx, 'sets', e.target.value ? Number(e.target.value) : null)} />
+                <input className="ds-input" placeholder="Reps" value={ex.reps ?? ''}
+                  onChange={e => updateExercise(dayIdx, exIdx, 'reps', e.target.value)} />
+                <input className="ds-input" type="number" placeholder="Rest (s)" value={ex.rest_seconds ?? ''}
+                  onChange={e => updateExercise(dayIdx, exIdx, 'rest_seconds', e.target.value ? Number(e.target.value) : null)} />
+                <input className="ds-input" placeholder="Notes" value={ex.notes ?? ''}
+                  onChange={e => updateExercise(dayIdx, exIdx, 'notes', e.target.value)} />
+                <button onClick={() => setDays(prev => prev.map((d, i) => i === dayIdx ? { ...d, exercises: d.exercises.filter((_, j) => j !== exIdx) } : d))}
+                  style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 4 }}>
+                  <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ))}
+            <button className="ds-btn-outline" style={{ marginTop: '0.5rem', padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => addExercise(dayIdx)}>
+              + Add Exercise
+            </button>
+          </div>
+        ))}
+
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+          <button className="ds-btn-outline" onClick={addDay}>+ Add Day</button>
+          <button className="ds-btn-gold" disabled={saving || !title.trim()} onClick={savePlan}>
+            {saving ? 'Saving…' : 'Save Plan'}
+          </button>
         </div>
       </div>
     );
@@ -215,631 +828,486 @@ function ClientsTab({ onNavigate }: { onNavigate: (tab: string, clientId?: strin
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 className="text-xl font-bold text-white mb-1">My Clients</h2>
-          <p className="text-white/35 text-sm">{mockClients.length} clients assigned to you</p>
+          <p className="ds-section-title">Workout Plans</p>
+          <p className="ds-section-sub">Create and manage workout programs</p>
         </div>
-        <button onClick={() => setAddMode(true)} className="ds-btn-gold">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Add Client by Email
-        </button>
+        {selectedClientId && (
+          <button className="ds-btn-gold" onClick={() => setView('create')}>
+            <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            New Plan
+          </button>
+        )}
       </div>
 
-      {/* Add client modal */}
-      {addMode && (
-        <div className="ds-card p-6 mb-6" style={{ borderColor: 'rgba(201,168,76,0.2)' }}>
-          {addSuccess ? (
-            <div className="text-center py-2">
-              <p className="text-2xl mb-1">✅</p>
-              <p className="text-sm text-white/60">Client invite sent!</p>
-            </div>
-          ) : (
-            <form onSubmit={handleAddClient}>
-              <h3 className="font-semibold text-white mb-3">Add Client by Email</h3>
-              <div className="flex gap-3">
-                <input type="email" className="ds-input flex-1" placeholder="client@example.com"
-                  value={email} onChange={e => setEmail(e.target.value)} required />
-                <button type="submit" className="ds-btn-gold" disabled={adding}>
-                  {adding ? 'Sending…' : 'Add Client'}
-                </button>
-                <button type="button" onClick={() => setAddMode(false)} className="ds-btn-outline">Cancel</button>
-              </div>
-              <p className="text-xs text-white/25 mt-2">The client must already have an account. They will be notified.</p>
-            </form>
-          )}
-        </div>
-      )}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label className="ds-label">Select Client</label>
+        <Select
+          value={selectedClientId}
+          onChange={setSelectedClientId}
+          placeholder="— choose a client —"
+          options={clients.map(c => ({ value: c.id, label: c.full_name ?? c.email }))}
+        />
+      </div>
 
-      {/* Client list */}
-      <div className="grid gap-4">
-        {mockClients.map(client => (
-          <div key={client.id} className="ds-card p-5 flex items-center gap-4 cursor-pointer group hover:border-gold-200 transition-all"
-            style={{ cursor: 'pointer' }}
-            onClick={() => setSelectedClient(client)}>
-            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)' }}>
-              <span className="font-bold" style={{ color: '#C9A84C' }}>{client.name[0]}</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="font-semibold text-white">{client.name}</p>
-                <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full`}
-                  style={{
-                    background: client.status === 'active' ? 'rgba(80,200,120,0.1)' : 'rgba(255,255,255,0.05)',
-                    color: client.status === 'active' ? 'rgba(80,200,120,0.9)' : 'rgba(255,255,255,0.3)',
-                    border: client.status === 'active' ? '1px solid rgba(80,200,120,0.2)' : '1px solid rgba(255,255,255,0.08)',
-                  }}>
-                  {client.status}
-                </span>
-              </div>
-              <p className="text-xs text-white/35">{client.email} · {client.goal} · {client.plan}</p>
-            </div>
-            <div className="hidden sm:grid grid-cols-3 gap-4 text-center text-xs">
-              <div>
-                <p className="text-white/25 text-[10px] uppercase tracking-wider">Weight</p>
-                <p className="text-white/70 font-semibold mt-0.5">{client.weight} kg</p>
-              </div>
-              <div>
-                <p className="text-white/25 text-[10px] uppercase tracking-wider">Target</p>
-                <p className="text-white/70 font-semibold mt-0.5">{client.targetWeight} kg</p>
-              </div>
-              <div>
-                <p className="text-white/25 text-[10px] uppercase tracking-wider">Streak</p>
-                <p className="text-white/70 font-semibold mt-0.5">{client.streak}d</p>
-              </div>
-            </div>
-            <svg className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      {selectedClientId && plans.length === 0 ? (
+        <div className="ds-empty">
+          <div className="ds-empty-icon">
+            <svg style={{ width: 22, height: 22 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
             </svg>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Meal Plan Builder ──────────────────────────────── */
-function MealBuilder() {
-  const [selectedClientId, setSelectedClientId] = useState('');
-  const [planName, setPlanName] = useState('');
-  const [meals, setMeals] = useState([
-    {
-      mealType: 'Breakfast', timing: '7:00 AM',
-      items: [{ food_name: '', grams: '', calories: '' }],
-    },
-  ]);
-  const [saved, setSaved] = useState(false);
-
-  const addMeal = () => setMeals(m => [...m, {
-    mealType: 'Snack', timing: '',
-    items: [{ food_name: '', grams: '', calories: '' }],
-  }]);
-
-  const updateMeal = (i: number, key: string, val: string) =>
-    setMeals(m => m.map((meal, idx) => idx === i ? { ...meal, [key]: val } : meal));
-
-  const addItem = (mealIdx: number) =>
-    setMeals(m => m.map((meal, idx) => idx === mealIdx ? { ...meal, items: [...meal.items, { food_name: '', grams: '', calories: '' }] } : meal));
-
-  const updateItem = (mealIdx: number, itemIdx: number, key: string, val: string) =>
-    setMeals(m => m.map((meal, mi) => mi === mealIdx ? {
-      ...meal,
-      items: meal.items.map((item, ii) => ii === itemIdx ? { ...item, [key]: val } : item),
-    } : meal));
-
-  const removeItem = (mealIdx: number, itemIdx: number) =>
-    setMeals(m => m.map((meal, mi) => mi === mealIdx ? {
-      ...meal, items: meal.items.filter((_, ii) => ii !== itemIdx),
-    } : meal));
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedClientId) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data: plan } = await supabase.from('meal_plans').insert({
-      client_id: selectedClientId,
-      trainer_id: user.id,
-      title: planName,
-    }).select().single();
-
-    if (plan) {
-      const items = meals.flatMap(meal => meal.items.map(item => ({
-        meal_plan_id: plan.id,
-        meal_type: meal.mealType,
-        meal_timing: meal.timing,
-        food_name: item.food_name,
-        grams: item.grams ? parseFloat(item.grams) : null,
-        calories: item.calories ? parseFloat(item.calories) : null,
-      })));
-      await supabase.from('meal_plan_items').insert(items);
-    }
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-  };
-
-  const mealTypeOptions = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Pre-Workout', 'Post-Workout'];
-
-  return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-white mb-1">Meal Plan Builder</h2>
-        <p className="text-white/35 text-sm">Create and assign personalised meal plans to clients</p>
-      </div>
-
-      {saved && (
-        <div className="ds-card p-4 mb-5 flex items-center gap-3"
-          style={{ background: 'rgba(80,200,120,0.06)', borderColor: 'rgba(80,200,120,0.2)' }}>
-          <span className="text-green-400 font-semibold text-sm">✓ Meal plan saved and assigned successfully!</span>
+          <p>No workout plans yet</p>
+          <small>Create the first program for this client.</small>
         </div>
-      )}
-
-      <form onSubmit={handleSave} className="space-y-5">
-        <div className="ds-card p-6">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="ds-label">Assign to Client</label>
-              <select className="ds-input" value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)} required>
-                <option value="" style={{ background: '#111' }}>Select client…</option>
-                {mockClients.map(c => (
-                  <option key={c.id} value={c.id} style={{ background: '#111' }}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="ds-label">Plan Name</label>
-              <input type="text" className="ds-input" placeholder="e.g. Fat Loss Phase 1"
-                value={planName} onChange={e => setPlanName(e.target.value)} required />
-            </div>
-          </div>
-        </div>
-
-        {meals.map((meal, mealIdx) => (
-          <div key={mealIdx} className="ds-card p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <select className="ds-input w-40" value={meal.mealType} onChange={e => updateMeal(mealIdx, 'mealType', e.target.value)}
-                style={{ width: 'auto' }}>
-                {mealTypeOptions.map(t => (
-                  <option key={t} value={t} style={{ background: '#111' }}>{t}</option>
-                ))}
-              </select>
-              <input type="text" className="ds-input" placeholder="Timing (e.g. 7:00 AM)" style={{ maxWidth: '150px' }}
-                value={meal.timing} onChange={e => updateMeal(mealIdx, 'timing', e.target.value)} />
-              {meals.length > 1 && (
-                <button type="button" onClick={() => setMeals(m => m.filter((_, i) => i !== mealIdx))}
-                  className="ml-auto text-xs text-red-400/60 hover:text-red-400 transition-colors">Remove meal</button>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <div className="grid grid-cols-12 gap-2 mb-1 text-[10px] uppercase tracking-wider text-white/25">
-                <span className="col-span-6">Food Name</span>
-                <span className="col-span-2">Grams</span>
-                <span className="col-span-2">Calories</span>
-                <span className="col-span-2" />
+      ) : (
+        <div style={{ display: 'grid', gap: '0.85rem' }}>
+          {plans.map(plan => (
+            <div key={plan.id} className="ds-card" style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className="ds-icon-box">
+                <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
               </div>
-              {meal.items.map((item, itemIdx) => (
-                <div key={itemIdx} className="grid grid-cols-12 gap-2">
-                  <input className="ds-input col-span-6" placeholder="e.g. Grilled chicken breast"
-                    value={item.food_name} onChange={e => updateItem(mealIdx, itemIdx, 'food_name', e.target.value)} />
-                  <input type="number" className="ds-input col-span-2" placeholder="200"
-                    value={item.grams} onChange={e => updateItem(mealIdx, itemIdx, 'grams', e.target.value)} />
-                  <input type="number" className="ds-input col-span-2" placeholder="330"
-                    value={item.calories} onChange={e => updateItem(mealIdx, itemIdx, 'calories', e.target.value)} />
-                  <div className="col-span-2 flex items-center gap-1">
-                    <button type="button" onClick={() => removeItem(mealIdx, itemIdx)}
-                      className="text-white/25 hover:text-red-400 transition-colors text-lg leading-none">×</button>
-                  </div>
-                </div>
-              ))}
-              <button type="button" onClick={() => addItem(mealIdx)}
-                className="text-xs mt-1" style={{ color: 'rgba(201,168,76,0.7)' }}>
-                + Add food item
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: '0.88rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{plan.title}</p>
+                {plan.description && <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.32)', marginTop: 2 }}>{plan.description}</p>}
+                <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.22)', marginTop: 3 }}>
+                  Created {new Date(plan.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              <span className={plan.status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'}>{plan.status}</span>
+              <button className="ds-btn-outline" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => openEdit(plan)}>Edit</button>
+              <button style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 4 }} onClick={() => deletePlan(plan.id)}>
+                <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                </svg>
               </button>
-            </div>
-          </div>
-        ))}
-
-        <div className="flex gap-3">
-          <button type="button" onClick={addMeal} className="ds-btn-outline">
-            + Add Meal
-          </button>
-          <button type="submit" className="ds-btn-gold">
-            Save & Assign Plan
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-/* ─── Workout Plan Builder ───────────────────────────── */
-function WorkoutBuilder() {
-  const [selectedClientId, setSelectedClientId] = useState('');
-  const [planName, setPlanName] = useState('');
-  const [days, setDays] = useState([
-    {
-      dayLabel: 'Day 1', focus: 'Upper Push',
-      exercises: [{ name: '', sets: '', reps: '', rest: '', notes: '' }],
-    },
-  ]);
-  const [saved, setSaved] = useState(false);
-
-  const addDay = () => setDays(d => [...d, {
-    dayLabel: `Day ${d.length + 1}`, focus: '',
-    exercises: [{ name: '', sets: '', reps: '', rest: '', notes: '' }],
-  }]);
-
-  const updateDay = (i: number, key: string, val: string) =>
-    setDays(d => d.map((day, idx) => idx === i ? { ...day, [key]: val } : day));
-
-  const addExercise = (dayIdx: number) =>
-    setDays(d => d.map((day, i) => i === dayIdx ? {
-      ...day, exercises: [...day.exercises, { name: '', sets: '', reps: '', rest: '', notes: '' }],
-    } : day));
-
-  const updateExercise = (dayIdx: number, exIdx: number, key: string, val: string) =>
-    setDays(d => d.map((day, di) => di === dayIdx ? {
-      ...day,
-      exercises: day.exercises.map((ex, ei) => ei === exIdx ? { ...ex, [key]: val } : ex),
-    } : day));
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedClientId) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: plan } = await supabase.from('workout_plans').insert({
-      client_id: selectedClientId,
-      trainer_id: user.id,
-      title: planName,
-    }).select().single();
-
-    if (plan) {
-      for (const day of days) {
-        const { data: dayRow } = await supabase.from('workout_plan_days').insert({
-          workout_plan_id: plan.id,
-          day_label: day.dayLabel,
-          focus: day.focus,
-        }).select().single();
-
-        if (dayRow) {
-          const exercises = day.exercises.map((ex, order) => ({
-            workout_plan_day_id: dayRow.id,
-            exercise_name: ex.name,
-            sets: ex.sets ? parseInt(ex.sets) : null,
-            reps: ex.reps,
-            rest_time: ex.rest,
-            notes: ex.notes || null,
-            order_index: order,
-          }));
-          await supabase.from('workout_exercises').insert(exercises);
-        }
-      }
-    }
-
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-  };
-
-  return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-white mb-1">Workout Plan Builder</h2>
-        <p className="text-white/35 text-sm">Build day-by-day workout plans for your clients. Exercise names are free text.</p>
-      </div>
-
-      {saved && (
-        <div className="ds-card p-4 mb-5" style={{ background: 'rgba(80,200,120,0.06)', borderColor: 'rgba(80,200,120,0.2)' }}>
-          <span className="text-green-400 font-semibold text-sm">✓ Workout plan saved and assigned successfully!</span>
-        </div>
-      )}
-
-      <form onSubmit={handleSave} className="space-y-5">
-        <div className="ds-card p-6">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="ds-label">Assign to Client</label>
-              <select className="ds-input" value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)} required>
-                <option value="" style={{ background: '#111' }}>Select client…</option>
-                {mockClients.map(c => (
-                  <option key={c.id} value={c.id} style={{ background: '#111' }}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="ds-label">Plan Name</label>
-              <input type="text" className="ds-input" placeholder="e.g. 4-Day Upper/Lower Split"
-                value={planName} onChange={e => setPlanName(e.target.value)} required />
-            </div>
-          </div>
-        </div>
-
-        {days.map((day, dayIdx) => (
-          <div key={dayIdx} className="ds-card p-6">
-            <div className="flex items-center gap-3 mb-4 flex-wrap">
-              <input className="ds-input" style={{ maxWidth: '100px' }} placeholder="Day 1"
-                value={day.dayLabel} onChange={e => updateDay(dayIdx, 'dayLabel', e.target.value)} />
-              <input className="ds-input flex-1" placeholder="Focus (e.g. Upper Push, Legs, Rest)"
-                value={day.focus} onChange={e => updateDay(dayIdx, 'focus', e.target.value)} />
-              {days.length > 1 && (
-                <button type="button" onClick={() => setDays(d => d.filter((_, i) => i !== dayIdx))}
-                  className="text-xs text-red-400/60 hover:text-red-400 transition-colors">Remove</button>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <div className="hidden sm:grid grid-cols-12 gap-2 mb-1 text-[10px] uppercase tracking-wider text-white/25">
-                <span className="col-span-4">Exercise Name (free text)</span>
-                <span className="col-span-1">Sets</span>
-                <span className="col-span-2">Reps</span>
-                <span className="col-span-2">Rest</span>
-                <span className="col-span-3">Notes</span>
-              </div>
-              {day.exercises.map((ex, exIdx) => (
-                <div key={exIdx} className="grid grid-cols-12 gap-2">
-                  <input className="ds-input col-span-12 sm:col-span-4" placeholder="e.g. Flat Bench Press"
-                    value={ex.name} onChange={e => updateExercise(dayIdx, exIdx, 'name', e.target.value)} />
-                  <input type="number" className="ds-input col-span-4 sm:col-span-1" placeholder="4"
-                    value={ex.sets} onChange={e => updateExercise(dayIdx, exIdx, 'sets', e.target.value)} />
-                  <input className="ds-input col-span-4 sm:col-span-2" placeholder="8–10"
-                    value={ex.reps} onChange={e => updateExercise(dayIdx, exIdx, 'reps', e.target.value)} />
-                  <input className="ds-input col-span-4 sm:col-span-2" placeholder="90s"
-                    value={ex.rest} onChange={e => updateExercise(dayIdx, exIdx, 'rest', e.target.value)} />
-                  <div className="col-span-11 sm:col-span-3 flex gap-2">
-                    <input className="ds-input flex-1" placeholder="Notes…"
-                      value={ex.notes} onChange={e => updateExercise(dayIdx, exIdx, 'notes', e.target.value)} />
-                    <button type="button" onClick={() => setDays(d => d.map((dy, di) => di === dayIdx ? {
-                      ...dy, exercises: dy.exercises.filter((_, ei) => ei !== exIdx),
-                    } : dy))} className="text-white/25 hover:text-red-400 text-lg leading-none">×</button>
-                  </div>
-                </div>
-              ))}
-              <button type="button" onClick={() => addExercise(dayIdx)}
-                className="text-xs mt-1" style={{ color: 'rgba(201,168,76,0.7)' }}>
-                + Add exercise
-              </button>
-            </div>
-          </div>
-        ))}
-
-        <div className="flex gap-3">
-          <button type="button" onClick={addDay} className="ds-btn-outline">
-            + Add Day
-          </button>
-          <button type="submit" className="ds-btn-gold">
-            Save & Assign Plan
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-/* ─── Progress Monitor ───────────────────────────────── */
-function ProgressMonitor() {
-  const [selectedClientId, setSelectedClientId] = useState(mockClients[0].id);
-  const client = mockClients.find(c => c.id === selectedClientId) ?? mockClients[0];
-
-  const logs = [
-    { date: 'Mar 30', weight: client.weight, notes: 'Feeling good', bodyCheck: false },
-    { date: 'Mar 27', weight: client.weight + 0.7, notes: '', bodyCheck: true },
-    { date: 'Mar 24', weight: client.weight + 1.5, notes: 'Bloated from cheat meal', bodyCheck: false },
-    { date: 'Mar 21', weight: client.weight + 1.9, notes: '', bodyCheck: false },
-    { date: 'Mar 18', weight: client.weight + 2.4, notes: 'Start weight', bodyCheck: true },
-  ];
-
-  return (
-    <div>
-      <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-white mb-1">Progress Monitor</h2>
-          <p className="text-white/35 text-sm">View client-submitted stats, body checks & InBody PDFs</p>
-        </div>
-        <select className="ds-input" style={{ width: 'auto' }} value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)}>
-          {mockClients.map(c => (
-            <option key={c.id} value={c.id} style={{ background: '#111' }}>{c.name}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        {[
-          { label: 'Start Weight', value: `${(client.weight + 2.4).toFixed(1)} kg` },
-          { label: 'Current Weight', value: `${client.weight} kg` },
-          { label: 'Total Loss', value: `−${2.4} kg`, color: 'rgba(80,200,120,0.9)' },
-        ].map(s => (
-          <div key={s.label} className="ds-card p-5 text-center">
-            <p className="text-xl font-bold" style={{ color: s.color ?? 'white' }}>{s.value}</p>
-            <p className="text-xs text-white/35 mt-1">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Weight bar chart */}
-      <div className="ds-card p-6 mb-6">
-        <h3 className="font-semibold text-white mb-4">Weight Timeline</h3>
-        <div className="flex items-end gap-3 h-28">
-          {logs.map((log, i) => {
-            const min = Math.min(...logs.map(l => l.weight));
-            const max = Math.max(...logs.map(l => l.weight));
-            const range = max - min || 1;
-            const pct = ((log.weight - min) / range) * 55 + 30;
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-[9px] text-white/40">{log.weight}</span>
-                <div className="w-full rounded-t-md"
-                  style={{
-                    height: `${pct}%`,
-                    background: i === 0 ? 'rgba(201,168,76,0.5)' : 'rgba(201,168,76,0.2)',
-                    border: '1px solid rgba(201,168,76,0.15)',
-                  }} />
-                <span className="text-[9px] text-white/30">{log.date}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Log history with body checks */}
-      <div className="ds-card p-6">
-        <h3 className="font-semibold text-white mb-4">Progress Entries</h3>
-        <div className="space-y-2">
-          {logs.map((log, i) => (
-            <div key={i} className="flex items-center gap-4 py-3 border-b border-white/05 last:border-0">
-              <span className="text-sm text-white/40 w-16">{log.date}</span>
-              <span className="text-sm font-semibold text-white">{log.weight} kg</span>
-              <span className="text-xs text-white/35 flex-1">{log.notes || '—'}</span>
-              {log.bodyCheck ? (
-                <button className="text-xs flex items-center gap-1.5" style={{ color: '#C9A84C' }}>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                  </svg>
-                  Body Check
-                </button>
-              ) : (
-                <span className="text-xs text-white/20">—</span>
-              )}
             </div>
           ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-/* ─── Coach Messages ─────────────────────────────────── */
-function CoachMessages() {
-  const [selectedClient, setSelectedClient] = useState(mockClients[0]);
-  const [message, setMessage] = useState('');
-  const [threads, setThreads] = useState<Record<string, { id: number; sender: string; text: string; time: string }[]>>({
-    c1: [
-      { id: 1, sender: 'client', text: 'Hi coach, I have a question about today\'s workout', time: '10:00 AM' },
-      { id: 2, sender: 'coach', text: 'Sure! What\'s your question?', time: '10:05 AM' },
-      { id: 3, sender: 'client', text: 'Should I do the deadlifts before or after squats?', time: '10:08 AM' },
-    ],
-    c2: [
-      { id: 1, sender: 'client', text: 'Coach, I lost 0.5kg this week!', time: '9:30 AM' },
-      { id: 2, sender: 'coach', text: 'Amazing progress Sara, keep it up! 💪', time: '9:45 AM' },
-    ],
-  });
+/* ─── Progress Monitor ────────────────────────────────── */
+interface BodyCheck { id: string; file_url: string; file_type: string; uploaded_at: string; }
+
+function ProgressTab({ clients }: { clients: ClientProfile[] }) {
+  const [selectedClientId, setSelectedClientId] = useState('');
+  const [logs, setLogs] = useState<ProgressLog[]>([]);
+  const [bodyChecks, setBodyChecks] = useState<BodyCheck[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selectedClientId) return;
+    setLoading(true);
+    Promise.all([
+      supabase.from('progress_logs').select('*').eq('user_id', selectedClientId).order('logged_at', { ascending: false }),
+      supabase.from('body_checks').select('*').eq('user_id', selectedClientId).order('uploaded_at', { ascending: false }),
+    ]).then(([logsRes, checksRes]) => {
+      setLogs(logsRes.data ?? []);
+      setBodyChecks(checksRes.data ?? []);
+      setLoading(false);
+    });
+  }, [selectedClientId]);
+
+  const isImage = (type: string) => type.startsWith('image/');
+
+  return (
+    <div>
+      <div style={{ marginBottom: '1.75rem' }}>
+        <p className="ds-section-title">Progress Monitor</p>
+        <p className="ds-section-sub">View client-submitted progress and check-ins</p>
+      </div>
+
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label className="ds-label">Select Client</label>
+        <Select
+          value={selectedClientId}
+          onChange={setSelectedClientId}
+          placeholder="— choose a client —"
+          options={clients.map(c => ({ value: c.id, label: c.full_name ?? c.email }))}
+        />
+      </div>
+
+      {loading && <p className="ds-loading" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.35)' }}>Loading…</p>}
+
+      {!loading && selectedClientId && logs.length === 0 && bodyChecks.length === 0 && (
+        <div className="ds-empty">
+          <div className="ds-empty-icon">
+            <svg style={{ width: 22, height: 22 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+            </svg>
+          </div>
+          <p>No progress data yet</p>
+          <small>This client hasn&apos;t submitted any check-ins or uploads.</small>
+        </div>
+      )}
+
+      {logs.length > 0 && (
+        <div className="ds-card" style={{ overflowX: 'auto', marginBottom: 20 }}>
+          <table className="ds-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Weight (kg)</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logs.map(log => (
+                <tr key={log.id}>
+                  <td>{new Date(log.logged_at).toLocaleDateString()}</td>
+                  <td style={{ color: 'rgba(255,255,255,0.82)' }}>{log.weight_kg ?? '—'}</td>
+                  <td style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.78rem' }}>{log.notes ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {bodyChecks.length > 0 && (
+        <div className="ds-card" style={{ padding: '1.5rem' }}>
+          <p style={{ fontWeight: 600, color: 'white', marginBottom: '1rem', fontSize: '0.9rem' }}>
+            Body Check Uploads
+            <span style={{ marginLeft: 8, fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>{bodyChecks.length} file{bodyChecks.length !== 1 ? 's' : ''}</span>
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
+            {bodyChecks.map(bc => (
+              <a key={bc.id} href={bc.file_url} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+                <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, overflow: 'hidden', background: 'rgba(255,255,255,0.02)', transition: 'border-color 0.18s ease' }}
+                  onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(201,168,76,0.35)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.08)'}
+                >
+                  {isImage(bc.file_type) ? (
+                    <img src={bc.file_url} alt="body check" style={{ width: '100%', height: 130, objectFit: 'cover', display: 'block' }} />
+                  ) : (
+                    <div style={{ height: 130, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'rgba(201,168,76,0.04)' }}>
+                      <svg style={{ width: 32, height: 32, color: 'rgba(201,168,76,0.5)' }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                      </svg>
+                      <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>PDF</span>
+                    </div>
+                  )}
+                  <div style={{ padding: '0.5rem 0.65rem' }}>
+                    <p style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)' }}>
+                      {new Date(bc.uploaded_at).toLocaleDateString('en', { month: 'short', day: 'numeric', year: '2-digit' })}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Messages ────────────────────────────────────────── */
+function MessagesTab({
+  coachId,
+  clients,
+  preselectedClientId,
+}: {
+  coachId: string;
+  clients: ClientProfile[];
+  preselectedClientId: string | null;
+}) {
+  const [selectedClientId, setSelectedClientId] = useState(preselectedClientId ?? '');
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [loadingThread, setLoadingThread] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+
+  useEffect(() => {
+    if (preselectedClientId) setSelectedClientId(preselectedClientId);
+  }, [preselectedClientId]);
+
+  const loadThread = useCallback(async (clientId: string) => {
+    if (!clientId || !coachId) return;
+    setLoadingThread(true);
+    setMessages([]);
+    setThreadId(null);
+
+    let { data: thread } = await supabase.from('message_threads')
+      .select('id').eq('client_id', clientId).eq('coach_id', coachId).single();
+
+    if (!thread) {
+      const { data: newThread } = await supabase.from('message_threads')
+        .insert({ client_id: clientId, coach_id: coachId }).select().single();
+      thread = newThread;
+    }
+
+    if (!thread) { setLoadingThread(false); return; }
+    setThreadId(thread.id);
+
+    const { data: msgs } = await supabase.from('messages').select('*').eq('thread_id', thread.id).order('created_at');
+    setMessages(msgs ?? []);
+    setLoadingThread(false);
+
+    if (channelRef.current) { supabase.removeChannel(channelRef.current); }
+    channelRef.current = supabase.channel(`coach-thread-${thread.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'messages',
+        filter: `thread_id=eq.${thread.id}`,
+      }, payload => {
+        setMessages(prev => {
+          if (prev.find(m => m.id === (payload.new as ChatMessage).id)) return prev;
+          return [...prev, payload.new as ChatMessage];
+        });
+      })
+      .subscribe();
+  }, [coachId]);
+
+  useEffect(() => {
+    if (selectedClientId) loadThread(selectedClientId);
+    return () => {
+      if (channelRef.current) supabase.removeChannel(channelRef.current);
+    };
+  }, [selectedClientId, loadThread]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [threads, selectedClient]);
+  }, [messages]);
 
-  const currentThread = threads[selectedClient.id] ?? [];
-
-  const sendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) return;
-    const newMsg = { id: currentThread.length + 1, sender: 'coach', text: message, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-    setThreads(t => ({ ...t, [selectedClient.id]: [...(t[selectedClient.id] ?? []), newMsg] }));
-    setMessage('');
+  const sendMessage = async () => {
+    if (!input.trim() || !threadId || sending) return;
+    const text = input.trim();
+    setInput('');
+    // Optimistic update — show immediately
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: ChatMessage = { id: tempId, thread_id: threadId, sender_id: coachId, content: text, created_at: new Date().toISOString() };
+    setMessages(prev => [...prev, optimistic]);
+    setSending(true);
+    const { data } = await supabase.from('messages').insert({ thread_id: threadId, sender_id: coachId, content: text }).select('*').single();
+    // Replace temp with real record
+    if (data) setMessages(prev => prev.map(m => m.id === tempId ? data as ChatMessage : m));
+    setSending(false);
   };
 
+  const selectedClient = clients.find(c => c.id === selectedClientId);
+
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-white mb-1">Messages</h2>
-        <p className="text-white/35 text-sm">Direct chat with your clients</p>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 140px)', minHeight: 480, gap: '1rem' }}>
+      <div style={{ flexShrink: 0 }}>
+        <p className="ds-section-title" style={{ marginBottom: '0.75rem' }}>Messages</p>
+        <Select
+          value={selectedClientId}
+          onChange={setSelectedClientId}
+          placeholder="— select a client —"
+          options={clients.map(c => ({ value: c.id, label: c.full_name ?? c.email }))}
+        />
       </div>
 
-      <div className="ds-card flex overflow-hidden" style={{ height: '560px' }}>
-        {/* Client list */}
-        <div className="w-56 flex-shrink-0 border-r border-white/06 flex flex-col">
-          <div className="p-3 border-b border-white/06">
-            <p className="text-[10px] uppercase tracking-wider text-white/25">Clients</p>
+      {selectedClient && (
+        <div style={{
+          flex: 1, display: 'flex', flexDirection: 'column',
+          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden',
+        }}>
+          {/* Chat header */}
+          <div style={{ padding: '0.9rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.22)',
+              fontSize: 11, fontWeight: 700, color: '#C9A84C',
+            }}>
+              {selectedClient.full_name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() ?? 'U'}
+            </div>
+            <div>
+              <p style={{ fontSize: '0.83rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{selectedClient.full_name ?? 'Client'}</p>
+              <p style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.28)' }}>{selectedClient.email}</p>
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto py-2">
-            {mockClients.map(c => (
-              <button key={c.id} onClick={() => setSelectedClient(c)}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-all"
-                style={{
-                  background: selectedClient.id === c.id ? 'rgba(201,168,76,0.06)' : 'transparent',
-                  borderLeft: selectedClient.id === c.id ? '2px solid rgba(201,168,76,0.5)' : '2px solid transparent',
-                }}>
-                <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)' }}>
-                  <span className="text-xs font-bold" style={{ color: '#C9A84C' }}>{c.name[0]}</span>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-white/75 truncate">{c.name.split(' ')[0]}</p>
-                  <p className="text-[10px] text-white/30 truncate">{c.goal}</p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
 
-        {/* Chat area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          <div className="flex items-center gap-3 p-4 border-b border-white/06">
-            <p className="text-sm font-semibold text-white">{selectedClient.name}</p>
-            <span className="text-xs text-white/30">{selectedClient.plan}</span>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {currentThread.map(msg => (
-              <div key={msg.id} className={`flex ${msg.sender === 'coach' ? 'justify-end' : 'justify-start'}`}>
-                <div className="max-w-[75%] rounded-2xl px-4 py-2.5"
-                  style={{
-                    background: msg.sender === 'coach' ? 'rgba(201,168,76,0.12)' : 'rgba(255,255,255,0.05)',
-                    border: msg.sender === 'coach' ? '1px solid rgba(201,168,76,0.25)' : '1px solid rgba(255,255,255,0.08)',
-                  }}>
-                  <p className="text-sm text-white/85">{msg.text}</p>
-                  <p className="text-[10px] text-white/25 mt-0.5 text-right">{msg.time}</p>
-                </div>
-              </div>
-            ))}
-            {currentThread.length === 0 && (
-              <div className="text-center py-10">
-                <p className="text-white/25 text-sm">No messages yet with {selectedClient.name.split(' ')[0]}</p>
+          {/* Messages */}
+          <div className="ds-no-scroll" style={{ flex: 1, overflowY: 'auto', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            {loadingThread && <p className="ds-loading" style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>Loading messages…</p>}
+            {!loadingThread && messages.length === 0 && (
+              <div style={{ textAlign: 'center', margin: 'auto' }}>
+                <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.28)' }}>No messages yet. Say hello!</p>
               </div>
             )}
+            {messages.map(msg => {
+              const isCoach = msg.sender_id === coachId;
+              return (
+                <div key={msg.id} style={{ display: 'flex', justifyContent: isCoach ? 'flex-end' : 'flex-start' }}>
+                  <div style={{
+                    maxWidth: '70%', padding: '0.65rem 1rem',
+                    borderRadius: isCoach ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                    background: isCoach ? 'rgba(201,168,76,0.14)' : 'rgba(255,255,255,0.06)',
+                    border: isCoach ? '1px solid rgba(201,168,76,0.25)' : '1px solid rgba(255,255,255,0.08)',
+                    fontSize: '0.84rem', color: 'rgba(255,255,255,0.82)',
+                    lineHeight: 1.45,
+                  }}>
+                    {msg.content}
+                    <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)', marginTop: 4, textAlign: 'right' }}>
+                      {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
             <div ref={bottomRef} />
           </div>
-          <form onSubmit={sendMessage} className="flex gap-2 p-4 border-t border-white/06">
-            <input className="ds-input flex-1" placeholder={`Message ${selectedClient.name.split(' ')[0]}…`}
-              value={message} onChange={e => setMessage(e.target.value)} />
-            <button type="submit" className="ds-btn-gold px-4">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+
+          {/* Input */}
+          <div style={{ padding: '0.9rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '0.65rem' }}>
+            <input
+              className="ds-input"
+              placeholder="Type a message…"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              style={{ flex: 1 }}
+            />
+            <button
+              className="ds-btn-gold"
+              style={{ flexShrink: 0, padding: '0.65rem 1.1rem' }}
+              onClick={sendMessage}
+              disabled={sending || !input.trim()}
+            >
+              <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
               </svg>
             </button>
-          </form>
+          </div>
         </div>
-      </div>
+      )}
+
+      {!selectedClientId && (
+        <div className="ds-empty" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="ds-empty-icon">
+            <svg style={{ width: 22, height: 22 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+            </svg>
+          </div>
+          <p>Select a client to start chatting</p>
+        </div>
+      )}
     </div>
   );
 }
 
-/* ─── Page ───────────────────────────────────────────── */
+/* ─── Main Page ───────────────────────────────────────── */
 export default function CoachDashboard() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
+  const [clients, setClients] = useState<ClientProfile[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleNavigate = (tab: string) => setActiveTab(tab);
+  // For cross-tab navigation with pre-selected client
+  const [deepLinkClientId, setDeepLinkClientId] = useState<string | null>(null);
 
-  const renderTab = () => {
-    switch (activeTab) {
-      case 'overview': return <CoachOverview onNavigate={handleNavigate} />;
-      case 'clients': return <ClientsTab onNavigate={handleNavigate} />;
-      case 'meal-builder': return <MealBuilder />;
-      case 'workout-builder': return <WorkoutBuilder />;
-      case 'progress': return <ProgressMonitor />;
-      case 'messages': return <CoachMessages />;
-      default: return null;
+  const loadClients = useCallback(async () => {
+    if (!user?.id) return;
+    setLoading(true);
+
+    // Single join query — profiles are read via the FK relationship which
+    // Supabase resolves server-side, avoiding the client-side RLS block on
+    // reading other users' profiles directly.
+    const { data: assignments, error } = await supabase
+      .from('trainer_client_assignments')
+      .select(`
+        client_id,
+        assigned_at,
+        client:profiles!trainer_client_assignments_client_id_fkey (
+          id, full_name, onboarding_completed
+        )
+      `)
+      .eq('trainer_id', user.id)
+      .eq('is_active', true);
+
+    if (error) console.error('loadClients error:', error.message);
+
+    if (!assignments || assignments.length === 0) {
+      setClients([]);
+      setLoading(false);
+      return;
     }
+
+    const clientIds = assignments.map(a => a.client_id);
+
+    const { data: subs } = await supabase
+      .from('subscriptions')
+      .select('user_id, status')
+      .in('user_id', clientIds)
+      .eq('status', 'active');
+
+    const activeSubIds = new Set((subs ?? []).map(s => s.user_id));
+
+    const merged: ClientProfile[] = assignments.map(a => {
+      const profile = (Array.isArray(a.client) ? a.client[0] : a.client) as { id: string; full_name: string | null; onboarding_completed: boolean } | null;
+      return {
+        id: a.client_id,
+        full_name: profile?.full_name ?? null,
+        email: `${a.client_id.slice(0, 8)}…`,
+        onboarding_completed: profile?.onboarding_completed ?? false,
+        subscription_status: activeSubIds.has(a.client_id) ? 'active' : undefined,
+        assigned_at: a.assigned_at,
+      };
+    });
+
+    setClients(merged);
+    setLoading(false);
+  }, [user?.id]);
+
+  useEffect(() => {
+    loadClients();
+  }, [loadClients]);
+
+  const navigateWithClient = (tab: string, clientId?: string) => {
+    if (clientId) setDeepLinkClientId(clientId);
+    setActiveTab(tab);
   };
+
+  if (loading) {
+    return (
+      <DashboardShell role="coach" navItems={navItems} activeTab={activeTab} onTabChange={setActiveTab}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div className="ds-loading" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>Loading dashboard…</div>
+          </div>
+        </div>
+      </DashboardShell>
+    );
+  }
 
   return (
     <DashboardShell role="coach" navItems={navItems} activeTab={activeTab} onTabChange={setActiveTab}>
-      {renderTab()}
+      {activeTab === 'overview' && (
+        <OverviewTab clients={clients} onNavigate={setActiveTab} />
+      )}
+      {activeTab === 'clients' && (
+        <ClientsTab
+          clients={clients}
+          onOpenChat={(id) => navigateWithClient('messages', id)}
+          onBuildMeal={(id) => navigateWithClient('meal-builder', id)}
+          onBuildWorkout={(id) => navigateWithClient('workout-builder', id)}
+        />
+      )}
+      {activeTab === 'meal-builder' && (
+        <MealBuilderTab clients={clients} preselectedClientId={deepLinkClientId} />
+      )}
+      {activeTab === 'workout-builder' && (
+        <WorkoutBuilderTab clients={clients} preselectedClientId={deepLinkClientId} />
+      )}
+      {activeTab === 'progress' && (
+        <ProgressTab clients={clients} />
+      )}
+      {activeTab === 'messages' && user?.id && (
+        <MessagesTab coachId={user.id} clients={clients} preselectedClientId={deepLinkClientId} />
+      )}
     </DashboardShell>
   );
 }

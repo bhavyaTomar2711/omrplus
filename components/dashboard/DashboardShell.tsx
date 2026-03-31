@@ -18,258 +18,346 @@ interface DashboardShellProps {
   children: React.ReactNode;
 }
 
-const roleConfig = {
-  client: { label: 'Member Portal', color: '#C9A84C' },
-  coach: { label: 'Coach Portal', color: '#C9A84C' },
-  admin: { label: 'Admin Panel', color: '#C9A84C' },
-};
+const roleLabels = { client: 'Member Portal', coach: 'Coach Portal', admin: 'Admin Panel' };
 
 export default function DashboardShell({ role, navItems, activeTab, onTabChange, children }: DashboardShellProps) {
   const { user, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const config = roleConfig[role];
+
+  const initials = user?.profile?.full_name
+    ? user.profile.full_name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+    : user?.email?.[0]?.toUpperCase() ?? 'U';
 
   return (
     <>
       <style>{`
-        .ds-root {
-          display: flex;
-          min-height: 100vh;
-          background: #080808;
-          font-family: inherit;
+        .dsh-root { display:flex; min-height:100vh; background:#080808; }
+
+        /* ─── Sidebar ─── */
+        .dsh-sidebar {
+          width: 272px; flex-shrink: 0;
+          background: rgba(12,12,12,0.95);
+          border-right: 1px solid rgba(255,255,255,0.06);
+          display: flex; flex-direction: column;
+          position: fixed; top:0; left:0; bottom:0; z-index:40;
+          transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+          backdrop-filter: blur(24px);
         }
-        /* Sidebar */
-        .ds-sidebar {
-          width: 260px;
-          flex-shrink: 0;
-          background: rgba(255,255,255,0.025);
-          border-right: 1px solid rgba(255,255,255,0.07);
-          display: flex;
-          flex-direction: column;
-          position: fixed;
-          top: 0; left: 0; bottom: 0;
-          z-index: 40;
-          transition: transform 0.3s ease;
+        .dsh-sidebar.closed { transform: translateX(-100%); }
+        @media (min-width:1024px) {
+          .dsh-sidebar { position:sticky; top:0; height:100vh; transform:none !important; }
+          .dsh-main { margin-left: 0; }
         }
-        .ds-sidebar.closed { transform: translateX(-100%); }
-        @media (min-width: 1024px) {
-          .ds-sidebar { position: sticky; top: 0; height: 100vh; transform: none !important; flex-shrink: 0; }
+
+        /* Sidebar top */
+        .dsh-sidebar-top {
+          padding: 1.75rem 1.5rem 1.25rem;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .ds-sidebar-header {
-          padding: 1.5rem 1.5rem 1rem;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .ds-nav-item {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.7rem 1.25rem;
-          margin: 0.1rem 0.75rem;
-          border-radius: 10px;
-          font-size: 0.82rem;
-          font-weight: 500;
-          color: rgba(255,255,255,0.45);
-          cursor: pointer;
-          border: none;
-          background: transparent;
-          width: calc(100% - 1.5rem);
-          text-align: left;
-          transition: all 0.2s ease;
-        }
-        .ds-nav-item:hover {
-          color: rgba(255,255,255,0.8);
-          background: rgba(255,255,255,0.04);
-        }
-        .ds-nav-item.active {
+        .dsh-role-pill {
+          display: inline-flex; align-items: center; gap: 0.4rem;
+          padding: 0.3rem 0.8rem; border-radius: 20px; margin-top: 0.85rem;
+          font-size: 0.62rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
           color: #C9A84C;
-          background: rgba(201,168,76,0.08);
+          background: rgba(201,168,76,0.07);
           border: 1px solid rgba(201,168,76,0.18);
         }
-        .ds-nav-item .icon { opacity: 0.7; flex-shrink: 0; }
-        .ds-nav-item.active .icon { opacity: 1; }
-        /* Main area */
-        .ds-main {
-          flex: 1;
-          min-width: 0;
-          display: flex;
-          flex-direction: column;
+
+        /* Nav */
+        .dsh-nav { flex:1; padding: 1rem 0.75rem; overflow-y:auto; }
+        .dsh-nav-item {
+          display: flex; align-items: center; gap: 0.75rem;
+          width: 100%; padding: 0.72rem 1rem; margin-bottom: 2px;
+          border-radius: 10px; border: 1px solid transparent;
+          font-size: 0.82rem; font-weight: 500;
+          color: rgba(255,255,255,0.38);
+          background: transparent; cursor: pointer; text-align: left;
+          transition: all 0.18s ease;
         }
-        /* Top bar */
-        .ds-topbar {
-          height: 64px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 1.5rem;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          background: rgba(255,255,255,0.015);
-          backdrop-filter: blur(12px);
-          position: sticky;
-          top: 0;
-          z-index: 30;
+        .dsh-nav-item:hover {
+          color: rgba(255,255,255,0.75);
+          background: rgba(255,255,255,0.04);
         }
-        .ds-content {
-          flex: 1;
-          padding: 2rem 1.5rem;
-          overflow-y: auto;
+        .dsh-nav-item.active {
+          color: #C9A84C;
+          background: rgba(201,168,76,0.07);
+          border-color: rgba(201,168,76,0.2);
         }
-        @media (max-width: 1023px) {
-          .ds-content { padding: 1.25rem 1rem; }
+        .dsh-nav-icon { flex-shrink:0; width:16px; height:16px; opacity:0.7; }
+        .dsh-nav-item.active .dsh-nav-icon { opacity:1; }
+
+        /* Sidebar bottom */
+        .dsh-sidebar-footer {
+          padding: 1rem 1.25rem;
+          border-top: 1px solid rgba(255,255,255,0.05);
         }
+        .dsh-avatar {
+          width:34px; height:34px; border-radius:50%;
+          display:flex; align-items:center; justify-content:center; flex-shrink:0;
+          background: rgba(201,168,76,0.1);
+          border: 1px solid rgba(201,168,76,0.25);
+          font-size:12px; font-weight:700; color:#C9A84C;
+        }
+
+        /* ─── Main ─── */
+        .dsh-main { flex:1; min-width:0; display:flex; flex-direction:column; }
+
+        /* Topbar */
+        .dsh-topbar {
+          height: 60px;
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 0 1.75rem;
+          background: rgba(8,8,8,0.9);
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          backdrop-filter: blur(16px);
+          position: sticky; top:0; z-index:30;
+        }
+
+        /* Content */
+        .dsh-content { flex:1; padding: 2rem 1.75rem; overflow-y:auto; }
+        @media (max-width:1023px) { .dsh-content { padding: 1.25rem 1rem; } }
+
         /* Overlay */
-        .ds-overlay {
-          display: none;
-          position: fixed; inset: 0;
-          background: rgba(0,0,0,0.6);
-          z-index: 35;
+        .dsh-overlay {
+          display:none; position:fixed; inset:0;
+          background:rgba(0,0,0,0.65); z-index:35;
+          backdrop-filter: blur(2px);
         }
-        .ds-overlay.active { display: block; }
-        /* Glass card utility */
+        .dsh-overlay.open { display:block; }
+
+        /* ─── Design tokens (available to all pages) ─── */
+
+        /* Glass card */
         .ds-card {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.07);
           border-radius: 16px;
-          backdrop-filter: blur(20px);
         }
-        .ds-gold-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.35rem;
-          padding: 0.25rem 0.75rem;
-          border-radius: 20px;
-          font-size: 0.65rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: #C9A84C;
-          background: rgba(201,168,76,0.08);
-          border: 1px solid rgba(201,168,76,0.2);
+        .ds-card-gold {
+          background: rgba(201,168,76,0.04);
+          border: 1px solid rgba(201,168,76,0.18);
+          border-radius: 16px;
         }
-        .ds-btn-gold {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.6rem 1.2rem;
-          font-size: 0.78rem;
-          font-weight: 600;
-          letter-spacing: 0.05em;
-          color: #C9A84C;
-          background: rgba(201,168,76,0.08);
-          border: 1px solid rgba(201,168,76,0.3);
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        .ds-btn-gold:hover {
-          background: rgba(201,168,76,0.14);
-          border-color: rgba(201,168,76,0.55);
-        }
-        .ds-btn-outline {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.6rem 1.2rem;
-          font-size: 0.78rem;
-          font-weight: 500;
-          color: rgba(255,255,255,0.55);
-          background: transparent;
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        .ds-btn-outline:hover {
-          color: rgba(255,255,255,0.85);
-          border-color: rgba(255,255,255,0.22);
-          background: rgba(255,255,255,0.04);
-        }
-        .ds-input {
-          width: 100%;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 10px;
-          padding: 0.65rem 1rem;
-          font-size: 0.83rem;
-          color: rgba(255,255,255,0.85);
-          outline: none;
+
+        /* Stat card */
+        .ds-stat {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 16px;
+          padding: 1.5rem;
           transition: border-color 0.2s ease;
         }
-        .ds-input::placeholder { color: rgba(255,255,255,0.25); }
-        .ds-input:focus { border-color: rgba(201,168,76,0.45); }
+        .ds-stat:hover { border-color: rgba(255,255,255,0.12); }
+        .ds-stat-icon {
+          width:40px; height:40px; border-radius:12px;
+          display:flex; align-items:center; justify-content:center; margin-bottom:1rem;
+          background: rgba(201,168,76,0.08);
+          border: 1px solid rgba(201,168,76,0.18);
+          color: #C9A84C; flex-shrink:0;
+        }
+        .ds-stat-value { font-size:1.75rem; font-weight:700; color:white; line-height:1; }
+        .ds-stat-label { font-size:0.75rem; color:rgba(255,255,255,0.38); margin-top:0.35rem; }
+        .ds-stat-sub { font-size:0.68rem; color:rgba(255,255,255,0.22); margin-top:0.25rem; }
+
+        /* Icon box */
+        .ds-icon-box {
+          width:36px; height:36px; border-radius:10px; flex-shrink:0;
+          display:flex; align-items:center; justify-content:center;
+          background: rgba(201,168,76,0.08);
+          border: 1px solid rgba(201,168,76,0.16);
+          color: #C9A84C;
+        }
+
+        /* Gold pill */
+        .ds-gold-pill {
+          display:inline-flex; align-items:center; gap:0.35rem;
+          padding: 0.25rem 0.75rem; border-radius:20px;
+          font-size:0.62rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+          color:#C9A84C; background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.2);
+        }
+
+        /* Buttons */
+        .ds-btn-gold {
+          display:inline-flex; align-items:center; gap:0.5rem;
+          padding: 0.65rem 1.35rem;
+          font-size:0.8rem; font-weight:600; letter-spacing:0.03em;
+          color:#C9A84C; background:rgba(201,168,76,0.08);
+          border:1px solid rgba(201,168,76,0.3); border-radius:10px;
+          cursor:pointer; transition:all 0.2s ease; white-space:nowrap;
+        }
+        .ds-btn-gold:hover { background:rgba(201,168,76,0.14); border-color:rgba(201,168,76,0.55); }
+        .ds-btn-gold:disabled { opacity:0.4; cursor:not-allowed; }
+
+        .ds-btn-outline {
+          display:inline-flex; align-items:center; gap:0.5rem;
+          padding: 0.65rem 1.35rem;
+          font-size:0.8rem; font-weight:500;
+          color:rgba(255,255,255,0.5); background:transparent;
+          border:1px solid rgba(255,255,255,0.1); border-radius:10px;
+          cursor:pointer; transition:all 0.2s ease; white-space:nowrap;
+        }
+        .ds-btn-outline:hover { color:rgba(255,255,255,0.8); border-color:rgba(255,255,255,0.22); background:rgba(255,255,255,0.04); }
+
+        /* Inputs */
+        .ds-input {
+          width:100%;
+          background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09);
+          border-radius:10px; padding:0.7rem 1rem;
+          font-size:0.84rem; color:rgba(255,255,255,0.85);
+          outline:none; transition:border-color 0.2s ease; box-sizing:border-box;
+        }
+        .ds-input::placeholder { color:rgba(255,255,255,0.22); }
+        .ds-input:focus { border-color:rgba(201,168,76,0.45); }
+
+        /* Select overrides — kill browser default arrow, inject gold custom arrow */
+        select.ds-input {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          padding-right: 2.5rem;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6.5L11 1' stroke='%23C9A84C' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 0.9rem center;
+          background-size: 12px 8px;
+          cursor: pointer;
+        }
+        select.ds-input:focus { border-color:rgba(201,168,76,0.45); }
+        select.ds-input option {
+          background: #111;
+          color: rgba(255,255,255,0.82);
+        }
+
+        /* Label */
         .ds-label {
-          display: block;
-          font-size: 0.72rem;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.3);
-          margin-bottom: 0.5rem;
+          display:block; font-size:0.7rem; font-weight:600;
+          letter-spacing:0.1em; text-transform:uppercase;
+          color:rgba(255,255,255,0.28); margin-bottom:0.5rem;
         }
-        .ds-divider {
-          height: 1px;
-          background: rgba(255,255,255,0.06);
-          margin: 1.5rem 0;
+
+        /* Divider */
+        .ds-divider { height:1px; background:rgba(255,255,255,0.06); margin:1.5rem 0; }
+
+        /* Section header */
+        .ds-section-title { font-size:1.1rem; font-weight:700; color:white; }
+        .ds-section-sub { font-size:0.78rem; color:rgba(255,255,255,0.32); margin-top:0.2rem; }
+
+        /* Status badge */
+        .ds-badge-green {
+          font-size:0.65rem; font-weight:700; padding:0.2rem 0.6rem; border-radius:20px;
+          background:rgba(74,222,128,0.08); color:rgba(74,222,128,0.9); border:1px solid rgba(74,222,128,0.18);
         }
+        .ds-badge-red {
+          font-size:0.65rem; font-weight:700; padding:0.2rem 0.6rem; border-radius:20px;
+          background:rgba(248,113,113,0.08); color:rgba(248,113,113,0.8); border:1px solid rgba(248,113,113,0.18);
+        }
+        .ds-badge-gold {
+          font-size:0.65rem; font-weight:700; padding:0.2rem 0.6rem; border-radius:20px;
+          background:rgba(201,168,76,0.1); color:#C9A84C; border:1px solid rgba(201,168,76,0.22);
+        }
+        .ds-badge-gray {
+          font-size:0.65rem; font-weight:700; padding:0.2rem 0.6rem; border-radius:20px;
+          background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.35); border:1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Table */
+        .ds-table { width:100%; border-collapse:collapse; }
+        .ds-table th {
+          text-align:left; padding:0.75rem 1rem;
+          font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+          color:rgba(255,255,255,0.25);
+          background:rgba(255,255,255,0.02);
+          border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .ds-table td {
+          padding:0.9rem 1rem;
+          font-size:0.83rem; color:rgba(255,255,255,0.65);
+          border-bottom:1px solid rgba(255,255,255,0.04);
+        }
+        .ds-table tr:last-child td { border-bottom:none; }
+        .ds-table tr:hover td { background:rgba(255,255,255,0.015); }
+
+        /* Toggle switch */
+        .ds-toggle {
+          position:relative; width:44px; height:24px; border-radius:12px;
+          cursor:pointer; border:none; transition:background 0.25s ease;
+          flex-shrink:0;
+        }
+        .ds-toggle-knob {
+          position:absolute; top:3px; width:18px; height:18px; border-radius:50%;
+          background:white; transition:left 0.25s ease;
+        }
+
+        /* Empty state */
+        .ds-empty {
+          text-align:center; padding:3.5rem 1rem;
+        }
+        .ds-empty-icon {
+          width:56px; height:56px; border-radius:16px; margin:0 auto 1.25rem;
+          display:flex; align-items:center; justify-content:center;
+          background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+          color:rgba(255,255,255,0.2);
+        }
+        .ds-empty p { font-size:0.85rem; color:rgba(255,255,255,0.3); }
+        .ds-empty small { font-size:0.75rem; color:rgba(255,255,255,0.18); }
+
+        /* Loading pulse */
+        @keyframes ds-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .ds-loading { animation: ds-pulse 1.5s ease-in-out infinite; }
+
+        /* Hide scrollbar */
+        .ds-no-scroll::-webkit-scrollbar { display: none; }
+        .ds-no-scroll { scrollbar-width: none; -ms-overflow-style: none; }
       `}</style>
 
-      <div className="ds-root">
-        {/* Sidebar overlay for mobile */}
-        <div
-          className={`ds-overlay ${sidebarOpen ? 'active' : ''}`}
-          onClick={() => setSidebarOpen(false)}
-        />
+      <div className="dsh-root">
+        <div className={`dsh-overlay ${sidebarOpen ? 'open' : ''}`} onClick={() => setSidebarOpen(false)} />
 
-        {/* Sidebar */}
-        <aside className={`ds-sidebar ${sidebarOpen ? '' : 'closed'}`}>
-          <div className="ds-sidebar-header">
+        {/* ── Sidebar ── */}
+        <aside className={`dsh-sidebar ${sidebarOpen ? '' : 'closed'}`}>
+          <div className="dsh-sidebar-top">
             <Link href="/" onClick={() => setSidebarOpen(false)}>
               <img
                 src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774866904/B9EBAC3E-ECDA-4CA9-81C7-F14DCC3E7A9D_1_-Photoroom_s5ro4z.png"
-                alt="OMR+"
-                className="h-10 w-auto object-contain mb-3"
+                alt="OMR+" className="h-9 w-auto object-contain"
               />
             </Link>
-            <div className="ds-gold-pill">
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C9A84C' }} />
-              {config.label}
+            <div className="dsh-role-pill">
+              <span style={{ width:6, height:6, borderRadius:'50%', background:'#C9A84C', flexShrink:0 }} />
+              {roleLabels[role]}
             </div>
           </div>
 
-          <nav className="flex-1 py-4 overflow-y-auto">
+          <nav className="dsh-nav">
             {navItems.map(item => (
               <button
                 key={item.id}
-                className={`ds-nav-item ${activeTab === item.id ? 'active' : ''}`}
+                className={`dsh-nav-item ${activeTab === item.id ? 'active' : ''}`}
                 onClick={() => { onTabChange(item.id); setSidebarOpen(false); }}
               >
-                <span className="icon">{item.icon}</span>
+                <span className="dsh-nav-icon">{item.icon}</span>
                 {item.label}
               </button>
             ))}
           </nav>
 
-          {/* User info + signout */}
-          <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.25)' }}>
-                <span className="text-xs font-bold" style={{ color: '#C9A84C' }}>
-                  {user?.profile?.full_name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? 'U'}
-                </span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-medium text-white/70 truncate">
+          <div className="dsh-sidebar-footer">
+            <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'0.75rem' }}>
+              <div className="dsh-avatar">{initials}</div>
+              <div style={{ minWidth:0 }}>
+                <p style={{ fontSize:'0.8rem', fontWeight:600, color:'rgba(255,255,255,0.75)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                   {user?.profile?.full_name ?? 'User'}
                 </p>
-                <p className="text-[10px] text-white/30 truncate">{user?.email}</p>
+                <p style={{ fontSize:'0.68rem', color:'rgba(255,255,255,0.28)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                  {user?.email}
+                </p>
               </div>
             </div>
             <button
               onClick={signOut}
-              className="ds-nav-item w-full"
-              style={{ width: '100%', margin: 0, color: 'rgba(255,255,255,0.35)' }}
+              className="dsh-nav-item"
+              style={{ width:'100%', color:'rgba(255,255,255,0.28)', marginBottom:0 }}
             >
-              <svg className="w-4 h-4 icon" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <svg className="dsh-nav-icon" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
               </svg>
               Sign Out
@@ -277,37 +365,30 @@ export default function DashboardShell({ role, navItems, activeTab, onTabChange,
           </div>
         </aside>
 
-        {/* Main */}
-        <div className="ds-main" style={{ marginLeft: 0 }}>
-          {/* Top bar */}
-          <header className="ds-topbar">
-            <div className="flex items-center gap-3">
+        {/* ── Main ── */}
+        <div className="dsh-main">
+          <header className="dsh-topbar">
+            <div style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
               <button
-                className="lg:hidden text-white/50 hover:text-white/80 transition-colors"
+                className="lg:hidden"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
+                style={{ color:'rgba(255,255,255,0.45)', background:'none', border:'none', cursor:'pointer', padding:'4px' }}
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <svg style={{ width:20, height:20 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
               </button>
-              <h1 className="text-sm font-semibold text-white/70">
-                {navItems.find(n => n.id === activeTab)?.label ?? 'Dashboard'}
-              </h1>
+              <span style={{ fontSize:'0.85rem', fontWeight:600, color:'rgba(255,255,255,0.6)' }}>
+                {navItems.find(n => n.id === activeTab)?.label}
+              </span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:block text-xs text-white/30">
-                Welcome, <span className="text-white/55">{user?.profile?.full_name?.split(' ')[0] ?? 'there'}</span>
-              </div>
-              <Link href="/" className="text-xs text-white/30 hover:text-brand-gold transition-colors hidden sm:block">
-                ← Back to site
-              </Link>
-            </div>
+            <Link href="/" style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.25)', textDecoration:'none', display:'none' }}
+              className="sm:block hover:text-white/50 transition-colors">
+              ← Back to site
+            </Link>
           </header>
 
-          {/* Content */}
-          <main className="ds-content">
-            {children}
-          </main>
+          <main className="dsh-content">{children}</main>
         </div>
       </div>
     </>
