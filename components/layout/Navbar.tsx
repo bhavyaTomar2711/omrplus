@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,21 +40,28 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#programs" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
+            <Link href="/programs" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
               Programs
-            </a>
-            <a href="#how-it-works" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
+            </Link>
+            <a href="/#how-it-works" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
               How It Works
             </a>
-            <a href="#transformations" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
+            <a href="/#transformations" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
               Transformations
             </a>
-            <a href="#" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
+            <Link href="/marketplace" className="relative text-white/70 hover:text-brand-gold transition-colors underline-gold flex items-center gap-1.5">
+              Marketplace
+              <span className="text-[9px] font-semibold tracking-wide px-1.5 py-0.5 rounded-full"
+                style={{ background: 'rgba(201,168,76,0.12)', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.25)' }}>
+                Soon
+              </span>
+            </Link>
+            <Link href="/about" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
               About
-            </a>
-            <a href="#" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
+            </Link>
+            <Link href="/contact" className="text-white/70 hover:text-brand-gold transition-colors underline-gold">
               Contact
-            </a>
+            </Link>
           </div>
 
           {/* Right Actions */}
@@ -64,15 +73,56 @@ export default function Navbar() {
               <button className="px-3 py-1 text-sm font-medium text-white/50 hover:text-brand-gold transition-colors">AR</button>
             </div>
 
-            {/* CTA Button */}
-            <a
-              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:block btn-gold text-sm"
-            >
-              Book Consultation
-            </a>
+            {/* Account / Dashboard Button */}
+            {!loading && (
+              user ? (
+                <Link
+                  href={`/dashboard/${user.profile?.role ?? 'client'}`}
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300"
+                  style={{
+                    color: '#C9A84C',
+                    border: '1px solid rgba(201,168,76,0.38)',
+                    background: 'transparent',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(201,168,76,0.08)';
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.65)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.38)';
+                  }}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300"
+                  style={{
+                    color: '#C9A84C',
+                    border: '1px solid rgba(201,168,76,0.38)',
+                    background: 'transparent',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(201,168,76,0.08)';
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.65)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.38)';
+                  }}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+                  Account
+                </Link>
+              )
+            )}
 
             {/* Mobile Menu Toggle */}
             <button
@@ -90,30 +140,40 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden pb-4 border-t border-white/10">
-            <a href="#programs" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
+            <Link href="/programs" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
               Programs
-            </a>
-            <a href="#how-it-works" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
+            </Link>
+            <a href="/#how-it-works" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
               How It Works
             </a>
-            <a href="#transformations" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
+            <a href="/#transformations" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
               Transformations
             </a>
-            <a href="#" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
+            <Link href="/marketplace" className="flex items-center gap-2 px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
+              Marketplace
+              <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
+                style={{ background: 'rgba(201,168,76,0.12)', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.25)' }}>
+                Soon
+              </span>
+            </Link>
+            <Link href="/about" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
               About
-            </a>
-            <a href="#" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
+            </Link>
+            <Link href="/contact" className="block px-4 py-2 text-white/70 hover:text-brand-gold transition-colors">
               Contact
-            </a>
+            </Link>
             <div className="px-4 py-2">
-              <a
-                href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-gold w-full text-center text-sm"
-              >
-                Book Consultation
-              </a>
+              {!loading && (
+                user ? (
+                  <Link href={`/dashboard/${user.profile?.role ?? 'client'}`} className="btn-gold-outline w-full text-center text-sm block">
+                    Dashboard
+                  </Link>
+                ) : (
+                  <Link href="/login" className="btn-gold-outline w-full text-center text-sm block">
+                    Account
+                  </Link>
+                )
+              )}
             </div>
           </div>
         )}

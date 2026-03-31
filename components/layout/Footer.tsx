@@ -175,11 +175,11 @@ export default function Footer() {
                 <p className="footer-heading">Quick Links</p>
                 <ul className="space-y-3">
                   {[
-                    { label: 'Programs', href: '#programs' },
-                    { label: 'How It Works', href: '#how-it-works' },
-                    { label: 'Transformations', href: '#transformations' },
-                    { label: 'About Us', href: '#' },
-                    { label: 'Contact', href: '#' },
+                    { label: 'Programs', href: '/programs' },
+                    { label: 'How It Works', href: '/#how-it-works' },
+                    { label: 'Transformations', href: '/#transformations' },
+                    { label: 'About Us', href: '/about' },
+                    { label: 'Contact', href: '/contact' },
                   ].map((link) => (
                     <li key={link.label}>
                       <a href={link.href} className="footer-link">{link.label}</a>
@@ -194,7 +194,7 @@ export default function Footer() {
                 <ul className="space-y-3">
                   {['Muscle Building', 'Fat Loss', 'Summer Body', 'Workout Plan', 'Meal Plan'].map((p) => (
                     <li key={p}>
-                      <a href="#" className="footer-link">{p}</a>
+                      <a href="/programs" className="footer-link">{p}</a>
                     </li>
                   ))}
                 </ul>

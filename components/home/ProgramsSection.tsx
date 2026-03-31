@@ -68,7 +68,7 @@ export default function ProgramsSection() {
           {programs.slice(0, 3).map((program, idx) => (
             <AnimateOnScroll key={program.id} delay={idx * 80}>
               <a
-                href="#"
+                href="/programs"
                 className="group block rounded-2xl overflow-hidden cursor-pointer"
                 style={{
                   background: 'rgba(255,255,255,0.03)',
@@ -139,7 +139,7 @@ export default function ProgramsSection() {
           {programs.slice(3).map((program, idx) => (
             <AnimateOnScroll key={program.id} delay={(idx + 3) * 80}>
               <a
-                href="#"
+                href="/programs"
                 className="group flex rounded-2xl overflow-hidden cursor-pointer"
                 style={{
                   background: 'rgba(255,255,255,0.03)',
@@ -204,12 +204,10 @@ export default function ProgramsSection() {
 
         {/* CTA */}
         <AnimateOnScroll className="text-center">
-          <p className="text-white/30 text-sm mb-5 font-light tracking-wide">Not sure which program is right for you?</p>
+          <p className="text-white/30 text-sm mb-5 font-light tracking-wide">Want to see all programs in detail?</p>
           <a
-            href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block text-sm font-medium tracking-wide px-7 py-3 rounded-lg transition-all duration-300"
+            href="/programs"
+            className="inline-flex items-center gap-2.5 text-sm font-medium tracking-wide px-7 py-3 rounded-lg transition-all duration-300"
             style={{
               background: 'transparent',
               border: '1px solid rgba(201,168,76,0.5)',
@@ -224,7 +222,10 @@ export default function ProgramsSection() {
               (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,168,76,0.5)';
             }}
           >
-            Book a Free Consultation
+            View All Programs
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
           </a>
         </AnimateOnScroll>
 
