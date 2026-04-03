@@ -42,18 +42,20 @@ export default function HeroSection() {
                 style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.22)' }}>
                 <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C9A84C' }} />
                 <span className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: '#C9A84C' }}>
-                  Premium Fitness Coaching
+                  {t('hero.badge')}
                 </span>
               </div>
 
               {/* Headline */}
               <div style={{ lineHeight: 1.0 }}>
                 <div className="text-[4.5rem] font-black tracking-tight text-white uppercase" style={{ letterSpacing: '-0.02em' }}>
-                  {t('hero.headline1')}
+                  {t('hero.mobileHeadline1')}
                 </div>
-                <div className="text-[4.5rem] font-black tracking-tight text-white uppercase" style={{ letterSpacing: '-0.02em' }}>
-                  YOUR
-                </div>
+                {t('hero.mobileHeadline2') && (
+                  <div className="text-[4.5rem] font-black tracking-tight text-white uppercase" style={{ letterSpacing: '-0.02em' }}>
+                    {t('hero.mobileHeadline2')}
+                  </div>
+                )}
                 <div className="text-[4.8rem] font-black uppercase" style={{
                   letterSpacing: '-0.02em',
                   background: 'linear-gradient(135deg, #C9A84C 0%, #F0D878 50%, #C9A84C 100%)',
@@ -92,8 +94,8 @@ export default function HeroSection() {
               </a>
 
               {/* Trust line */}
-              <p className="text-[11px] tracking-[0.18em] uppercase" style={{ color: 'rgba(255,255,255,0.2)' }}>
-                Trusted by hundreds of members
+              <p dir="auto" className="text-[11px] tracking-[0.18em] uppercase" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                {t('hero.trust')}
               </p>
             </div>
 

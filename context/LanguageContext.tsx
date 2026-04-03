@@ -57,6 +57,10 @@ const en: Record<string, string> = {
   'hero.headline2': 'POTENTIAL',
   'hero.subtext': 'Join a community where goals are crushed, strength is built, and potential becomes power.',
   'hero.cta': 'Get Started',
+  'hero.badge': 'Premium Fitness Coaching',
+  'hero.mobileHeadline1': 'UNLEASH',
+  'hero.mobileHeadline2': 'YOUR',
+  'hero.trust': 'Trusted by hundreds of members',
 
   // Programs page
   'programs.badge': 'Our Programs',
@@ -743,6 +747,10 @@ const ar: Record<string, string> = {
   'hero.headline2': 'إمكاناتك',
   'hero.subtext': 'انضم إلى مجتمع يُحقق الأهداف ويبني القوة ويحوّل الإمكانات إلى قوة حقيقية.',
   'hero.cta': 'ابدأ الآن',
+  'hero.badge': 'تدريب لياقة بدنية متميز',
+  'hero.mobileHeadline1': 'اكشف',
+  'hero.mobileHeadline2': '',
+  'hero.trust': 'موثوق به من مئات الأعضاء',
 
   // Programs page
   'programs.badge': 'برامجنا',
