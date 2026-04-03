@@ -796,7 +796,7 @@ function SubscriptionTab({ userId }: { userId: string }) {
   };
 
   const isPendingCancel = sub && sub.cancel_at_period_end === true && sub.status === 'active';
-  const isCancelledButValid = sub?.status === 'cancelled' && sub.expires_at && new Date(sub.expires_at as string) > new Date();
+  const isCancelledButValid = !!(sub?.status === 'cancelled' && sub.expires_at && new Date(sub.expires_at as string) > new Date());
   const isActive = sub && (sub.status === 'active' || isCancelledButValid);
 
   return (
