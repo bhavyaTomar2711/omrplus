@@ -23,7 +23,7 @@ export default function HeroSection() {
         </video>
 
         {/* Desktop overlay - left side darker */}
-        <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent"></div>
+        <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/25"></div>
         {/* Mobile overlay - heavier dark for readability */}
         <div className="sm:hidden absolute inset-0 bg-black/70"></div>
       </div>
