@@ -1489,7 +1489,7 @@ export default function CoachDashboard() {
       const activeSubIds = new Set((subs ?? []).map(s => s.user_id));
 
       const merged: ClientProfile[] = assignments.map(a => {
-        const profile = (Array.isArray(a.client) ? a.client[0] : a.client) as { id: string; full_name: string | null; onboarding_completed: boolean } | null;
+        const profile = (Array.isArray(a.client) ? a.client[0] : a.client) as { id: string; full_name: string | null; email?: string | null; onboarding_completed: boolean } | null;
         return {
           id: a.client_id,
           full_name: profile?.full_name ?? null,
