@@ -4,8 +4,10 @@ import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Select from '@/components/ui/Select';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ContactPage() {
+  const { t } = useLanguage();
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
@@ -135,18 +137,17 @@ export default function ContactPage() {
               style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.18)' }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C9A84C' }} />
               <span className="text-xs font-semibold tracking-[0.2em] uppercase" style={{ color: '#C9A84C' }}>
-                Get in Touch
+                {t('contact.badge')}
               </span>
             </div>
             <h1 className="text-5xl sm:text-6xl font-bold text-white mb-5 tracking-tight leading-[1.1]">
-              Let&apos;s{' '}
+              {t('contact.title')}{' '}
               <span style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C76A, #C9A84C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Talk
+                {t('contact.titleHighlight')}
               </span>
             </h1>
             <p className="text-white/40 text-base leading-relaxed">
-              Have a question about a program? Ready to start? Just want to know more?
-              We respond to every message — usually within a few hours.
+              {t('contact.subtitle')}
             </p>
           </div>
         </section>
@@ -172,8 +173,8 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">Chat on WhatsApp</p>
-                    <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.38)' }}>Fastest response — usually under 2 hours</p>
+                    <p className="text-sm font-semibold text-white">{t('contact.whatsapp.btn')}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.38)' }}>{t('contact.whatsapp.desc')}</p>
                   </div>
                 </a>
 
@@ -242,20 +243,20 @@ export default function ContactPage() {
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-5">
                       <div className="mb-6">
-                        <h2 className="text-xl font-bold text-white mb-1">Send a Message</h2>
+                        <h2 className="text-xl font-bold text-white mb-1">{t('contact.form.title')}</h2>
                         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                          Fill in the form and we&apos;ll be in touch shortly.
+                          {t('contact.subtitle')}
                         </p>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                          <label className="contact-label">Full Name</label>
-                          <input className="contact-input" type="text" placeholder="Your name" value={form.name} onChange={update('name')} required />
+                          <label className="contact-label">{t('contact.form.name')}</label>
+                          <input className="contact-input" type="text" placeholder={t('contact.form.namePlaceholder')} value={form.name} onChange={update('name')} required />
                         </div>
                         <div>
-                          <label className="contact-label">Email</label>
-                          <input className="contact-input" type="email" placeholder="you@example.com" value={form.email} onChange={update('email')} required />
+                          <label className="contact-label">{t('contact.form.email')}</label>
+                          <input className="contact-input" type="email" placeholder={t('contact.form.emailPlaceholder')} value={form.email} onChange={update('email')} required />
                         </div>
                       </div>
 
@@ -282,10 +283,10 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="contact-label">Message</label>
+                        <label className="contact-label">{t('contact.form.message')}</label>
                         <textarea
                           className="contact-input"
-                          placeholder="Tell us what's on your mind..."
+                          placeholder={t('contact.form.messagePlaceholder')}
                           value={form.message}
                           onChange={update('message')}
                           required
@@ -295,7 +296,7 @@ export default function ContactPage() {
                       </div>
 
                       <button type="submit" className="contact-btn" disabled={status === 'sending'}>
-                        {status === 'sending' ? 'Sending…' : 'Send Message'}
+                        {status === 'sending' ? t('contact.form.sending') : t('contact.form.submit')}
                       </button>
                     </form>
                   )}

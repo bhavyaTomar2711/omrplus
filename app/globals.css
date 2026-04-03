@@ -150,6 +150,12 @@
   animation: fadeInUp 0.8s ease-out forwards;
 }
 
+/* Already in viewport on mount — show without hiding first */
+.is-visible-instant {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Stagger animation delays */
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
@@ -252,4 +258,9 @@ body {
 
 .underline-gold:hover::after {
   width: 100%;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

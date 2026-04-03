@@ -5,6 +5,8 @@ import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
 
 const VIDEO_URL =
   'https://res.cloudinary.com/dqiuwzvfb/video/upload/v1774890621/Video_Project_d73r7c.mp4';
+const VIDEO_URL_MOBILE =
+  'https://res.cloudinary.com/dqiuwzvfb/video/upload/v1775201565/5752503-uhd_2160_3840_25fps_1_tgqdr9.mp4';
 
 const testimonials = [
   {
@@ -218,8 +220,8 @@ export default function TestimonialsSection() {
       `}</style>
 
       <section className="tm-section">
-        {/* Video background */}
-        <div ref={bgRef} className="tm-video-wrap">
+        {/* Video background — desktop */}
+        <div ref={bgRef} className="tm-video-wrap hidden sm:block">
           <video
             ref={videoRef}
             className="tm-video"
@@ -228,6 +230,19 @@ export default function TestimonialsSection() {
             muted
             loop
             playsInline
+          />
+        </div>
+
+        {/* Video background — mobile portrait */}
+        <div className="tm-video-wrap sm:hidden" style={{ inset: 0, transform: 'none' }}>
+          <video
+            className="tm-video"
+            src={VIDEO_URL_MOBILE}
+            autoPlay
+            muted
+            loop
+            playsInline
+            style={{ filter: 'brightness(0.32) saturate(0.65)' }}
           />
         </div>
 
@@ -342,26 +357,6 @@ export default function TestimonialsSection() {
             ))}
           </div>
 
-          {/* CTA */}
-          <AnimateOnScroll className="text-center">
-            <p
-              className="mb-7 text-xs tracking-[0.22em] uppercase"
-              style={{ color: 'rgba(255,255,255,0.25)' }}
-            >
-              Join hundreds who've transformed their lives
-            </p>
-            <a
-              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="tm-btn"
-            >
-              Book Your Free Consultation
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </a>
-          </AnimateOnScroll>
 
         </div>
       </section>

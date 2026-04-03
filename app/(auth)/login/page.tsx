@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function LoginPage() {
   const { signIn } = useAuth();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -190,15 +192,15 @@ export default function LoginPage() {
               >
                 <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C9A84C' }} />
                 <span className="text-[10px] font-semibold tracking-[0.18em] uppercase" style={{ color: '#C9A84C' }}>
-                  Member Portal
+                  {t('login.memberPortal')}
                 </span>
               </div>
 
               <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
-                Welcome Back
+                {t('login.title')}
               </h1>
               <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                Sign in to access your coaching dashboard
+                {t('login.subtitle')}
               </p>
             </div>
 
@@ -207,11 +209,11 @@ export default function LoginPage() {
               {error && <div className="login-error">{error}</div>}
 
               <div>
-                <label className="login-label">Email Address</label>
+                <label className="login-label">{t('login.email')}</label>
                 <input
                   className="login-input"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t('login.emailPlaceholder')}
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
@@ -221,13 +223,13 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="login-label" style={{ marginBottom: 0 }}>Password</label>
+                  <label className="login-label" style={{ marginBottom: 0 }}>{t('login.password')}</label>
                   <Link
                     href="/forgot-password"
                     className="text-[11px] transition-colors hover:opacity-80"
                     style={{ color: 'rgba(201,168,76,0.55)' }}
                   >
-                    Forgot password?
+                    {t('login.forgotPassword')}
                   </Link>
                 </div>
                 <div style={{ position: 'relative' }}>
@@ -267,7 +269,7 @@ export default function LoginPage() {
 
               <div className="pt-1">
                 <button type="submit" className="login-btn" disabled={loading}>
-                  {loading ? 'Signing in…' : 'Sign In'}
+                  {loading ? t('login.signingIn') : t('login.signIn')}
                 </button>
               </div>
             </form>
@@ -275,13 +277,13 @@ export default function LoginPage() {
             <div className="login-divider" />
 
             <p className="text-center text-sm" style={{ color: 'rgba(255,255,255,0.28)' }}>
-              Don&apos;t have an account?{' '}
+              {t('login.noAccount')}{' '}
               <Link
                 href="/signup"
                 className="font-semibold hover:opacity-80 transition-opacity"
                 style={{ color: '#C9A84C' }}
               >
-                Create one
+                {t('login.createOne')}
               </Link>
             </p>
 
@@ -290,8 +292,8 @@ export default function LoginPage() {
               className="text-center text-[11px] mt-5 tracking-wide"
               style={{ color: 'rgba(255,255,255,0.15)' }}
             >
-              <span style={{ color: 'rgba(201,168,76,0.35)' }}>✓</span> Secure login &nbsp;·&nbsp;
-              <span style={{ color: 'rgba(201,168,76,0.35)' }}>✓</span> Your data is private
+              <span style={{ color: 'rgba(201,168,76,0.35)' }}>✓</span> {t('login.secureLogin')} &nbsp;·&nbsp;
+              <span style={{ color: 'rgba(201,168,76,0.35)' }}>✓</span> {t('login.dataPrivate')}
             </p>
           </div>
         </main>

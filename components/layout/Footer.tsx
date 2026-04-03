@@ -1,7 +1,10 @@
 'use client';
 
+import { useLanguage } from '@/context/LanguageContext';
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { lang, setLang, t } = useLanguage();
 
   return (
     <>
@@ -142,7 +145,7 @@ export default function Footer() {
                   className="h-20 w-auto object-contain"
                 />
                 <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)' }}>
-                  Premium fitness coaching with personalized meal plans. Transform your body, elevate your life.
+                  {t('footer.tagline')}
                 </p>
                 {/* Socials */}
                 <div className="flex gap-2.5 pt-1">
@@ -172,17 +175,17 @@ export default function Footer() {
 
               {/* Quick Links */}
               <div>
-                <p className="footer-heading">Quick Links</p>
+                <p className="footer-heading">{t('footer.quickLinks')}</p>
                 <ul className="space-y-3">
                   {[
-                    { label: 'Programs', href: '/programs' },
-                    { label: 'How It Works', href: '/#how-it-works' },
-                    { label: 'Transformations', href: '/#transformations' },
-                    { label: 'About Us', href: '/about' },
-                    { label: 'Contact', href: '/contact' },
+                    { labelKey: 'nav.programs', href: '/programs' },
+                    { labelKey: 'nav.howItWorks', href: '/#how-it-works' },
+                    { labelKey: 'nav.transformations', href: '/#transformations' },
+                    { labelKey: 'footer.aboutUs', href: '/about' },
+                    { labelKey: 'nav.contact', href: '/contact' },
                   ].map((link) => (
-                    <li key={link.label}>
-                      <a href={link.href} className="footer-link">{link.label}</a>
+                    <li key={link.labelKey}>
+                      <a href={link.href} className="footer-link">{t(link.labelKey)}</a>
                     </li>
                   ))}
                 </ul>
@@ -190,11 +193,17 @@ export default function Footer() {
 
               {/* Programs */}
               <div>
-                <p className="footer-heading">Our Programs</p>
+                <p className="footer-heading">{t('footer.ourPrograms')}</p>
                 <ul className="space-y-3">
-                  {['Muscle Building', 'Fat Loss', 'Summer Body', 'Workout Plan', 'Meal Plan'].map((p) => (
-                    <li key={p}>
-                      <a href="/programs" className="footer-link">{p}</a>
+                  {[
+                    'footer.muscleBuilding',
+                    'footer.fatLoss',
+                    'footer.summerBody',
+                    'footer.workoutPlan',
+                    'footer.mealPlan',
+                  ].map((key) => (
+                    <li key={key}>
+                      <a href="/programs" className="footer-link">{t(key)}</a>
                     </li>
                   ))}
                 </ul>
@@ -202,23 +211,23 @@ export default function Footer() {
 
               {/* Contact */}
               <div>
-                <p className="footer-heading">Get in Touch</p>
+                <p className="footer-heading">{t('footer.getInTouch')}</p>
                 <div className="space-y-4 mb-5">
                   <div>
-                    <p className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>Email</p>
+                    <p className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('footer.email')}</p>
                     <a href="mailto:support@omrplus.com" className="footer-link text-[13px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
                       support@omrplus.com
                     </a>
                   </div>
                   <div>
-                    <p className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>WhatsApp</p>
+                    <p className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('footer.whatsapp')}</p>
                     <a
                       href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
                       target="_blank" rel="noopener noreferrer"
                       className="footer-link text-[13px]"
                       style={{ color: 'rgba(255,255,255,0.55)' }}
                     >
-                      Message Us
+                      {t('footer.messageUs')}
                     </a>
                   </div>
                 </div>
@@ -227,7 +236,7 @@ export default function Footer() {
                   target="_blank" rel="noopener noreferrer"
                   className="footer-btn"
                 >
-                  Free Consultation
+                  {t('footer.freeConsultation')}
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                   </svg>
@@ -242,26 +251,33 @@ export default function Footer() {
             <div className="flex flex-col md:flex-row justify-between items-center gap-5">
               <div className="flex flex-wrap items-center gap-5">
                 <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                  © {currentYear} OMR+. All rights reserved.
+                  © {currentYear} OMR+. {t('footer.allRightsReserved')}
                 </p>
-                {['Privacy Policy', 'Terms of Service'].map((t) => (
-                  <a key={t} href="#" className="text-[11px] transition-colors duration-200"
+                {[
+                  { key: 'footer.privacyPolicy' },
+                  { key: 'footer.termsOfService' },
+                ].map((item) => (
+                  <a key={item.key} href="#" className="text-[11px] transition-colors duration-200"
                     style={{ color: 'rgba(255,255,255,0.25)' }}
                     onMouseEnter={e => (e.currentTarget.style.color = '#C9A84C')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
-                  >{t}</a>
+                  >{t(item.key)}</a>
                 ))}
               </div>
 
               {/* Language toggle */}
               <div className="flex items-center gap-3">
-                <span className="text-[10px] tracking-[0.14em] uppercase" style={{ color: 'rgba(255,255,255,0.2)' }}>Language</span>
-                <button className="text-[11px] font-semibold tracking-wide" style={{ color: '#C9A84C' }}>EN</button>
+                <span className="text-[10px] tracking-[0.14em] uppercase" style={{ color: 'rgba(255,255,255,0.2)' }}>{t('footer.language')}</span>
+                <button
+                  onClick={() => setLang('en')}
+                  className="text-[11px] font-semibold tracking-wide transition-colors duration-200"
+                  style={{ color: lang === 'en' ? '#C9A84C' : 'rgba(255,255,255,0.3)' }}
+                >EN</button>
                 <span style={{ color: 'rgba(255,255,255,0.15)' }}>|</span>
-                <button className="text-[11px] font-semibold tracking-wide transition-colors duration-200"
-                  style={{ color: 'rgba(255,255,255,0.3)' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#C9A84C')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                <button
+                  onClick={() => setLang('ar')}
+                  className="text-[11px] font-semibold tracking-wide transition-colors duration-200"
+                  style={{ color: lang === 'ar' ? '#C9A84C' : 'rgba(255,255,255,0.3)' }}
                 >AR</button>
               </div>
             </div>
@@ -269,10 +285,10 @@ export default function Footer() {
             {/* Premium tagline */}
             <div className="mt-5 text-center">
               <p className="text-[10px] tracking-[0.18em] uppercase" style={{ color: 'rgba(255,255,255,0.15)' }}>
-                <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> Premium coaching &nbsp;·&nbsp;
-                <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> No free trials &nbsp;·&nbsp;
-                <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> Transparent pricing &nbsp;·&nbsp;
-                <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> Real results
+                <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> {t('footer.premiumCoaching')} &nbsp;·&nbsp;
+                <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> {t('footer.noFreeTrials')} &nbsp;·&nbsp;
+                <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> {t('footer.transparentPricing')} &nbsp;·&nbsp;
+                <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> {t('footer.realResults')}
               </p>
             </div>
 

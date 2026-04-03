@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import DashboardShell, { NavItem } from '@/components/dashboard/DashboardShell';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { useLanguage } from '@/context/LanguageContext';
 
 /* ─── Icons ──────────────────────────────────────────── */
 const Icons = {
@@ -21,19 +22,12 @@ const Icons = {
   user: <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>,
 };
 
-const navItems: NavItem[] = [
-  { id: 'overview',     label: 'Overview',     icon: Icons.grid  },
-  { id: 'meal-plan',    label: 'Meal Plan',     icon: Icons.meal  },
-  { id: 'workout',      label: 'Workout Plan',  icon: Icons.bolt  },
-  { id: 'progress',     label: 'Progress',      icon: Icons.chart },
-  { id: 'messages',     label: 'Messages',      icon: Icons.chat  },
-  { id: 'subscription', label: 'Subscription',  icon: Icons.card  },
-];
+/* navItems built inside component to support i18n — see component body */
 
 /* ─── Types ──────────────────────────────────────────── */
 interface MealPlanItem { id:string; meal_type:string; meal_timing:string|null; food_name:string; quantity_g:number|null; calories:number|null; }
 interface MealPlan { id:string; title:string; meal_plan_items: MealPlanItem[]; }
-interface WorkoutExercise { id:string; exercise_name:string; sets:number|null; reps:string|null; rest_seconds:number|null; notes:string|null; sort_order:number; }
+interface WorkoutExercise { id:string; exercise_name:string; sets:number|null; reps:string|null; rest_seconds:number|null; notes:string|null; video_url:string|null; sort_order:number; }
 interface WorkoutDay { id:string; day_label:string; focus:string|null; sort_order:number; workout_exercises: WorkoutExercise[]; }
 interface WorkoutPlan { id:string; title:string; workout_plan_days: WorkoutDay[]; }
 interface ProgressLog { id:string; weight_kg:number|null; notes:string|null; logged_at:string; }
@@ -60,8 +54,24 @@ function OnboardingModal({ onComplete }: { onComplete: () => void }) {
   const handleSubmit = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase.from('onboarding_responses').upsert({ user_id:user.id, goal:form.goal, current_weight:form.currentWeight?parseFloat(form.currentWeight):null, target_weight:form.targetWeight?parseFloat(form.targetWeight):null, height:form.height?parseFloat(form.height):null, age:form.age?parseInt(form.age):null, gender:form.gender, activity_level:form.activityLevel, dietary_restrictions:form.dietaryRestrictions, health_conditions:form.healthConditions, experience_level:form.experience });
-    await supabase.from('profiles').update({ onboarding_completed:true }).eq('id', user.id);
+    const { error: onboardErr } = await supabase.from('onboarding_responses').upsert({
+      user_id: user.id,
+      fitness_goal: form.goal,
+      current_weight_kg: form.currentWeight ? parseFloat(form.currentWeight) : null,
+      target_weight_kg: form.targetWeight ? parseFloat(form.targetWeight) : null,
+      height_cm: form.height ? parseFloat(form.height) : null,
+      age: form.age ? parseInt(form.age) : null,
+      gender: form.gender,
+      activity_level: form.activityLevel,
+      dietary_restrictions: form.dietaryRestrictions ? [form.dietaryRestrictions] : [],
+      health_conditions: form.healthConditions,
+      experience_level: form.experience,
+    }, { onConflict: 'user_id' });
+    console.log('[onboarding] upsert result:', onboardErr ? JSON.stringify(onboardErr) : 'success');
+
+    const { error: profileErr } = await supabase.from('profiles').update({ onboarding_completed: true }).eq('id', user.id);
+    console.log('[onboarding] profile update:', profileErr ? JSON.stringify(profileErr) : 'success');
+
     onComplete();
   };
 
@@ -353,19 +363,30 @@ function WorkoutTab({ workoutPlan, loading }: { workoutPlan:WorkoutPlan|null; lo
           ) : (
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
               {current.workout_exercises.sort((a,b)=>a.sort_order-b.sort_order).map((ex,i) => (
-                <div key={ex.id} style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:'1rem 1.25rem', display:'flex', alignItems:'center', gap:'1rem' }}>
-                  <span style={{ width:28, height:28, borderRadius:8, background:'rgba(201,168,76,0.1)', border:'1px solid rgba(201,168,76,0.2)', color:'#C9A84C', fontSize:'0.75rem', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>{i+1}</span>
-                  <div style={{ flex:1 }}>
-                    <p style={{ fontSize:'0.85rem', fontWeight:600, color:'white' }}>{ex.exercise_name}</p>
-                    {ex.notes && <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.28)', marginTop:2 }}>{ex.notes}</p>}
-                  </div>
-                  <div style={{ display:'flex', gap:20, textAlign:'center', flexShrink:0 }}>
-                    {[['Sets',ex.sets],['Reps',ex.reps],['Rest',ex.rest_seconds ? `${ex.rest_seconds}s` : null]].map(([label,val]) => val && (
-                      <div key={label as string}>
-                        <p style={{ fontSize:'0.62rem', textTransform:'uppercase', letterSpacing:'0.1em', color:'rgba(255,255,255,0.22)' }}>{label}</p>
-                        <p style={{ fontSize:'0.85rem', fontWeight:700, color:'white', marginTop:1 }}>{val}</p>
-                      </div>
-                    ))}
+                <div key={ex.id} style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
+                  <div style={{ padding:'1rem 1.25rem', display:'flex', alignItems:'center', gap:'1rem' }}>
+                    <span style={{ width:28, height:28, borderRadius:8, background:'rgba(201,168,76,0.1)', border:'1px solid rgba(201,168,76,0.2)', color:'#C9A84C', fontSize:'0.75rem', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>{i+1}</span>
+                    <div style={{ flex:1 }}>
+                      <p style={{ fontSize:'0.85rem', fontWeight:600, color:'white' }}>{ex.exercise_name}</p>
+                      {ex.notes && <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.28)', marginTop:2 }}>{ex.notes}</p>}
+                    </div>
+                    <div style={{ display:'flex', gap:20, textAlign:'center', flexShrink:0, alignItems:'center' }}>
+                      {[['Sets',ex.sets],['Reps',ex.reps],['Rest',ex.rest_seconds ? `${ex.rest_seconds}s` : null]].map(([label,val]) => val && (
+                        <div key={label as string}>
+                          <p style={{ fontSize:'0.62rem', textTransform:'uppercase', letterSpacing:'0.1em', color:'rgba(255,255,255,0.22)' }}>{label}</p>
+                          <p style={{ fontSize:'0.85rem', fontWeight:700, color:'white', marginTop:1 }}>{val}</p>
+                        </div>
+                      ))}
+                      {ex.video_url && (
+                        <a href={ex.video_url} target="_blank" rel="noopener noreferrer"
+                          style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:2, textDecoration:'none', flexShrink:0 }}>
+                          <div style={{ width:32, height:32, borderRadius:8, background:'rgba(201,168,76,0.12)', border:'1px solid rgba(201,168,76,0.25)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                            <svg style={{ width:14, height:14, color:'#C9A84C' }} fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                          </div>
+                          <p style={{ fontSize:'0.6rem', textTransform:'uppercase', letterSpacing:'0.08em', color:'rgba(201,168,76,0.7)' }}>Watch</p>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -564,49 +585,55 @@ function MessagesTab() {
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
     const init = async () => {
-      // Find assigned trainer
-      const { data:assign } = await supabase
-        .from('trainer_client_assignments')
-        .select('trainer_id')
-        .eq('client_id', user.id)
-        .single();
+      try {
+        // Find assigned trainer
+        const { data:assign } = await supabase
+          .from('trainer_client_assignments')
+          .select('trainer_id')
+          .eq('client_id', user.id)
+          .maybeSingle();
 
-      if (!assign) { setNoCoach(true); setLoading(false); return; }
-      setTrainerId(assign.trainer_id);
+        if (!assign) { setNoCoach(true); setLoading(false); return; }
+        setTrainerId(assign.trainer_id);
 
-      // Get trainer name
-      const { data:tp } = await supabase.from('profiles').select('full_name').eq('id', assign.trainer_id).single();
-      if (tp?.full_name) setTrainerName(tp.full_name);
+        // Get trainer name
+        const { data:tp } = await supabase.from('profiles').select('full_name').eq('id', assign.trainer_id).maybeSingle();
+        if (tp?.full_name) setTrainerName(tp.full_name);
 
-      // Find or create thread — table uses coach_id (not trainer_id)
-      let tid: string;
-      const { data:thread } = await supabase.from('message_threads').select('id').eq('client_id', user.id).eq('coach_id', assign.trainer_id).single();
-      if (thread) {
-        tid = thread.id;
-      } else {
-        const { data:nt } = await supabase.from('message_threads').insert({ client_id:user.id, coach_id:assign.trainer_id }).select('id').single();
-        if (!nt) { setLoading(false); return; }
-        tid = nt.id;
+        // Find or create thread — table uses coach_id (not trainer_id)
+        let tid: string;
+        const { data:thread } = await supabase.from('message_threads').select('id').eq('client_id', user.id).eq('coach_id', assign.trainer_id).maybeSingle();
+        if (thread) {
+          tid = thread.id;
+        } else {
+          const { data:nt } = await supabase.from('message_threads').insert({ client_id:user.id, coach_id:assign.trainer_id }).select('id').single();
+          if (!nt) { setLoading(false); return; }
+          tid = nt.id;
+        }
+        setThreadId(tid);
+
+        // Load history
+        const { data:msgs } = await supabase.from('messages').select('*').eq('thread_id', tid).order('created_at', { ascending:true });
+        if (msgs) setMessages(msgs as Message[]);
+        setLoading(false);
+        scrollDown();
+
+        // Realtime — subscribe and store ref for cleanup
+        channel = supabase.channel(`client-thread-${tid}`)
+          .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages', filter:`thread_id=eq.${tid}` }, (payload) => {
+            const incoming = payload.new as Message;
+            setMessages(m => {
+              if (m.find(x => x.id === incoming.id)) return m;
+              return [...m, incoming];
+            });
+            scrollDown();
+          })
+          .subscribe();
+      } catch (err) {
+        console.error('[MessagesTab] init error:', err);
+        setNoCoach(true);
+        setLoading(false);
       }
-      setThreadId(tid);
-
-      // Load history
-      const { data:msgs } = await supabase.from('messages').select('*').eq('thread_id', tid).order('created_at', { ascending:true });
-      if (msgs) setMessages(msgs as Message[]);
-      setLoading(false);
-      scrollDown();
-
-      // Realtime — subscribe and store ref for cleanup
-      channel = supabase.channel(`client-thread-${tid}`)
-        .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages', filter:`thread_id=eq.${tid}` }, (payload) => {
-          const incoming = payload.new as Message;
-          setMessages(m => {
-            if (m.find(x => x.id === incoming.id)) return m;
-            return [...m, incoming];
-          });
-          scrollDown();
-        })
-        .subscribe();
     };
 
     init();
@@ -639,7 +666,7 @@ function MessagesTab() {
     <div>
       <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">Messages</p><p className="ds-section-sub">Direct chat with your assigned coach</p></div>
 
-      <div className="ds-card" style={{ display:'flex', flexDirection:'column', height:520 }}>
+      <div className="ds-card" style={{ display:'flex', flexDirection:'column', height:'clamp(520px, 70vh, 720px)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'1rem 1.25rem', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ width:36, height:36, borderRadius:'50%', background:'rgba(201,168,76,0.1)', border:'1px solid rgba(201,168,76,0.25)', display:'flex', alignItems:'center', justifyContent:'center', color:'#C9A84C', fontWeight:700, fontSize:'0.85rem', flexShrink:0 }}>
             {trainerName[0]?.toUpperCase()}
@@ -701,104 +728,275 @@ function MessagesTab() {
 }
 
 /* ─── Subscription Tab ───────────────────────────────── */
-function SubscriptionTab() {
-  const [subs, setSubs] = useState<any[]>([]);
+function SubscriptionTab({ userId }: { userId: string }) {
+  const { t } = useLanguage();
+  const [sub, setSub] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [invoices, setInvoices] = useState<{ id:string; number:string|null; status:string; amount:number; currency:string; date:string|null; pdf:string|null; hosted_url:string|null }[]>([]);
+  const [invoicesLoading, setInvoicesLoading] = useState(false);
 
   useEffect(()=>{
-    (async()=>{
-      const { data:{user} } = await supabase.auth.getUser(); if (!user) return;
-      const { data } = await supabase.from('subscriptions').select('*').eq('user_id', user.id).order('created_at',{ascending:false});
-      if (data) setSubs(data);
-      setLoading(false);
-    })();
-  },[]);
+    if (!userId) return;
+    supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('started_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setSub(data);
+        setLoading(false);
+      });
+  },[userId]);
 
-  const active = subs.find(s=>s.status==='active');
+  // Fetch invoices
+  useEffect(()=>{
+    if (!userId) return;
+    setInvoicesLoading(true);
+    fetch('/api/stripe/invoices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.invoices) setInvoices(data.invoices);
+      })
+      .catch(() => {})
+      .finally(() => setInvoicesLoading(false));
+  },[userId]);
 
-  const plans = [
-    { name:'Plan Only', nameAr:'خطة فقط', price:149, desc:'Workout or meal plan without coaching', current: active?.plan_name==='Plan Only' },
-    { name:'Full Coaching', nameAr:'تدريب كامل', price:349, desc:'Meal plan + workout plan + coach support', current: active?.plan_name==='Full Coaching' },
-    { name:'Elite Coaching', nameAr:'تدريب نخبة', price:549, desc:'Full Coaching + weekly check-ins + priority support', current: active?.plan_name==='Elite Coaching' },
-  ];
+  async function handleCancel() {
+    if (!userId) return;
+    setCancelLoading(true);
+    try {
+      const res = await fetch('/api/stripe/cancel-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+      if (res.ok) {
+        setCancelConfirm(false);
+        // Immediately update local state so UI reflects the change
+        setSub(prev => prev ? { ...prev, cancel_at_period_end: true } : prev);
+      }
+    } finally {
+      setCancelLoading(false);
+    }
+  }
+
+  const statusColors: Record<string, string> = {
+    active: 'rgba(74,222,128,0.9)',
+    pending: 'rgba(251,191,36,0.9)',
+    cancelled: 'rgba(248,113,113,0.9)',
+    expired: 'rgba(255,255,255,0.3)',
+  };
+
+  const isPendingCancel = sub && sub.cancel_at_period_end === true && sub.status === 'active';
+  const isCancelledButValid = sub?.status === 'cancelled' && sub.expires_at && new Date(sub.expires_at as string) > new Date();
+  const isActive = sub && (sub.status === 'active' || isCancelledButValid);
 
   return (
     <div>
-      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">Subscription</p><p className="ds-section-sub">Manage your plan, billing & invoices</p></div>
-
-      {loading ? <div className="ds-loading" style={{ height:120, background:'rgba(255,255,255,0.03)', borderRadius:16, marginBottom:16 }} /> :
-      active ? (
-        <div className="ds-card-gold" style={{ padding:'1.75rem', marginBottom:20 }}>
-          <div style={{ display:'flex', alignItems:'start', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
-            <div>
-              <span className="ds-badge-gold" style={{ marginBottom:12, display:'inline-flex' }}>Active Plan</span>
-              <h3 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginTop:4, marginBottom:4 }}>{active.plan_name}</h3>
-            </div>
-            <div style={{ textAlign:'right' }}>
-              <p style={{ fontSize:'2rem', fontWeight:700, color:'#C9A84C', lineHeight:1 }}>SAR {active.price_sar}</p>
-              <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.3)', marginTop:4 }}>/ month</p>
-            </div>
-          </div>
-          <div className="ds-divider" />
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
-            {[
-              { label:'Status', value:'Active', color:'rgba(74,222,128,0.9)' },
-              { label:'Next Billing', value: active.expires_at ? new Date(active.expires_at).toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'}) : '—', color:'rgba(255,255,255,0.7)' },
-              { label:'Member Since', value: new Date(active.started_at).toLocaleDateString('en',{month:'short',year:'numeric'}), color:'rgba(255,255,255,0.7)' },
-            ].map(i=>(
-              <div key={i.label}><p style={{ fontSize:'0.65rem', textTransform:'uppercase', letterSpacing:'0.12em', color:'rgba(255,255,255,0.25)', marginBottom:4 }}>{i.label}</p><p style={{ fontSize:'0.88rem', fontWeight:600, color:i.color }}>{i.value}</p></div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="ds-card ds-empty" style={{ marginBottom:20 }}>
-          <div className="ds-empty-icon">{Icons.card}</div>
-          <p>No active subscription</p>
-          <small>Contact your coach or admin to get started.</small>
-        </div>
-      )}
-
-      <div className="ds-card" style={{ padding:'1.75rem', marginBottom:20 }}>
-        <p style={{ fontWeight:600, color:'white', marginBottom:'1rem' }}>Available Plans</p>
-        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-          {plans.map(p=>(
-            <div key={p.name} style={{ padding:'1rem 1.25rem', borderRadius:12, background: p.current?'rgba(201,168,76,0.05)':'rgba(255,255,255,0.02)', border: p.current?'1px solid rgba(201,168,76,0.28)':'1px solid rgba(255,255,255,0.06)', display:'flex', alignItems:'center', gap:'1rem' }}>
-              <div style={{ flex:1 }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <p style={{ fontSize:'0.85rem', fontWeight:600, color:'white' }}>{p.name}</p>
-                  <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.25)' }}>{p.nameAr}</p>
-                  {p.current && <span className="ds-badge-gold">Current</span>}
-                </div>
-                <p style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.35)', marginTop:2 }}>{p.desc}</p>
-              </div>
-              <div style={{ textAlign:'right', flexShrink:0 }}>
-                <p style={{ fontWeight:700, color: p.current?'#C9A84C':'rgba(255,255,255,0.55)', fontSize:'0.9rem' }}>SAR {p.price}<span style={{ fontSize:'0.7rem', fontWeight:400, color:'rgba(255,255,255,0.25)' }}>/mo</span></p>
-                {!p.current && <button className="ds-btn-outline" style={{ fontSize:'0.72rem', padding:'0.4rem 0.8rem', marginTop:6 }}>Switch</button>}
-              </div>
-            </div>
-          ))}
-        </div>
+      <div style={{ marginBottom:'1.5rem' }}>
+        <p className="ds-section-title">{t('client.subscription')}</p>
+        <p className="ds-section-sub">Manage your plan, billing & invoices</p>
       </div>
 
-      {subs.length > 0 && (
-        <div className="ds-card" style={{ padding:'1.75rem' }}>
-          <p style={{ fontWeight:600, color:'white', marginBottom:'1rem' }}>Invoice History</p>
-          <table className="ds-table">
-            <thead><tr><th>Plan</th><th>Amount</th><th>Date</th><th>Status</th><th /></tr></thead>
-            <tbody>
-              {subs.map(s=>(
-                <tr key={s.id}>
-                  <td style={{ color:'rgba(255,255,255,0.75)', fontWeight:500 }}>{s.plan_name}</td>
-                  <td style={{ color:'#C9A84C', fontWeight:600 }}>SAR {s.price_sar}</td>
-                  <td>{new Date(s.started_at).toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'})}</td>
-                  <td><span className={s.status==='active'?'ds-badge-green':'ds-badge-red'}>{s.status}</span></td>
-                  <td><button className="ds-btn-outline" style={{ fontSize:'0.72rem', padding:'0.35rem 0.75rem' }}>PDF</button></td>
-                </tr>
+      {loading ? (
+        <div className="ds-loading" style={{ height:140, background:'rgba(255,255,255,0.03)', borderRadius:16, marginBottom:16 }} />
+      ) : isActive ? (
+        <>
+          {/* Active Plan Card */}
+          <div className="ds-card-gold" style={{ padding:'1.75rem', marginBottom:20 }}>
+            <div style={{ display:'flex', alignItems:'start', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+              <div>
+                <span className="ds-badge-gold" style={{ marginBottom:12, display:'inline-flex' }}>Active Plan</span>
+                <h3 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginTop:4, marginBottom:4 }}>{sub.plan_name as string}</h3>
+              </div>
+              <div style={{ textAlign:'right' }}>
+                <p style={{ fontSize:'2rem', fontWeight:700, color:'#C9A84C', lineHeight:1 }} dir="ltr">SAR {String(sub.price_sar)}</p>
+                <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.3)', marginTop:4 }}>/month</p>
+              </div>
+            </div>
+            <div className="ds-divider" />
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:16 }}>
+              {[
+                { label:'Status', value: String(sub.status).charAt(0).toUpperCase()+String(sub.status).slice(1), color: statusColors[sub.status as string] ?? 'rgba(255,255,255,0.7)' },
+                { label:'Next Billing', value: sub.expires_at ? new Date(sub.expires_at as string).toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'}) : '—', color:'rgba(255,255,255,0.7)' },
+                { label:'Member Since', value: sub.started_at ? new Date(sub.started_at as string).toLocaleDateString('en',{month:'short',year:'numeric'}) : '—', color:'rgba(255,255,255,0.7)' },
+              ].map(i=>(
+                <div key={i.label}>
+                  <p style={{ fontSize:'0.65rem', textTransform:'uppercase', letterSpacing:'0.12em', color:'rgba(255,255,255,0.25)', marginBottom:4 }}>{i.label}</p>
+                  <p style={{ fontSize:'0.88rem', fontWeight:600, color:i.color }}>{i.value}</p>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+
+            {/* Cancellation scheduled banner */}
+            {(isPendingCancel || isCancelledButValid) && (
+              <div style={{ padding:'0.85rem 1.15rem', borderRadius:10, marginBottom:12, background:'rgba(251,191,36,0.07)', border:'1px solid rgba(251,191,36,0.2)' }}>
+                <p style={{ fontSize:'0.8rem', color:'rgba(251,191,36,0.85)', fontWeight:500 }}>
+                  Your subscription has been cancelled. You retain full access until{' '}
+                  <strong>{sub?.expires_at ? new Date(sub.expires_at as string).toLocaleDateString('en',{month:'long',day:'numeric',year:'numeric'}) : 'the end of your billing period'}</strong>.
+                </p>
+              </div>
+            )}
+
+            {/* Cancel confirmation banner */}
+            {!isPendingCancel && !isCancelledButValid && cancelConfirm && (
+              <div style={{ padding:'1rem 1.25rem', borderRadius:12, marginBottom:16, background:'rgba(248,113,113,0.06)', border:'1px solid rgba(248,113,113,0.2)' }}>
+                <p style={{ fontSize:'0.82rem', color:'rgba(248,113,113,0.9)', marginBottom:10, fontWeight:500 }}>
+                  Are you sure? Your access continues until the end of the current billing period.
+                </p>
+                <div style={{ display:'flex', gap:8 }}>
+                  <button
+                    onClick={handleCancel}
+                    disabled={cancelLoading}
+                    style={{ padding:'0.5rem 1rem', borderRadius:8, fontSize:'0.75rem', fontWeight:700, border:'1px solid rgba(248,113,113,0.4)', background:'rgba(248,113,113,0.1)', color:'rgba(248,113,113,0.9)', cursor:'pointer', letterSpacing:'0.05em', textTransform:'uppercase' }}
+                  >
+                    {cancelLoading ? 'Cancelling…' : 'Yes, Cancel Subscription'}
+                  </button>
+                  <button
+                    onClick={() => setCancelConfirm(false)}
+                    style={{ padding:'0.5rem 1rem', borderRadius:8, fontSize:'0.75rem', fontWeight:600, border:'1px solid rgba(255,255,255,0.1)', background:'transparent', color:'rgba(255,255,255,0.5)', cursor:'pointer' }}
+                  >
+                    Keep Subscription
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Cancel button — only show if not already cancelled */}
+            {!isPendingCancel && !isCancelledButValid && !cancelConfirm && (
+              <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+                <button
+                  onClick={() => setCancelConfirm(true)}
+                  style={{
+                    fontSize:'0.75rem', fontWeight:600, padding:'0.55rem 1.2rem',
+                    borderRadius:10, border:'1px solid rgba(248,113,113,0.25)',
+                    background:'transparent', color:'rgba(248,113,113,0.7)', cursor:'pointer',
+                    transition:'all 0.2s ease', letterSpacing:'0.04em',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.06)'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.4)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.25)'; }}
+                >
+                  Cancel Subscription
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Invoices Section */}
+          <div className="ds-card" style={{ padding:'1.5rem' }}>
+            <p style={{ fontSize:'0.88rem', fontWeight:700, color:'white', marginBottom:4 }}>Invoices</p>
+            <p style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.3)', marginBottom:16 }}>Download your payment receipts</p>
+
+            {invoicesLoading ? (
+              <div className="ds-loading" style={{ height:60, background:'rgba(255,255,255,0.03)', borderRadius:10 }} />
+            ) : invoices.length > 0 ? (
+              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                {invoices.map(inv => (
+                  <div key={inv.id} style={{
+                    display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0.75rem 1rem',
+                    borderRadius:10, background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)',
+                  }}>
+                    <div style={{ flex:1 }}>
+                      <p style={{ fontSize:'0.82rem', fontWeight:600, color:'rgba(255,255,255,0.7)' }}>
+                        {inv.number ?? inv.id.slice(-8)}
+                      </p>
+                      <p style={{ fontSize:'0.7rem', color:'rgba(255,255,255,0.3)', marginTop:2 }}>
+                        {inv.date ? new Date(inv.date).toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'}) : '—'}
+                      </p>
+                    </div>
+                    <div style={{ textAlign:'right', marginRight:16 }}>
+                      <p style={{ fontSize:'0.85rem', fontWeight:700, color:'#C9A84C' }} dir="ltr">
+                        {inv.amount} {inv.currency}
+                      </p>
+                      <p style={{ fontSize:'0.65rem', color: inv.status === 'paid' ? 'rgba(74,222,128,0.8)' : 'rgba(255,255,255,0.3)', textTransform:'capitalize', marginTop:1 }}>
+                        {inv.status}
+                      </p>
+                    </div>
+                    {inv.pdf && (
+                      <a
+                        href={inv.pdf}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display:'inline-flex', alignItems:'center', gap:4, padding:'0.4rem 0.75rem',
+                          borderRadius:8, fontSize:'0.7rem', fontWeight:600,
+                          border:'1px solid rgba(201,168,76,0.3)', color:'#C9A84C',
+                          textDecoration:'none', transition:'all 0.2s ease',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201,168,76,0.07)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        PDF
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize:'0.8rem', color:'rgba(255,255,255,0.25)', textAlign:'center', padding:'1rem 0' }}>
+                No invoices yet
+              </p>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="ds-card" style={{ padding:'2rem', marginBottom:20, textAlign:'center' }}>
+          <div className="ds-empty-icon" style={{ margin:'0 auto 1rem' }}>{Icons.card}</div>
+          <p style={{ color:'white', fontWeight:600, marginBottom:6 }}>No active subscription</p>
+          <p style={{ fontSize:'0.82rem', color:'rgba(255,255,255,0.35)', marginBottom:'1.25rem' }}>
+            Subscribe to unlock your coaching dashboard, meal plans, and direct trainer access.
+          </p>
+          <a
+            href="/checkout"
+            className="ds-btn-gold"
+            style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'0.7rem 1.5rem', fontSize:'0.8rem', textDecoration:'none' }}
+          >
+            View Plans & Subscribe
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ─── Subscription Gate (locked screen) ─────────────── */
+function SubscriptionGate() {
+  return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh', padding:'2rem' }}>
+      <div style={{ maxWidth:420, width:'100%', textAlign:'center', background:'rgba(255,255,255,0.025)', border:'1px solid rgba(201,168,76,0.18)', borderRadius:24, padding:'3rem 2rem' }}>
+        <div style={{ width:56, height:56, borderRadius:'50%', background:'rgba(201,168,76,0.08)', border:'1px solid rgba(201,168,76,0.2)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1.25rem' }}>
+          <svg className="w-6 h-6" fill="none" stroke="#C9A84C" strokeWidth="1.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+        </div>
+        <h2 style={{ fontSize:'1.35rem', fontWeight:700, color:'white', marginBottom:8 }}>Subscription Required</h2>
+        <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', lineHeight:1.6, marginBottom:'1.75rem' }}>
+          Your subscription is inactive or has expired. Subscribe to unlock your full coaching dashboard — meal plans, workouts, progress tracking, and direct coach access.
+        </p>
+        <a
+          href="/checkout"
+          style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'0.8rem 1.75rem', background:'linear-gradient(135deg,#C9A84C,#E8C76A)', color:'#0B0B0B', fontWeight:800, fontSize:'0.8rem', letterSpacing:'0.1em', textTransform:'uppercase', borderRadius:12, textDecoration:'none' }}
+        >
+          View Plans
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </a>
+      </div>
     </div>
   );
 }
@@ -806,12 +1004,49 @@ function SubscriptionTab() {
 /* ─── Page ───────────────────────────────────────────── */
 export default function ClientDashboard() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [tab, setTab] = useState('overview');
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'loading'|'active'|'inactive'>('loading');
+
+  const navItems: NavItem[] = [
+    { id: 'overview',     label: t('client.overview'),    icon: Icons.grid  },
+    { id: 'meal-plan',    label: t('client.mealPlan'),    icon: Icons.meal  },
+    { id: 'workout',      label: t('client.workoutPlan'), icon: Icons.bolt  },
+    { id: 'progress',     label: t('client.progress'),    icon: Icons.chart },
+    { id: 'messages',     label: t('client.messages'),    icon: Icons.chat  },
+    { id: 'subscription', label: t('client.subscription'),icon: Icons.card  },
+  ];
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [mealPlan, setMealPlan] = useState<MealPlan|null>(null);
   const [workoutPlan, setWorkoutPlan] = useState<WorkoutPlan|null>(null);
   const [progressLogs, setProgressLogs] = useState<ProgressLog[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Check subscription status on mount
+  // A subscription is considered active if status='active' OR if it's cancelled but hasn't expired yet
+  useEffect(()=>{
+    if (!user?.id) return;
+    supabase
+      .from('subscriptions')
+      .select('status, expires_at')
+      .eq('user_id', user.id)
+      .order('started_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) {
+          setSubscriptionStatus('inactive');
+          return;
+        }
+        const isActive = data.status === 'active';
+        const isCancelledButValid = data.status === 'cancelled' && data.expires_at && new Date(data.expires_at) > new Date();
+        if (isActive || isCancelledButValid) {
+          setSubscriptionStatus('active');
+        } else {
+          setSubscriptionStatus('inactive');
+        }
+      });
+  }, [user?.id]);
 
   const loadData = useCallback(async () => {
     if (!user?.id) return;
@@ -832,14 +1067,21 @@ export default function ClientDashboard() {
     if (user?.profile && !user.profile.onboarding_completed) setShowOnboarding(true);
   }, [user]);
 
+  // Tabs that are always accessible even without an active subscription
+  const openTabs = new Set(['subscription']);
+
   const render = () => {
+    // Show gate for locked tabs if subscription is inactive
+    if (subscriptionStatus === 'inactive' && !openTabs.has(tab)) {
+      return <SubscriptionGate />;
+    }
     switch(tab) {
       case 'overview':     return <OverviewTab progressLogs={progressLogs} mealPlan={mealPlan} workoutPlan={workoutPlan} onNavigate={setTab} />;
       case 'meal-plan':    return <MealPlanTab mealPlan={mealPlan} loading={loading} onNavigate={setTab} />;
       case 'workout':      return <WorkoutTab workoutPlan={workoutPlan} loading={loading} />;
       case 'progress':     return <ProgressTab progressLogs={progressLogs} onLogged={loadData} />;
       case 'messages':     return <MessagesTab />;
-      case 'subscription': return <SubscriptionTab />;
+      case 'subscription': return user ? <SubscriptionTab userId={user.id} /> : null;
       default: return null;
     }
   };

@@ -1,5 +1,8 @@
+'use client';
+
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { useLanguage } from '@/context/LanguageContext';
 
 const values = [
   {
@@ -48,6 +51,7 @@ const stats = [
 ];
 
 export default function AboutPage() {
+  const { t } = useLanguage();
   return (
     <>
       <style>{`
@@ -124,20 +128,17 @@ export default function AboutPage() {
               style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.18)' }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C9A84C' }} />
               <span className="text-xs font-semibold tracking-[0.2em] uppercase" style={{ color: '#C9A84C' }}>
-                About OMR+
+                {t('about.badge')}
               </span>
             </div>
             <h1 className="text-5xl sm:text-6xl font-bold text-white mb-6 tracking-tight leading-[1.1]">
-              Built for{' '}
+              {t('about.title')}{' '}
               <span style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C76A, #C9A84C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Real Results
+                {t('about.titleHighlight')}
               </span>
             </h1>
             <p className="text-white/42 text-base leading-[1.9] max-w-2xl mx-auto">
-              OMR+ is a premium fitness coaching platform built on one belief —
-              that every person deserves a program as unique as they are.
-              We combine expert coaching, precision nutrition, and real accountability
-              to deliver transformations that stick.
+              {t('about.subtitle')}
             </p>
           </div>
         </section>
@@ -161,7 +162,7 @@ export default function AboutPage() {
             {/* Mission */}
             <div className="about-glass p-10 lg:p-14 mb-16 max-w-4xl mx-auto text-center">
               <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-5" style={{ color: 'rgba(201,168,76,0.5)' }}>
-                Our Mission
+                {t('about.mission.title')}
               </p>
               <blockquote className="text-2xl lg:text-3xl font-bold text-white leading-[1.4] tracking-tight mb-6">
                 "To make elite-level fitness coaching accessible, personal, and{' '}
@@ -171,9 +172,7 @@ export default function AboutPage() {
                 {' '}— for everyone."
               </blockquote>
               <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)' }}>
-                We started OMR+ because the fitness industry was full of generic plans, empty promises,
-                and programs that ignored the individual. We built the alternative —
-                a platform where every client has a real coach, a real plan, and real support.
+                {t('about.mission.body')}
               </p>
             </div>
 
@@ -249,7 +248,7 @@ export default function AboutPage() {
                 target="_blank" rel="noopener noreferrer"
                 className="about-btn"
               >
-                Book Free Consultation
+                {t('footer.freeConsultation')}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>

@@ -1,6 +1,7 @@
 'use client';
 
 import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
+import { useLanguage } from '@/context/LanguageContext';
 
 const CheckIcon = () => (
   <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -8,14 +9,14 @@ const CheckIcon = () => (
   </svg>
 );
 
-const points = [
-  'Free Consultation — No Commitment',
-  'Fully Personalized Plans',
-  'Dedicated Coach From Day One',
-  'Real, Measurable Results',
-];
-
 export default function ConsultationCTA() {
+  const { t } = useLanguage();
+  const points = [
+    t('footer.freeConsultation'),
+    t('hiw.step2.title'),
+    t('hiw.step3.title'),
+    t('hiw.step4.title'),
+  ];
   return (
     <>
       <style>{`
@@ -180,7 +181,7 @@ export default function ConsultationCTA() {
                   className="text-xs font-semibold tracking-[0.2em] uppercase"
                   style={{ color: '#C9A84C' }}
                 >
-                  Start Today
+                  {t('cta.btn')}
                 </span>
               </div>
             </AnimateOnScroll>
@@ -188,19 +189,7 @@ export default function ConsultationCTA() {
             {/* Headline */}
             <AnimateOnScroll delay={80}>
               <h2 className="text-4xl sm:text-5xl lg:text-[3.2rem] font-bold text-white leading-[1.1] tracking-tight mb-6">
-                Ready to Transform
-                <br />
-                <span
-                  style={{
-                    background:
-                      'linear-gradient(135deg, #C9A84C 0%, #E8C76A 50%, #C9A84C 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
-                  Your Life?
-                </span>
+                {t('cta.title')}
               </h2>
             </AnimateOnScroll>
 
@@ -210,8 +199,7 @@ export default function ConsultationCTA() {
                 className="text-base leading-[1.9] tracking-wide mb-10 max-w-lg mx-auto"
                 style={{ color: 'rgba(255,255,255,0.42)' }}
               >
-                No contracts. No gimmicks. Just a coach who knows your name,
-                a plan built around your body, and a system that delivers results.
+                {t('cta.subtitle')}
               </p>
             </AnimateOnScroll>
 
@@ -242,7 +230,7 @@ export default function ConsultationCTA() {
                 rel="noopener noreferrer"
                 className="cta-btn"
               >
-                Book Free Consultation
+                {t('cta.btn')}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>

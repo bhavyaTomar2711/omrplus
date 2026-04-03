@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export interface NavItem {
   id: string;
@@ -18,10 +19,11 @@ interface DashboardShellProps {
   children: React.ReactNode;
 }
 
-const roleLabels = { client: 'Member Portal', coach: 'Coach Portal', admin: 'Admin Panel' };
+const roleKeys = { client: 'dash.memberPortal', coach: 'dash.coachPortal', admin: 'dash.adminPanel' } as const;
 
 export default function DashboardShell({ role, navItems, activeTab, onTabChange, children }: DashboardShellProps) {
   const { user, signOut } = useAuth();
+  const { t } = useLanguage();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const initials = user?.profile?.full_name
@@ -323,7 +325,7 @@ export default function DashboardShell({ role, navItems, activeTab, onTabChange,
             </Link>
             <div className="dsh-role-pill">
               <span style={{ width:6, height:6, borderRadius:'50%', background:'#C9A84C', flexShrink:0 }} />
-              {roleLabels[role]}
+              {t(roleKeys[role])}
             </div>
           </div>
 
@@ -360,7 +362,7 @@ export default function DashboardShell({ role, navItems, activeTab, onTabChange,
               <svg className="dsh-nav-icon" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
               </svg>
-              Sign Out
+              {t('dash.signOut')}
             </button>
           </div>
         </aside>
@@ -382,10 +384,21 @@ export default function DashboardShell({ role, navItems, activeTab, onTabChange,
                 {navItems.find(n => n.id === activeTab)?.label}
               </span>
             </div>
-            <Link href="/" style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.25)', textDecoration:'none', display:'none' }}
-              className="sm:block hover:text-white/50 transition-colors">
-              ← Back to site
-            </Link>
+            <a href="/" style={{
+              fontSize:'0.75rem', color:'rgba(255,255,255,0.3)', textDecoration:'none',
+              display:'inline-flex', alignItems:'center', gap:'0.4rem',
+              padding:'0.35rem 0.85rem', borderRadius:8,
+              border:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.03)',
+              transition:'all 0.2s ease',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.3)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+            >
+              <svg style={{ width:14, height:14 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+              </svg>
+              {t('dash.backToSite')}
+            </a>
           </header>
 
           <main className="dsh-content">{children}</main>

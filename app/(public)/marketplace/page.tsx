@@ -1,5 +1,8 @@
+'use client';
+
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { useLanguage } from '@/context/LanguageContext';
 
 const categories = [
   { name: 'Supplements', icon: (
@@ -25,6 +28,7 @@ const categories = [
 ];
 
 export default function MarketplacePage() {
+  const { t } = useLanguage();
   return (
     <>
       <style>{`
@@ -100,7 +104,7 @@ export default function MarketplacePage() {
               style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.18)' }}>
               <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#C9A84C' }} />
               <span className="text-xs font-semibold tracking-[0.2em] uppercase" style={{ color: '#C9A84C' }}>
-                Coming Soon
+                {t('marketplace.comingSoon')}
               </span>
             </div>
 
@@ -117,15 +121,14 @@ export default function MarketplacePage() {
             </div>
 
             <h1 className="text-5xl sm:text-6xl font-bold text-white mb-5 tracking-tight leading-[1.1]">
-              The OMR+{' '}
+              {t('marketplace.title')}{' '}
               <span style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C76A, #C9A84C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Marketplace
+                {t('marketplace.titleHighlight')}
               </span>
             </h1>
 
             <p className="text-white/40 text-base leading-[1.9] max-w-xl mx-auto mb-10">
-              Premium supplements, healthy snacks, nutrition essentials, and digital guides —
-              all curated for performance. Launching soon exclusively for OMR+ members.
+              {t('marketplace.subtitle')}
             </p>
 
             {/* Notify CTA */}
@@ -137,7 +140,7 @@ export default function MarketplacePage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
               </svg>
-              Notify Me at Launch
+              {t('marketplace.notifyBtn')}
             </a>
 
             {/* Divider */}

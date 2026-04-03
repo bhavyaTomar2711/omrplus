@@ -2,51 +2,54 @@
 
 import { useEffect, useRef } from 'react';
 import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
+import { useLanguage } from '@/context/LanguageContext';
 
 const BG_IMAGE =
   'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774889959/pexels-dogu-tuncer-339534179-17210043_ogbko1.jpg';
-
-const transformations = [
-  {
-    id: 1,
-    metric: '15 kg',
-    metricLabel: 'lost',
-    duration: '12 weeks',
-    program: 'Fat Loss',
-    change: 'Body composition improved significantly. Consistent training and tailored nutrition made the difference.',
-  },
-  {
-    id: 2,
-    metric: '12 kg',
-    metricLabel: 'gained',
-    duration: '16 weeks',
-    program: 'Muscle Building',
-    change: 'Strength increased by 40%. Progressive overload and precision meal planning built a foundation that lasts.',
-  },
-  {
-    id: 3,
-    metric: '100%',
-    metricLabel: 'confidence',
-    duration: '12 weeks',
-    program: 'Summer Body',
-    change: 'More energy, better posture, and a physique to be proud of — achieved through consistency and guidance.',
-  },
-];
-
-const stats = [
-  { label: '500+', description: 'Active Members' },
-  { label: '95%', description: 'Success Rate' },
-  { label: '12+', description: 'Avg. Months' },
-  { label: '50K+', description: 'Check-ins' },
-];
+const BG_IMAGE_MOBILE =
+  'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1775200853/make_the_samke_202604031249_yos6q3.jpg';
 
 export default function TransformationsSection() {
+  const { t } = useLanguage();
+  const transformations = [
+    {
+      id: 1,
+      metric: '15 kg',
+      metricLabel: t('trans.t1.label'),
+      duration: t('trans.t1.duration'),
+      program: t('trans.t1.program'),
+      change: t('trans.t1.change'),
+    },
+    {
+      id: 2,
+      metric: '12 kg',
+      metricLabel: t('trans.t2.label'),
+      duration: t('trans.t2.duration'),
+      program: t('trans.t2.program'),
+      change: t('trans.t2.change'),
+    },
+    {
+      id: 3,
+      metric: '100%',
+      metricLabel: t('trans.t3.label'),
+      duration: t('trans.t3.duration'),
+      program: t('trans.t3.program'),
+      change: t('trans.t3.change'),
+    },
+  ];
+  const stats = [
+    { label: '500+', description: t('trans.stat1') },
+    { label: '95%',  description: t('trans.stat2') },
+    { label: '12+',  description: t('trans.stat3') },
+    { label: '50K+', description: t('trans.stat4') },
+  ];
   const bgRef = useRef<HTMLDivElement>(null);
 
   // Subtle parallax on scroll
   useEffect(() => {
     const handleScroll = () => {
       if (!bgRef.current) return;
+      if (window.innerWidth < 640) return; // disable parallax on mobile
       const section = bgRef.current.closest('section') as HTMLElement;
       if (!section) return;
       const rect = section.getBoundingClientRect();
@@ -77,6 +80,28 @@ export default function TransformationsSection() {
           filter: brightness(0.28) saturate(0.6) blur(1px);
           will-change: transform;
           transform: scale(1.12);
+        }
+        @media (max-width: 640px) {
+          .tf-bg {
+            background-image: url('${BG_IMAGE_MOBILE}');
+            background-position: center top;
+            background-size: cover;
+            inset: 0;
+            transform: scale(1);
+            filter: brightness(0.38) saturate(0.7) blur(0.5px);
+          }
+          .tf-overlay-left {
+            background: linear-gradient(
+              to bottom,
+              rgba(0,0,0,0.55) 0%,
+              rgba(0,0,0,0.2) 40%,
+              rgba(0,0,0,0.2) 60%,
+              rgba(0,0,0,0.75) 100%
+            );
+          }
+          .tf-overlay-bottom {
+            background: none;
+          }
         }
 
         /* Cinematic gradient overlays */
@@ -246,14 +271,14 @@ export default function TransformationsSection() {
                 className="text-xs font-semibold tracking-[0.2em] uppercase"
                 style={{ color: '#C9A84C' }}
               >
-                Real Results
+                {t('trans.badge')}
               </span>
             </div>
 
             <h2
               className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]"
             >
-              Client{' '}
+              {t('trans.title')}{' '}
               <span
                 style={{
                   background: 'linear-gradient(135deg, #C9A84C 0%, #E8C76A 50%, #C9A84C 100%)',
@@ -262,13 +287,12 @@ export default function TransformationsSection() {
                   backgroundClip: 'text',
                 }}
               >
-                Transformations
+                {t('trans.titleHighlight')}
               </span>
             </h2>
 
             <p className="text-white/40 max-w-md mx-auto text-base leading-relaxed tracking-wide">
-              Real results from real members. Every story is privacy-protected
-              and authentically earned.
+              {t('trans.subtitle')}
             </p>
           </AnimateOnScroll>
 
@@ -315,13 +339,13 @@ export default function TransformationsSection() {
                       className="text-[10px] font-medium tracking-[0.14em] uppercase"
                       style={{ color: 'rgba(201,168,76,0.5)' }}
                     >
-                      Privacy Protected
+                      {t('trans.disclaimer')}
                     </span>
                   </div>
 
                   {/* Metric */}
                   <div>
-                    <div className="flex items-baseline gap-2 mb-1">
+                    <div className="flex items-baseline gap-2 mb-1" dir="ltr">
                       <span
                         className="text-5xl font-black leading-none tracking-tight"
                         style={{
@@ -356,7 +380,7 @@ export default function TransformationsSection() {
                     <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                    <span className="text-[11px] text-white/30 tracking-wide">Verified Result</span>
+                    <span className="text-[11px] text-white/30 tracking-wide">{t('trans.verified')}</span>
                   </div>
                 </div>
               </AnimateOnScroll>
@@ -369,10 +393,10 @@ export default function TransformationsSection() {
               className="mb-6 text-xs tracking-[0.22em] uppercase"
               style={{ color: 'rgba(255,255,255,0.28)' }}
             >
-              Hundreds more stories waiting to be told
+              {t('trans.more')}
             </p>
             <a href="#" className="tf-btn">
-              View All Transformations
+              {t('trans.viewAll')}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>

@@ -1,6 +1,7 @@
 'use client';
 
 import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
+import { useLanguage } from '@/context/LanguageContext';
 
 const CalendarIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
@@ -41,40 +42,16 @@ const AwardIcon = () => (
   </svg>
 );
 
-const steps = [
-  {
-    number: '01',
-    title: 'Book Consultation',
-    description: 'Schedule a free call with our team to discuss your goals and current situation.',
-    icon: <CalendarIcon />,
-  },
-  {
-    number: '02',
-    title: 'Complete Onboarding',
-    description: 'Answer our detailed questionnaire about fitness goals, dietary preferences, and lifestyle.',
-    icon: <ClipboardIcon />,
-  },
-  {
-    number: '03',
-    title: 'Get Your Plan',
-    description: 'Receive a personalized meal and workout plan tailored to your specific needs.',
-    icon: <TargetIcon />,
-  },
-  {
-    number: '04',
-    title: 'Weekly Check-ins',
-    description: 'Connect with your trainer every week to track progress and adjust your plan.',
-    icon: <MessageIcon />,
-  },
-  {
-    number: '05',
-    title: 'Transform & Track',
-    description: 'Monitor your transformation with real results and celebrate your milestones.',
-    icon: <AwardIcon />,
-  },
-];
-
 export default function HowItWorksSection() {
+  const { t } = useLanguage();
+
+  const steps = [
+    { number: '01', titleKey: 'hiw.step1.title', descKey: 'hiw.step1.desc', icon: <CalendarIcon /> },
+    { number: '02', titleKey: 'hiw.step2.title', descKey: 'hiw.step2.desc', icon: <ClipboardIcon /> },
+    { number: '03', titleKey: 'hiw.step3.title', descKey: 'hiw.step3.desc', icon: <TargetIcon /> },
+    { number: '04', titleKey: 'hiw.step4.title', descKey: 'hiw.step4.desc', icon: <MessageIcon /> },
+    { number: '05', titleKey: 'hiw.step1.title', descKey: 'hiw.step4.desc', icon: <AwardIcon /> },
+  ];
   return (
     <>
       <style>{`
@@ -212,12 +189,12 @@ export default function HowItWorksSection() {
                 className="text-xs font-semibold tracking-[0.2em] uppercase"
                 style={{ color: '#C9A84C' }}
               >
-                The Process
+                {t('hiw.badge')}
               </span>
             </div>
 
             <h2 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]">
-              Your Journey{' '}
+              {t('hiw.title')}{' '}
               <span
                 style={{
                   background:
@@ -227,13 +204,12 @@ export default function HowItWorksSection() {
                   backgroundClip: 'text',
                 }}
               >
-                Starts Here
+                {t('hiw.titleHighlight')}
               </span>
             </h2>
 
             <p className="text-white/45 max-w-lg mx-auto text-base leading-relaxed tracking-wide">
-              Five carefully designed steps to guide you from where you are
-              to where you want to be.
+              {t('hiw.step1.desc')}
             </p>
           </AnimateOnScroll>
 
@@ -286,12 +262,12 @@ export default function HowItWorksSection() {
 
                   {/* Title */}
                   <h3 className="relative z-10 text-[15px] font-bold text-white mb-3 leading-snug tracking-tight">
-                    {step.title}
+                    {t(step.titleKey)}
                   </h3>
 
                   {/* Description */}
                   <p className="relative z-10 text-white/40 text-[13px] leading-relaxed">
-                    {step.description}
+                    {t(step.descKey)}
                   </p>
                 </div>
               </AnimateOnScroll>
@@ -304,7 +280,7 @@ export default function HowItWorksSection() {
               className="mb-7 text-xs tracking-[0.22em] uppercase"
               style={{ color: 'rgba(255,255,255,0.3)' }}
             >
-              Ready to transform?
+              {t('cta.title')}
             </p>
             <a
               href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
@@ -312,7 +288,7 @@ export default function HowItWorksSection() {
               rel="noopener noreferrer"
               className="hiw-cta-btn inline-flex items-center gap-3 px-10 py-4 text-xs font-semibold tracking-[0.16em] uppercase rounded-lg"
             >
-              Book Free Consultation
+              {t('footer.freeConsultation')}
               <svg
                 className="w-4 h-4"
                 fill="none"

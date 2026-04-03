@@ -1,6 +1,9 @@
 'use client';
 
+import { useLanguage } from '@/context/LanguageContext';
+
 export default function HeroSection() {
+  const { t } = useLanguage();
   return (
     <section className="relative w-full min-h-screen bg-brand-black overflow-hidden flex items-center pt-20">
       {/* Video Background */}
@@ -19,44 +22,101 @@ export default function HeroSection() {
           />
         </video>
 
-        {/* Professional Overlay - Left side darker */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent"></div>
+        {/* Desktop overlay - left side darker */}
+        <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent"></div>
+        {/* Mobile overlay - heavier dark for readability */}
+        <div className="sm:hidden absolute inset-0 bg-black/70"></div>
       </div>
 
       {/* Content - Less Desktop Width, More Focused */}
       <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-80px)]">
-          {/* Left Content - Professional & Clean */}
-          <div className="flex flex-col justify-center space-y-6">
-            {/* Main Headline - Professional */}
-            <div className="space-y-0">
-              {/* Headline - Professional */}
+          {/* Left Content */}
+          <div className="flex flex-col justify-center sm:items-start sm:text-left sm:space-y-6">
+
+            {/* ── MOBILE HERO ── */}
+            <div className="sm:hidden flex flex-col items-center text-center px-2" style={{ gap: '1.25rem' }}>
+
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
+                style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.22)' }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C9A84C' }} />
+                <span className="text-[10px] font-semibold tracking-[0.22em] uppercase" style={{ color: '#C9A84C' }}>
+                  Premium Fitness Coaching
+                </span>
+              </div>
+
+              {/* Headline */}
+              <div style={{ lineHeight: 1.0 }}>
+                <div className="text-[4.5rem] font-black tracking-tight text-white uppercase" style={{ letterSpacing: '-0.02em' }}>
+                  {t('hero.headline1')}
+                </div>
+                <div className="text-[4.5rem] font-black tracking-tight text-white uppercase" style={{ letterSpacing: '-0.02em' }}>
+                  YOUR
+                </div>
+                <div className="text-[4.8rem] font-black uppercase" style={{
+                  letterSpacing: '-0.02em',
+                  background: 'linear-gradient(135deg, #C9A84C 0%, #F0D878 50%, #C9A84C 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}>
+                  {t('hero.headline2')}
+                </div>
+              </div>
+
+              {/* Thin gold divider */}
+              <div className="flex items-center gap-3 w-full justify-center">
+                <div className="h-px flex-1 max-w-[60px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.4))' }} />
+                <span className="text-[10px] tracking-[0.25em] uppercase" style={{ color: 'rgba(201,168,76,0.5)' }}>OMR+</span>
+                <div className="h-px flex-1 max-w-[60px]" style={{ background: 'linear-gradient(90deg, rgba(201,168,76,0.4), transparent)' }} />
+              </div>
+
+              {/* Subtext */}
+              <p className="text-[15px] leading-relaxed max-w-[300px]" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 300 }}>
+                {t('hero.subtext')}
+              </p>
+
+              {/* CTA */}
+              <a href="/pricing"
+                className="inline-flex items-center gap-3 px-10 py-4 rounded-xl text-base font-bold tracking-widest uppercase transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, #C9A84C, #E5C76B)',
+                  color: '#0A0A0A',
+                  boxShadow: '0 8px 28px rgba(201,168,76,0.25)',
+                }}>
+                {t('hero.cta')}
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
+              </a>
+
+              {/* Trust line */}
+              <p className="text-[11px] tracking-[0.18em] uppercase" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                Trusted by hundreds of members
+              </p>
+            </div>
+
+            {/* ── DESKTOP HERO (unchanged) ── */}
+            <div className="hidden sm:flex flex-col space-y-6">
               <div className="space-y-1">
                 <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium text-white leading-tight">
-                  UNLEASH YOUR
+                  {t('hero.headline1')}
                 </h1>
                 <h2 className="text-7xl md:text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold leading-tight">
-                  POTENTIAL
+                  {t('hero.headline2')}
                 </h2>
+              </div>
+              <p className="text-sm text-white/60 max-w-lg font-light leading-relaxed">
+                {t('hero.subtext')}
+              </p>
+              <div className="pt-2">
+                <a href="/pricing" className="btn-gold-outline inline-block px-8 py-3 text-base">
+                  {t('hero.cta')}
+                </a>
               </div>
             </div>
 
-            {/* Subtext - Professional tone */}
-            <p className="text-sm text-white/60 max-w-lg font-light leading-relaxed">
-              Join a community where goals are crushed, strength is built, and potential becomes power.
-            </p>
-
-            {/* CTA Button */}
-            <div className="pt-2">
-              <a
-                href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-gold-outline inline-block px-8 py-3 text-base"
-              >
-                Get Started
-              </a>
-            </div>
           </div>
 
           {/* Right Side - Video fills space */}

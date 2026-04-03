@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     // Upsert profile with coach role
     const { error: profileError } = await supabaseAdmin.from('profiles').upsert({
       id: authData.user.id,
+      email,
       full_name,
       phone: phone ?? null,
       role: 'coach',

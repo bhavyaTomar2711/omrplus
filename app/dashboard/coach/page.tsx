@@ -5,34 +5,17 @@ import DashboardShell, { NavItem } from '@/components/dashboard/DashboardShell';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import Select from '@/components/ui/Select';
+import { useLanguage } from '@/context/LanguageContext';
 
-/* ─── Nav ─────────────────────────────────────────────── */
-const navItems: NavItem[] = [
-  {
-    id: 'overview', label: 'Overview',
-    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" /></svg>,
-  },
-  {
-    id: 'clients', label: 'My Clients',
-    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>,
-  },
-  {
-    id: 'meal-builder', label: 'Meal Plans',
-    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5M6 10.608v6.137a2.587 2.587 0 0 0 2.587 2.587h6.826A2.587 2.587 0 0 0 18 16.745v-6.137M6 10.608H4.5m13.5 0H19.5" /></svg>,
-  },
-  {
-    id: 'workout-builder', label: 'Workout Plans',
-    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>,
-  },
-  {
-    id: 'progress', label: 'Progress Monitor',
-    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>,
-  },
-  {
-    id: 'messages', label: 'Messages',
-    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" /></svg>,
-  },
-];
+/* ─── Nav icons (labels built inside component for i18n) ── */
+const CoachNavIcons = {
+  overview: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" /></svg>,
+  clients: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>,
+  mealBuilder: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5M6 10.608v6.137a2.587 2.587 0 0 0 2.587 2.587h6.826A2.587 2.587 0 0 0 18 16.745v-6.137M6 10.608H4.5m13.5 0H19.5" /></svg>,
+  workoutBuilder: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>,
+  progress: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>,
+  messages: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" /></svg>,
+};
 
 /* ─── Types ───────────────────────────────────────────── */
 interface ClientProfile {
@@ -88,7 +71,17 @@ interface WorkoutExercise {
   reps: string | null;
   rest_seconds: number | null;
   notes: string | null;
+  video_url: string | null;
   sort_order: number;
+}
+
+interface WorkoutVideo {
+  id: string;
+  title: string;
+  cloudinary_url: string;
+  public_id: string;
+  thumbnail_url: string | null;
+  duration: number | null;
 }
 
 interface ProgressLog {
@@ -272,25 +265,74 @@ function OverviewTab({
 /* ─── Clients Tab ─────────────────────────────────────── */
 function ClientsTab({
   clients,
+  coachId,
   onOpenChat,
   onBuildMeal,
   onBuildWorkout,
+  onRefresh,
 }: {
   clients: ClientProfile[];
+  coachId: string;
   onOpenChat: (clientId: string) => void;
   onBuildMeal: (clientId: string) => void;
   onBuildWorkout: (clientId: string) => void;
+  onRefresh: () => void;
 }) {
   const [selected, setSelected] = useState<ClientProfile | null>(null);
   const [onboarding, setOnboarding] = useState<Record<string, string> | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addEmail, setAddEmail] = useState('');
+  const [addStatus, setAddStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [addMsg, setAddMsg] = useState('');
+
+  const addClientByEmail = async () => {
+    const email = addEmail.trim().toLowerCase();
+    if (!email) return;
+    setAddStatus('loading');
+    setAddMsg('');
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, full_name, role')
+      .eq('email', email)
+      .single();
+    if (!profile) {
+      setAddStatus('error');
+      setAddMsg('No user found with that email address.');
+      return;
+    }
+    if (profile.role !== 'client') {
+      setAddStatus('error');
+      setAddMsg('That account is not registered as a client.');
+      return;
+    }
+    if (clients.find(c => c.id === profile.id)) {
+      setAddStatus('error');
+      setAddMsg('This client is already assigned to you.');
+      return;
+    }
+    const { error } = await supabase
+      .from('trainer_client_assignments')
+      .insert({ trainer_id: coachId, client_id: profile.id });
+    if (error) {
+      setAddStatus('error');
+      setAddMsg('Failed to add client. They may already be assigned.');
+      return;
+    }
+    setAddStatus('success');
+    setAddMsg(`${profile.full_name ?? email} added successfully!`);
+    setAddEmail('');
+    onRefresh();
+    setTimeout(() => { setShowAddForm(false); setAddStatus('idle'); setAddMsg(''); }, 2000);
+  };
 
   const openClient = async (c: ClientProfile) => {
     setSelected(c);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('onboarding_responses')
       .select('*')
       .eq('user_id', c.id)
-      .single();
+      .maybeSingle();
+    console.log('[coach] onboarding query for', c.id, '→ data:', data, 'error:', error);
     setOnboarding(data ?? null);
   };
 
@@ -342,35 +384,147 @@ function ClientsTab({
           </div>
         </div>
 
-        {onboarding && (
-          <div className="ds-card" style={{ padding: '1.75rem' }}>
-            <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>Onboarding Responses</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '1rem' }}>
-              {Object.entries(onboarding)
-                .filter(([k]) => !['id', 'user_id', 'created_at', 'updated_at'].includes(k))
-                .map(([key, val]) => (
-                  <div key={key} style={{ padding: '0.9rem 1rem', background: 'rgba(255,255,255,0.025)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
-                      {key.replace(/_/g, ' ')}
-                    </p>
-                    <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.72)' }}>{String(val) || '—'}</p>
-                  </div>
-                ))}
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '1.75rem', backdropFilter: 'blur(20px)' }}>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg style={{ width: 16, height: 16, color: '#C9A84C' }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+              </svg>
             </div>
+            <div>
+              <p style={{ fontSize: '0.92rem', fontWeight: 700, color: 'white' }}>Questionnaire</p>
+              <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>Client onboarding responses</p>
+            </div>
+            {onboarding && (
+              <span style={{ marginLeft: 'auto', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.65rem', borderRadius: 20, background: 'rgba(74,222,128,0.08)', color: 'rgba(74,222,128,0.85)', border: '1px solid rgba(74,222,128,0.18)' }}>
+                Completed
+              </span>
+            )}
           </div>
-        )}
+
+          {onboarding ? (() => {
+            const GoldIcon = ({ path, path2 }: { path: string; path2?: string }) => (
+              <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg style={{ width: 14, height: 14, color: '#C9A84C' }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d={path} />
+                  {path2 && <path strokeLinecap="round" strokeLinejoin="round" d={path2} />}
+                </svg>
+              </div>
+            );
+            const fields: { key: string; label: string; path: string; path2?: string; unit?: string }[] = [
+              { key: 'fitness_goal',         label: 'Fitness Goal',          path: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z' },
+              { key: 'current_weight_kg',    label: 'Current Weight',        path: 'M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z', unit: 'kg' },
+              { key: 'target_weight_kg',     label: 'Target Weight',         path: 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z', unit: 'kg' },
+              { key: 'height_cm',            label: 'Height',                path: 'M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5', unit: 'cm' },
+              { key: 'age',                  label: 'Age',                   path: 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5', unit: 'yrs' },
+              { key: 'gender',               label: 'Gender',                path: 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z' },
+              { key: 'activity_level',       label: 'Activity Level',        path: 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z' },
+              { key: 'experience_level',     label: 'Experience',            path: 'M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0' },
+              { key: 'dietary_restrictions', label: 'Dietary',               path: 'M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5M6 10.608v6.137a2.587 2.587 0 0 0 2.587 2.587h6.826A2.587 2.587 0 0 0 18 16.745v-6.137M6 10.608H4.5m13.5 0H19.5' },
+              { key: 'health_conditions',    label: 'Health',                path: 'M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z' },
+              { key: 'workout_days_per_week',label: 'Days / Week',           path: 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H18v-.008Zm0 2.25h.008v.008H18V15Z', unit: 'days' },
+              { key: 'notes',                label: 'Notes',                 path: 'M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10' },
+            ];
+            const ob = onboarding as Record<string, unknown>;
+            const visible = fields.filter(f => ob[f.key] != null && ob[f.key] !== '' && String(ob[f.key]).toLowerCase() !== 'null');
+            return (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(210px,1fr))', gap: '0.75rem' }}>
+                {visible.map(f => {
+                  const raw = ob[f.key];
+                  const display = Array.isArray(raw) ? (raw as string[]).join(', ') : String(raw);
+                  return (
+                    <div key={f.key} style={{
+                      padding: '1rem 1.1rem',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: 14,
+                      transition: 'border-color 0.2s ease',
+                    }}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(201,168,76,0.2)')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                        <GoldIcon path={f.path} path2={f.path2} />
+                        <p style={{ fontSize: '0.62rem', fontWeight: 700, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                          {f.label}
+                        </p>
+                      </div>
+                      <p style={{ fontSize: '0.88rem', fontWeight: 600, color: 'rgba(255,255,255,0.82)', paddingLeft: '0.25rem' }}>
+                        {display}{f.unit ? <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)', marginLeft: 3 }}>{f.unit}</span> : null}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })() : (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                <svg style={{ width: 20, height: 20, color: 'rgba(255,255,255,0.2)' }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+              </div>
+              <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.3)' }}>Questionnaire not completed yet</p>
+              <p style={{ fontSize: '0.73rem', color: 'rgba(255,255,255,0.18)', marginTop: 4 }}>The client will fill this in on first login</p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
           <p className="ds-section-title">My Clients</p>
           <p className="ds-section-sub">{clients.length} client{clients.length !== 1 ? 's' : ''} assigned to you</p>
         </div>
+        <button className="ds-btn-gold" onClick={() => { setShowAddForm(f => !f); setAddStatus('idle'); setAddMsg(''); }}>
+          <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Add Client
+        </button>
       </div>
+
+      {showAddForm && (
+        <div className="ds-card-gold" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.25rem' }}>
+          <p style={{ fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: '0.75rem' }}>
+            Search client by email and add to your roster
+          </p>
+          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <input
+              className="ds-input"
+              style={{ flex: 1, minWidth: 200 }}
+              placeholder="client@example.com"
+              type="email"
+              value={addEmail}
+              onChange={e => setAddEmail(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') addClientByEmail(); }}
+            />
+            <button
+              className="ds-btn-gold"
+              disabled={addStatus === 'loading' || !addEmail.trim()}
+              onClick={addClientByEmail}
+            >
+              {addStatus === 'loading' ? 'Searching…' : 'Add Client'}
+            </button>
+            <button
+              className="ds-btn-outline"
+              onClick={() => { setShowAddForm(false); setAddStatus('idle'); setAddMsg(''); setAddEmail(''); }}
+            >
+              Cancel
+            </button>
+          </div>
+          {addMsg && (
+            <p style={{ marginTop: '0.6rem', fontSize: '0.78rem', color: addStatus === 'success' ? 'rgba(74,222,128,0.9)' : 'rgba(248,113,113,0.8)' }}>
+              {addMsg}
+            </p>
+          )}
+        </div>
+      )}
 
       {clients.length === 0 ? (
         <div className="ds-empty">
@@ -651,6 +805,13 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
   const [description, setDescription] = useState('');
   const [days, setDays] = useState<WorkoutDay[]>([]);
   const [saving, setSaving] = useState(false);
+  // Video picker
+  const [videos, setVideos] = useState<WorkoutVideo[]>([]);
+  const [pickerTarget, setPickerTarget] = useState<{ dayIdx: number; exIdx: number } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/admin/list-videos').then(r => r.json()).then(j => setVideos(j.videos ?? [])).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (preselectedClientId) setSelectedClientId(preselectedClientId);
@@ -685,6 +846,7 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
         reps: null,
         rest_seconds: null,
         notes: null,
+        video_url: null,
         sort_order: d.exercises.length,
       }],
     } : d));
@@ -738,7 +900,7 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
       }).select().single();
       if (dayRow && day.exercises.length > 0) {
         await supabase.from('workout_exercises').insert(
-          day.exercises.map((e, idx) => ({ exercise_name: e.exercise_name, sets: e.sets, reps: e.reps, rest_seconds: e.rest_seconds, notes: e.notes, workout_day_id: dayRow.id, sort_order: idx }))
+          day.exercises.map((e, idx) => ({ exercise_name: e.exercise_name, sets: e.sets, reps: e.reps, rest_seconds: e.rest_seconds, notes: e.notes, video_url: e.video_url ?? null, workout_day_id: dayRow.id, sort_order: idx }))
         );
       }
     }
@@ -756,6 +918,7 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
 
   if (view === 'create' || view === 'edit') {
     return (
+      <>
       <div>
         <button className="ds-btn-outline" style={{ marginBottom: '1.5rem' }}
           onClick={() => { setView('list'); setTitle(''); setDescription(''); setDays([]); setEditPlan(null); }}>
@@ -793,21 +956,44 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
                 style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: '4px 8px' }}>Remove day</button>
             </div>
             {day.exercises.map((ex, exIdx) => (
-              <div key={exIdx} style={{ display: 'grid', gridTemplateColumns: '2fr 80px 90px 100px 1fr auto', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'center' }}>
-                <input className="ds-input" placeholder="Exercise name" value={ex.exercise_name}
-                  onChange={e => updateExercise(dayIdx, exIdx, 'exercise_name', e.target.value)} />
-                <input className="ds-input" type="number" placeholder="Sets" value={ex.sets ?? ''}
-                  onChange={e => updateExercise(dayIdx, exIdx, 'sets', e.target.value ? Number(e.target.value) : null)} />
-                <input className="ds-input" placeholder="Reps" value={ex.reps ?? ''}
-                  onChange={e => updateExercise(dayIdx, exIdx, 'reps', e.target.value)} />
-                <input className="ds-input" type="number" placeholder="Rest (s)" value={ex.rest_seconds ?? ''}
-                  onChange={e => updateExercise(dayIdx, exIdx, 'rest_seconds', e.target.value ? Number(e.target.value) : null)} />
-                <input className="ds-input" placeholder="Notes" value={ex.notes ?? ''}
-                  onChange={e => updateExercise(dayIdx, exIdx, 'notes', e.target.value)} />
-                <button onClick={() => setDays(prev => prev.map((d, i) => i === dayIdx ? { ...d, exercises: d.exercises.filter((_, j) => j !== exIdx) } : d))}
-                  style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 4 }}>
-                  <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
-                </button>
+              <div key={exIdx} style={{ marginBottom: '0.75rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '0.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 80px 90px 100px 1fr auto', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'center' }}>
+                  <input className="ds-input" placeholder="Exercise name" value={ex.exercise_name}
+                    onChange={e => updateExercise(dayIdx, exIdx, 'exercise_name', e.target.value)} />
+                  <input className="ds-input" type="number" placeholder="Sets" value={ex.sets ?? ''}
+                    onChange={e => updateExercise(dayIdx, exIdx, 'sets', e.target.value ? Number(e.target.value) : null)} />
+                  <input className="ds-input" placeholder="Reps" value={ex.reps ?? ''}
+                    onChange={e => updateExercise(dayIdx, exIdx, 'reps', e.target.value)} />
+                  <input className="ds-input" type="number" placeholder="Rest (s)" value={ex.rest_seconds ?? ''}
+                    onChange={e => updateExercise(dayIdx, exIdx, 'rest_seconds', e.target.value ? Number(e.target.value) : null)} />
+                  <input className="ds-input" placeholder="Notes" value={ex.notes ?? ''}
+                    onChange={e => updateExercise(dayIdx, exIdx, 'notes', e.target.value)} />
+                  <button onClick={() => setDays(prev => prev.map((d, i) => i === dayIdx ? { ...d, exercises: d.exercises.filter((_, j) => j !== exIdx) } : d))}
+                    style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 4 }}>
+                    <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+                {/* Video attachment row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.35rem' }}>
+                  {ex.video_url ? (
+                    <>
+                      <span style={{ fontSize: '0.72rem', color: 'rgba(201,168,76,0.8)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <svg style={{ width: 12, height: 12 }} fill="currentColor" viewBox="0 0 24 24"><path d="M4 8H2v12a2 2 0 0 0 2 2h12v-2H4V8zm16-4H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 11V7l6 4-6 4z"/></svg>
+                        Video attached
+                      </span>
+                      <button onClick={() => updateExercise(dayIdx, exIdx, 'video_url', null)}
+                        style={{ background: 'none', border: 'none', fontSize: '0.68rem', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 0 }}>Remove</button>
+                      <button onClick={() => setPickerTarget({ dayIdx, exIdx })}
+                        style={{ background: 'none', border: 'none', fontSize: '0.68rem', color: 'rgba(201,168,76,0.6)', cursor: 'pointer', padding: 0 }}>Change</button>
+                    </>
+                  ) : (
+                    <button onClick={() => setPickerTarget({ dayIdx, exIdx })}
+                      style={{ background: 'none', border: '1px dashed rgba(201,168,76,0.25)', borderRadius: 6, padding: '0.25rem 0.6rem', fontSize: '0.7rem', color: 'rgba(201,168,76,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <svg style={{ width: 11, height: 11 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5 20.47 6m0 0-5.47.75M20.47 6l-3.53 5.25M3.53 18l5.47-.75M3.53 18l3.53-5.25M3.53 18 8.25 13.5m6-6L9.53 12m0 0 .75 5.47M9.53 12 4.5 16.5" /></svg>
+                      Attach video
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
             <button className="ds-btn-outline" style={{ marginTop: '0.5rem', padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => addExercise(dayIdx)}>
@@ -823,6 +1009,45 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
           </button>
         </div>
       </div>
+
+      {/* ── Video Picker Modal ── */}
+      {pickerTarget && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+          onClick={() => setPickerTarget(null)}>
+          <div style={{ background: '#111', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 16, padding: '1.5rem', width: '100%', maxWidth: 640, maxHeight: '80vh', overflowY: 'auto' }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <p style={{ fontWeight: 700, color: 'white', fontSize: '0.95rem' }}>Select a Video</p>
+              <button onClick={() => setPickerTarget(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '1.1rem' }}>✕</button>
+            </div>
+            {videos.length === 0 ? (
+              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '2rem 0' }}>No videos uploaded yet. Ask admin to upload workout videos.</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem' }}>
+                {videos.map(v => (
+                  <button key={v.id} onClick={() => {
+                    updateExercise(pickerTarget.dayIdx, pickerTarget.exIdx, 'video_url', v.cloudinary_url);
+                    setPickerTarget(null);
+                  }} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 0, cursor: 'pointer', overflow: 'hidden', textAlign: 'left' }}>
+                    {v.thumbnail_url ? (
+                      <img src={v.thumbnail_url} alt={v.title} style={{ width: '100%', height: 100, objectFit: 'cover', display: 'block' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: 100, background: 'rgba(201,168,76,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg style={{ width: 24, height: 24, color: 'rgba(201,168,76,0.3)' }} fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                      </div>
+                    )}
+                    <div style={{ padding: '0.5rem 0.6rem' }}>
+                      <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.title}</p>
+                      {v.duration && <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{Math.floor(v.duration / 60)}:{String(Math.round(v.duration % 60)).padStart(2, '0')}</p>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      </>
     );
   }
 
@@ -1039,34 +1264,44 @@ function MessagesTab({
     setMessages([]);
     setThreadId(null);
 
-    let { data: thread } = await supabase.from('message_threads')
-      .select('id').eq('client_id', clientId).eq('coach_id', coachId).single();
+    try {
+      let { data: thread, error: threadErr } = await supabase.from('message_threads')
+        .select('id').eq('client_id', clientId).eq('coach_id', coachId).single();
 
-    if (!thread) {
-      const { data: newThread } = await supabase.from('message_threads')
-        .insert({ client_id: clientId, coach_id: coachId }).select().single();
-      thread = newThread;
+      if (threadErr && threadErr.code !== 'PGRST116') {
+        console.error('loadThread error:', threadErr.message);
+      }
+
+      if (!thread) {
+        const { data: newThread, error: insertErr } = await supabase.from('message_threads')
+          .insert({ client_id: clientId, coach_id: coachId }).select().single();
+        if (insertErr) console.error('createThread error:', insertErr.message);
+        thread = newThread;
+      }
+
+      if (!thread) return;
+      setThreadId(thread.id);
+
+      const { data: msgs } = await supabase.from('messages').select('*').eq('thread_id', thread.id).order('created_at');
+      setMessages(msgs ?? []);
+
+      if (channelRef.current) { supabase.removeChannel(channelRef.current); }
+      channelRef.current = supabase.channel(`coach-thread-${thread.id}`)
+        .on('postgres_changes', {
+          event: 'INSERT', schema: 'public', table: 'messages',
+          filter: `thread_id=eq.${thread.id}`,
+        }, payload => {
+          setMessages(prev => {
+            if (prev.find(m => m.id === (payload.new as ChatMessage).id)) return prev;
+            return [...prev, payload.new as ChatMessage];
+          });
+        })
+        .subscribe();
+    } catch (err) {
+      console.error('loadThread exception:', err);
+    } finally {
+      setLoadingThread(false);
     }
-
-    if (!thread) { setLoadingThread(false); return; }
-    setThreadId(thread.id);
-
-    const { data: msgs } = await supabase.from('messages').select('*').eq('thread_id', thread.id).order('created_at');
-    setMessages(msgs ?? []);
-    setLoadingThread(false);
-
-    if (channelRef.current) { supabase.removeChannel(channelRef.current); }
-    channelRef.current = supabase.channel(`coach-thread-${thread.id}`)
-      .on('postgres_changes', {
-        event: 'INSERT', schema: 'public', table: 'messages',
-        filter: `thread_id=eq.${thread.id}`,
-      }, payload => {
-        setMessages(prev => {
-          if (prev.find(m => m.id === (payload.new as ChatMessage).id)) return prev;
-          return [...prev, payload.new as ChatMessage];
-        });
-      })
-      .subscribe();
   }, [coachId]);
 
   useEffect(() => {
@@ -1098,7 +1333,7 @@ function MessagesTab({
   const selectedClient = clients.find(c => c.id === selectedClientId);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 140px)', minHeight: 480, gap: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)', minHeight: 560, gap: '1rem' }}>
       <div style={{ flexShrink: 0 }}>
         <p className="ds-section-title" style={{ marginBottom: '0.75rem' }}>Messages</p>
         <Select
@@ -1202,6 +1437,15 @@ function MessagesTab({
 /* ─── Main Page ───────────────────────────────────────── */
 export default function CoachDashboard() {
   const { user } = useAuth();
+  const { t } = useLanguage();
+  const navItems: NavItem[] = [
+    { id: 'overview',        label: t('client.overview'),      icon: CoachNavIcons.overview },
+    { id: 'clients',         label: t('coach.clients'),        icon: CoachNavIcons.clients },
+    { id: 'meal-builder',    label: t('coach.mealBuilder'),    icon: CoachNavIcons.mealBuilder },
+    { id: 'workout-builder', label: t('coach.workoutBuilder'), icon: CoachNavIcons.workoutBuilder },
+    { id: 'progress',        label: t('coach.progress'),       icon: CoachNavIcons.progress },
+    { id: 'messages',        label: t('coach.messages'),       icon: CoachNavIcons.messages },
+  ];
   const [activeTab, setActiveTab] = useState('overview');
   const [clients, setClients] = useState<ClientProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1210,56 +1454,58 @@ export default function CoachDashboard() {
   const [deepLinkClientId, setDeepLinkClientId] = useState<string | null>(null);
 
   const loadClients = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id) { setLoading(false); return; }
     setLoading(true);
+    try {
+      // Single join query — profiles are read via the FK relationship which
+      // Supabase resolves server-side, avoiding the client-side RLS block on
+      // reading other users' profiles directly.
+      const { data: assignments, error } = await supabase
+        .from('trainer_client_assignments')
+        .select(`
+          client_id,
+          assigned_at,
+          client:profiles!trainer_client_assignments_client_id_fkey (
+            id, full_name, email, onboarding_completed
+          )
+        `)
+        .eq('trainer_id', user.id);
 
-    // Single join query — profiles are read via the FK relationship which
-    // Supabase resolves server-side, avoiding the client-side RLS block on
-    // reading other users' profiles directly.
-    const { data: assignments, error } = await supabase
-      .from('trainer_client_assignments')
-      .select(`
-        client_id,
-        assigned_at,
-        client:profiles!trainer_client_assignments_client_id_fkey (
-          id, full_name, onboarding_completed
-        )
-      `)
-      .eq('trainer_id', user.id)
-      .eq('is_active', true);
+      if (error) console.error('loadClients error:', error.message);
 
-    if (error) console.error('loadClients error:', error.message);
+      if (!assignments || assignments.length === 0) {
+        setClients([]);
+        return;
+      }
 
-    if (!assignments || assignments.length === 0) {
-      setClients([]);
+      const clientIds = assignments.map(a => a.client_id);
+
+      const { data: subs } = await supabase
+        .from('subscriptions')
+        .select('user_id, status')
+        .in('user_id', clientIds)
+        .eq('status', 'active');
+
+      const activeSubIds = new Set((subs ?? []).map(s => s.user_id));
+
+      const merged: ClientProfile[] = assignments.map(a => {
+        const profile = (Array.isArray(a.client) ? a.client[0] : a.client) as { id: string; full_name: string | null; onboarding_completed: boolean } | null;
+        return {
+          id: a.client_id,
+          full_name: profile?.full_name ?? null,
+          email: profile?.email ?? `${a.client_id.slice(0, 8)}…`,
+          onboarding_completed: profile?.onboarding_completed ?? false,
+          subscription_status: activeSubIds.has(a.client_id) ? 'active' : undefined,
+          assigned_at: a.assigned_at,
+        };
+      });
+
+      setClients(merged);
+    } catch (err) {
+      console.error('loadClients exception:', err);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const clientIds = assignments.map(a => a.client_id);
-
-    const { data: subs } = await supabase
-      .from('subscriptions')
-      .select('user_id, status')
-      .in('user_id', clientIds)
-      .eq('status', 'active');
-
-    const activeSubIds = new Set((subs ?? []).map(s => s.user_id));
-
-    const merged: ClientProfile[] = assignments.map(a => {
-      const profile = (Array.isArray(a.client) ? a.client[0] : a.client) as { id: string; full_name: string | null; onboarding_completed: boolean } | null;
-      return {
-        id: a.client_id,
-        full_name: profile?.full_name ?? null,
-        email: `${a.client_id.slice(0, 8)}…`,
-        onboarding_completed: profile?.onboarding_completed ?? false,
-        subscription_status: activeSubIds.has(a.client_id) ? 'active' : undefined,
-        assigned_at: a.assigned_at,
-      };
-    });
-
-    setClients(merged);
-    setLoading(false);
   }, [user?.id]);
 
   useEffect(() => {
@@ -1288,12 +1534,14 @@ export default function CoachDashboard() {
       {activeTab === 'overview' && (
         <OverviewTab clients={clients} onNavigate={setActiveTab} />
       )}
-      {activeTab === 'clients' && (
+      {activeTab === 'clients' && user && (
         <ClientsTab
           clients={clients}
+          coachId={user.id}
           onOpenChat={(id) => navigateWithClient('messages', id)}
           onBuildMeal={(id) => navigateWithClient('meal-builder', id)}
           onBuildWorkout={(id) => navigateWithClient('workout-builder', id)}
+          onRefresh={loadClients}
         />
       )}
       {activeTab === 'meal-builder' && (

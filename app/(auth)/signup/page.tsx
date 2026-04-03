@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function SignUpPage() {
   const { signUp } = useAuth();
+  const { t } = useLanguage();
   const [form, setForm] = useState({ full_name: '', email: '', phone: '', password: '', confirm: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -162,9 +164,9 @@ export default function SignUpPage() {
               alt="OMR+"
               className="h-12 w-auto object-contain mx-auto mb-5"
             />
-            <h1 className="text-2xl font-bold text-white tracking-tight mb-1.5">Create Account</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight mb-1.5">{t('signup.title')}</h1>
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.38)' }}>
-              Start your transformation today
+              {t('signup.subtitle')}
             </p>
           </div>
 
@@ -172,11 +174,11 @@ export default function SignUpPage() {
             {error && <div className="auth-error">{error}</div>}
 
             <div>
-              <label className="auth-label">Full Name</label>
+              <label className="auth-label">{t('signup.fullName')}</label>
               <input
                 className="auth-input"
                 type="text"
-                placeholder="Your full name"
+                placeholder={t('signup.fullNamePlaceholder')}
                 value={form.full_name}
                 onChange={update('full_name')}
                 required
@@ -185,11 +187,11 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label className="auth-label">Email Address</label>
+              <label className="auth-label">{t('signup.email')}</label>
               <input
                 className="auth-input"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t('signup.emailPlaceholder')}
                 value={form.email}
                 onChange={update('email')}
                 required
@@ -215,7 +217,7 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label className="auth-label">Password</label>
+              <label className="auth-label">{t('signup.password')}</label>
               <div style={{ position: 'relative' }}>
                 <input
                   className="auth-input"
@@ -266,11 +268,11 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label className="auth-label">Confirm Password</label>
+              <label className="auth-label">{t('signup.confirmPassword')}</label>
               <input
                 className="auth-input"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Repeat your password"
+                placeholder={t('signup.confirmPlaceholder')}
                 value={form.confirm}
                 onChange={update('confirm')}
                 required
@@ -285,7 +287,7 @@ export default function SignUpPage() {
 
             <div className="pt-1">
               <button type="submit" className="auth-btn" disabled={loading}>
-                {loading ? 'Creating account…' : 'Create Account'}
+                {loading ? t('signup.creating') : t('signup.createAccount')}
               </button>
             </div>
 
@@ -300,9 +302,9 @@ export default function SignUpPage() {
           <div className="auth-divider" />
 
           <p className="text-center text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
-            Already have an account?{' '}
+            {t('signup.haveAccount')}{' '}
             <Link href="/login" style={{ color: '#C9A84C' }} className="font-semibold hover:opacity-80 transition-opacity">
-              Sign in
+              {t('signup.signIn')}
             </Link>
           </p>
         </div>
