@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const { isRTL } = useLanguage();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -157,5 +157,13 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#0B0B0B' }} />}>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }
