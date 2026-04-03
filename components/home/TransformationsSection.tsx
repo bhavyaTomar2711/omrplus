@@ -276,6 +276,7 @@ export default function TransformationsSection() {
             </div>
 
             <h2
+              dir="auto"
               className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]"
             >
               {t('trans.title')}{' '}
@@ -291,7 +292,7 @@ export default function TransformationsSection() {
               </span>
             </h2>
 
-            <p className="text-white/40 max-w-md mx-auto text-base leading-relaxed tracking-wide">
+            <p dir="auto" className="text-white/40 max-w-md mx-auto text-base leading-relaxed tracking-wide">
               {t('trans.subtitle')}
             </p>
           </AnimateOnScroll>
@@ -312,7 +313,7 @@ export default function TransformationsSection() {
                   >
                     {stat.label}
                   </div>
-                  <p className="text-xs text-white/40 tracking-wide">{stat.description}</p>
+                  <p dir="auto" className="text-xs text-white/40 tracking-wide">{stat.description}</p>
                 </div>
               ))}
             </div>
@@ -359,7 +360,7 @@ export default function TransformationsSection() {
                       </span>
                       <span className="text-white/50 text-sm font-medium">{item.metricLabel}</span>
                     </div>
-                    <p className="text-xs text-white/35 tracking-wide">
+                    <p dir="auto" className="text-xs text-white/35 tracking-wide">
                       {item.program} &nbsp;·&nbsp; {item.duration}
                     </p>
                   </div>
@@ -371,7 +372,7 @@ export default function TransformationsSection() {
                   />
 
                   {/* Description */}
-                  <p className="text-white/45 text-sm leading-relaxed flex-grow">
+                  <p dir="auto" className="text-white/45 text-sm leading-relaxed flex-grow">
                     {item.change}
                   </p>
 
@@ -390,6 +391,7 @@ export default function TransformationsSection() {
           {/* CTA */}
           <AnimateOnScroll className="text-center">
             <p
+              dir="auto"
               className="mb-6 text-xs tracking-[0.22em] uppercase"
               style={{ color: 'rgba(255,255,255,0.28)' }}
             >

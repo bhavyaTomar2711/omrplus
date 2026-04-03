@@ -193,7 +193,7 @@ export default function HowItWorksSection() {
               </span>
             </div>
 
-            <h2 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]">
+            <h2 dir="auto" className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]">
               {t('hiw.title')}{' '}
               <span
                 style={{
@@ -208,7 +208,7 @@ export default function HowItWorksSection() {
               </span>
             </h2>
 
-            <p className="text-white/45 max-w-lg mx-auto text-base leading-relaxed tracking-wide">
+            <p dir="auto" className="text-white/45 max-w-lg mx-auto text-base leading-relaxed tracking-wide">
               {t('hiw.step1.desc')}
             </p>
           </AnimateOnScroll>
@@ -261,12 +261,12 @@ export default function HowItWorksSection() {
                   </p>
 
                   {/* Title */}
-                  <h3 className="relative z-10 text-[15px] font-bold text-white mb-3 leading-snug tracking-tight">
+                  <h3 dir="auto" className="relative z-10 text-[15px] font-bold text-white mb-3 leading-snug tracking-tight">
                     {t(step.titleKey)}
                   </h3>
 
                   {/* Description */}
-                  <p className="relative z-10 text-white/40 text-[13px] leading-relaxed">
+                  <p dir="auto" className="relative z-10 text-white/40 text-[13px] leading-relaxed">
                     {t(step.descKey)}
                   </p>
                 </div>
@@ -277,6 +277,7 @@ export default function HowItWorksSection() {
           {/* CTA */}
           <AnimateOnScroll className="text-center">
             <p
+              dir="auto"
               className="mb-7 text-xs tracking-[0.22em] uppercase"
               style={{ color: 'rgba(255,255,255,0.3)' }}
             >

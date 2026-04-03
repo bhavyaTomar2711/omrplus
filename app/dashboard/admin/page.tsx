@@ -84,6 +84,7 @@ function AdminOverview({
   subscriptions: AdminSubscription[];
   onNavigate: (tab: string) => void;
 }) {
+  const { t } = useLanguage();
   const activeSubs = subscriptions.filter(s => s.status === 'active').length;
   const revenue = subscriptions.filter(s => s.status === 'active')
     .reduce((sum, s) => sum + (s.price_sar ?? 0), 0);
@@ -91,22 +92,22 @@ function AdminOverview({
 
   const stats = [
     {
-      label: 'Total Members', value: String(clients.length), sub: 'Registered clients',
+      label: t('admin.totalMembers'), value: String(clients.length), sub: t('admin.registeredClients'),
       bg: 'rgba(201,168,76,0.06)', border: 'rgba(201,168,76,0.2)',
       icon: <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z" /></svg>,
     },
     {
-      label: 'Active Coaches', value: String(coaches.length), sub: 'Platform trainers',
+      label: t('admin.activeCoaches'), value: String(coaches.length), sub: t('admin.platformTrainers'),
       bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)',
       icon: <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>,
     },
     {
-      label: 'Active Subscriptions', value: String(activeSubs), sub: 'Paying members',
+      label: t('admin.activeSubscriptions'), value: String(activeSubs), sub: t('admin.payingMembers'),
       bg: 'rgba(74,222,128,0.04)', border: 'rgba(74,222,128,0.18)',
       icon: <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>,
     },
     {
-      label: 'Monthly Revenue', value: `$${revenue.toLocaleString()}`, sub: 'Active subscriptions',
+      label: t('admin.monthlyRevenue'), value: `$${revenue.toLocaleString()}`, sub: t('admin.activeSubscriptionsLabel'),
       bg: 'rgba(255,200,80,0.04)', border: 'rgba(255,200,80,0.18)',
       icon: <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>,
     },
@@ -117,10 +118,10 @@ function AdminOverview({
       <div className="mb-7">
         <div className="ds-gold-pill mb-3">
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C9A84C', flexShrink: 0, display: 'inline-block' }} />
-          Admin Panel
+          {t('dash.adminPanel')}
         </div>
-        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: 'white', marginBottom: '0.35rem' }}>Platform Overview</h2>
-        <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>Full control of the OMR+ platform.</p>
+        <h2 dir="auto" style={{ fontSize: '1.6rem', fontWeight: 700, color: 'white', marginBottom: '0.35rem' }}>{t('admin.platformOverview')}</h2>
+        <p dir="auto" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>{t('admin.platformSubtitle')}</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '1rem', marginBottom: '2rem' }}>
@@ -138,17 +139,17 @@ function AdminOverview({
         {/* Recent users */}
         <div className="ds-card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-            <p className="ds-section-title">Recent Members</p>
-            <button className="ds-btn-gold" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => onNavigate('users')}>View All</button>
+            <p dir="auto" className="ds-section-title">{t('admin.recentMembers')}</p>
+            <button className="ds-btn-gold" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => onNavigate('users')}>{t('admin.viewAll')}</button>
           </div>
           {clients.slice(0, 4).map(u => (
             <div key={u.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', padding: '0.55rem 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)', fontSize: 10, fontWeight: 700, color: '#C9A84C' }}>
                 {u.full_name?.[0]?.toUpperCase() ?? 'U'}
               </div>
-              <p style={{ flex: 1, fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name ?? 'Unnamed'}</p>
+              <p style={{ flex: 1, fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name ?? t('admin.unnamed')}</p>
               <span className={u.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'} style={{ fontSize: '0.6rem' }}>
-                {u.subscription_status ?? 'free'}
+                {u.subscription_status === 'active' ? t('admin.statusActive') : t('admin.statusFree')}
               </span>
             </div>
           ))}
@@ -157,21 +158,21 @@ function AdminOverview({
         {/* Coaches */}
         <div className="ds-card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-            <p className="ds-section-title">Coaches</p>
-            <button className="ds-btn-gold" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => onNavigate('trainers')}>Manage</button>
+            <p dir="auto" className="ds-section-title">{t('admin.coaches')}</p>
+            <button className="ds-btn-gold" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => onNavigate('trainers')}>{t('admin.manage')}</button>
           </div>
           {coaches.length === 0 ? (
-            <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>No coaches yet. Add one in the Coaches tab.</p>
+            <p dir="auto" style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>{t('admin.noCoaches')}</p>
           ) : coaches.map(c => (
             <div key={c.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', padding: '0.55rem 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)', fontSize: 10, fontWeight: 700, color: '#C9A84C' }}>
                 {c.full_name?.[0]?.toUpperCase() ?? 'C'}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>{c.full_name ?? 'Unnamed'}</p>
-                <p style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.28)' }}>{c.client_count} client{c.client_count !== 1 ? 's' : ''}</p>
+                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>{c.full_name ?? t('admin.unnamed')}</p>
+                <p dir="ltr" style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.28)' }}>{c.client_count} {t('admin.clients')}</p>
               </div>
-              <span className="ds-badge-green" style={{ fontSize: '0.6rem' }}>active</span>
+              <span className="ds-badge-green" style={{ fontSize: '0.6rem' }}>{t('admin.statusActive')}</span>
             </div>
           ))}
         </div>
@@ -182,6 +183,7 @@ function AdminOverview({
 
 /* ─── Users Tab ───────────────────────────────────────── */
 function UsersTab({ users, coaches, onRefresh }: { users: AdminUser[]; coaches: AdminCoach[]; onRefresh: () => void }) {
+  const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [assigning, setAssigning] = useState<string | null>(null);
   const [assignCoachId, setAssignCoachId] = useState('');
@@ -231,8 +233,8 @@ function UsersTab({ users, coaches, onRefresh }: { users: AdminUser[]; coaches: 
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p className="ds-section-title">Members</p>
-          <p className="ds-section-sub">{filtered.length} client{filtered.length !== 1 ? 's' : ''}</p>
+          <p dir="auto" className="ds-section-title">{t('admin.usersTab')}</p>
+          <p dir="ltr" className="ds-section-sub">{filtered.length} {t('admin.clients')}</p>
         </div>
         <input className="ds-input" style={{ width: 220 }} placeholder="Search by name…" value={search} onChange={e => setSearch(e.target.value)} />
       </div>
@@ -249,12 +251,12 @@ function UsersTab({ users, coaches, onRefresh }: { users: AdminUser[]; coaches: 
           <table className="ds-table">
             <thead>
               <tr>
-                <th>Member</th>
-                <th>Status</th>
-                <th>Onboarded</th>
-                <th>Assigned Coach</th>
-                <th>Joined</th>
-                <th>Actions</th>
+                <th>{t('admin.member')}</th>
+                <th>{t('admin.status')}</th>
+                <th>{t('admin.onboarded')}</th>
+                <th>{t('admin.coach')}</th>
+                <th>{t('admin.joined')}</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -266,12 +268,12 @@ function UsersTab({ users, coaches, onRefresh }: { users: AdminUser[]; coaches: 
                         <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)', fontSize: 11, fontWeight: 700, color: '#C9A84C' }}>
                           {u.full_name?.[0]?.toUpperCase() ?? 'U'}
                         </div>
-                        <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.8)' }}>{u.full_name ?? 'Unnamed'}</p>
+                        <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.8)' }}>{u.full_name ?? t('admin.unnamed')}</p>
                       </div>
                     </td>
-                    <td><span className={u.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'} style={{ whiteSpace: 'nowrap' }}>{u.subscription_status ?? 'None'}</span></td>
-                    <td><span className={u.onboarding_completed ? 'ds-badge-green' : 'ds-badge-gray'}>{u.onboarding_completed ? 'Yes' : 'No'}</span></td>
-                    <td style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.8rem' }}>{u.assigned_coach ?? '—'}</td>
+                    <td><span className={u.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'} style={{ whiteSpace: 'nowrap' }}>{u.subscription_status === 'active' ? t('admin.statusActive') : (u.subscription_status ?? t('admin.statusFree'))}</span></td>
+                    <td><span className={u.onboarding_completed ? 'ds-badge-green' : 'ds-badge-gray'}>{u.onboarding_completed ? t('admin.yes') : t('admin.no')}</span></td>
+                    <td style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.8rem' }}>{u.assigned_coach ?? t('admin.noCoachAssigned')}</td>
                     <td style={{ color: 'rgba(255,255,255,0.32)', fontSize: '0.75rem' }}>{new Date(u.created_at).toLocaleDateString()}</td>
                     <td>
                       <button
@@ -279,7 +281,7 @@ function UsersTab({ users, coaches, onRefresh }: { users: AdminUser[]; coaches: 
                         style={{ padding: '0.4rem 0.75rem', fontSize: '0.73rem' }}
                         onClick={() => { setAssigning(assigning === u.id ? null : u.id); setAssignCoachId(''); }}
                       >
-                        Assign Coach
+                        {t('admin.assignCoach')}
                       </button>
                     </td>
                   </tr>
@@ -295,9 +297,9 @@ function UsersTab({ users, coaches, onRefresh }: { users: AdminUser[]; coaches: 
                             options={coaches.map(c => ({ value: c.id, label: c.full_name ?? c.id }))}
                           />
                           <button className="ds-btn-gold" style={{ padding: '0.5rem 1rem', fontSize: '0.78rem' }} disabled={saving || !assignCoachId} onClick={() => assignCoach(u.id)}>
-                            {saving ? 'Saving…' : 'Confirm'}
+                            {saving ? t('admin.saving') : t('admin.save')}
                           </button>
-                          <button className="ds-btn-outline" style={{ padding: '0.5rem 0.9rem', fontSize: '0.78rem' }} onClick={() => { setAssigning(null); setAssignError(''); }}>Cancel</button>
+                          <button className="ds-btn-outline" style={{ padding: '0.5rem 0.9rem', fontSize: '0.78rem' }} onClick={() => { setAssigning(null); setAssignError(''); }}>{t('admin.cancel')}</button>
                           {assignError && <span style={{ fontSize: '0.75rem', color: 'rgba(239,68,68,0.85)' }}>{assignError}</span>}
                         </div>
                       </td>
@@ -315,6 +317,7 @@ function UsersTab({ users, coaches, onRefresh }: { users: AdminUser[]; coaches: 
 
 /* ─── Coaches Tab ─────────────────────────────────────── */
 function CoachesTab({ coaches, onRefresh }: { coaches: AdminCoach[]; onRefresh: () => void }) {
+  const { t } = useLanguage();
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ full_name: '', email: '', password: '', phone: '' });
   const [saving, setSaving] = useState(false);
@@ -342,12 +345,12 @@ function CoachesTab({ coaches, onRefresh }: { coaches: AdminCoach[]; onRefresh: 
     <div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
         <div>
-          <p className="ds-section-title">Coaches</p>
-          <p className="ds-section-sub">{coaches.length} coach account{coaches.length !== 1 ? 's' : ''}</p>
+          <p dir="auto" className="ds-section-title">{t('admin.coaches')}</p>
+          <p dir="ltr" className="ds-section-sub">{coaches.length} {t('admin.clients')}</p>
         </div>
         <button className="ds-btn-gold" onClick={() => { setShowCreate(!showCreate); setError(''); setSuccess(''); }}>
           <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          Add Coach
+          {t('admin.createCoach')}
         </button>
       </div>
 
@@ -357,7 +360,7 @@ function CoachesTab({ coaches, onRefresh }: { coaches: AdminCoach[]; onRefresh: 
 
       {showCreate && (
         <div className="ds-card-gold" style={{ padding: '1.75rem', marginBottom: '1.5rem' }}>
-          <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>Create Coach Account</p>
+          <p dir="auto" className="ds-section-title" style={{ marginBottom: '1.25rem' }}>{t('admin.createCoach')}</p>
           {error && (
             <div style={{ padding: '0.75rem 1rem', marginBottom: '1rem', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.22)', borderRadius: 10, fontSize: '0.8rem', color: 'rgba(239,68,68,0.85)' }}>{error}</div>
           )}
@@ -380,8 +383,8 @@ function CoachesTab({ coaches, onRefresh }: { coaches: AdminCoach[]; onRefresh: 
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button className="ds-btn-gold" disabled={saving} onClick={createCoach}>{saving ? 'Creating…' : 'Create Coach'}</button>
-            <button className="ds-btn-outline" onClick={() => { setShowCreate(false); setError(''); }}>Cancel</button>
+            <button className="ds-btn-gold" disabled={saving} onClick={createCoach}>{saving ? t('admin.saving') : t('admin.createCoach')}</button>
+            <button className="ds-btn-outline" onClick={() => { setShowCreate(false); setError(''); }}>{t('admin.cancel')}</button>
           </div>
         </div>
       )}
@@ -391,14 +394,13 @@ function CoachesTab({ coaches, onRefresh }: { coaches: AdminCoach[]; onRefresh: 
           <div className="ds-empty-icon">
             <svg style={{ width: 22, height: 22 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>
           </div>
-          <p>No coaches yet</p>
-          <small>Create a coach account using the button above.</small>
+          <p dir="auto">{t('admin.noCoaches')}</p>
         </div>
       ) : (
         <div className="ds-card" style={{ overflowX: 'auto' }}>
           <table className="ds-table">
             <thead>
-              <tr><th>Coach</th><th>Clients</th><th>Joined</th></tr>
+              <tr><th>{t('admin.coach')}</th><th>{t('admin.clients')}</th><th>{t('admin.joined')}</th></tr>
             </thead>
             <tbody>
               {coaches.map(c => (
@@ -408,7 +410,7 @@ function CoachesTab({ coaches, onRefresh }: { coaches: AdminCoach[]; onRefresh: 
                       <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)', fontSize: 11, fontWeight: 700, color: '#C9A84C' }}>
                         {c.full_name?.[0]?.toUpperCase() ?? 'C'}
                       </div>
-                      <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.8)' }}>{c.full_name ?? 'Unnamed'}</p>
+                      <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.8)' }}>{c.full_name ?? t('admin.unnamed')}</p>
                     </div>
                   </td>
                   <td style={{ color: 'rgba(255,255,255,0.55)' }}>{c.client_count}</td>
@@ -425,6 +427,7 @@ function CoachesTab({ coaches, onRefresh }: { coaches: AdminCoach[]; onRefresh: 
 
 /* ─── Subscriptions Tab ───────────────────────────────── */
 function SubscriptionsTab({ subscriptions }: { subscriptions: AdminSubscription[] }) {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState('all');
 
   const filtered = filter === 'all' ? subscriptions : subscriptions.filter(s => s.status === filter);
@@ -433,8 +436,8 @@ function SubscriptionsTab({ subscriptions }: { subscriptions: AdminSubscription[
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p className="ds-section-title">Subscriptions</p>
-          <p className="ds-section-sub">{subscriptions.length} total subscriptions</p>
+          <p className="ds-section-title">{t('admin.subscriptionsTitle')}</p>
+          <p className="ds-section-sub">{subscriptions.length} {t('admin.totalSubscriptions')}</p>
         </div>
         <Select
           style={{ width: 160 }}
@@ -442,10 +445,10 @@ function SubscriptionsTab({ subscriptions }: { subscriptions: AdminSubscription[
           onChange={setFilter}
           placeholder=""
           options={[
-            { value: 'all', label: 'All' },
-            { value: 'active', label: 'Active' },
-            { value: 'cancelled', label: 'Cancelled' },
-            { value: 'expired', label: 'Expired' },
+            { value: 'all', label: t('admin.filterAll') },
+            { value: 'active', label: t('admin.filterActive') },
+            { value: 'cancelled', label: t('admin.filterCancelled') },
+            { value: 'expired', label: t('admin.filterExpired') },
           ]}
         />
       </div>
@@ -455,13 +458,13 @@ function SubscriptionsTab({ subscriptions }: { subscriptions: AdminSubscription[
           <div className="ds-empty-icon">
             <svg style={{ width: 22, height: 22 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>
           </div>
-          <p>No subscriptions found</p>
+          <p>{t('admin.noSubscriptions')}</p>
         </div>
       ) : (
         <div className="ds-card" style={{ overflowX: 'auto' }}>
           <table className="ds-table">
             <thead>
-              <tr><th>Member</th><th>Plan</th><th>Amount</th><th>Status</th><th>Start</th><th>Expires</th></tr>
+              <tr><th>{t('admin.member')}</th><th>{t('admin.colPlan')}</th><th>{t('admin.colAmount')}</th><th>{t('admin.status')}</th><th>{t('admin.colStart')}</th><th>{t('admin.colExpires')}</th></tr>
             </thead>
             <tbody>
               {filtered.map(s => (
@@ -488,6 +491,7 @@ function SubscriptionsTab({ subscriptions }: { subscriptions: AdminSubscription[
 
 /* ─── Marketplace Tab ─────────────────────────────────── */
 function MarketplaceTab() {
+  const { t } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -552,12 +556,12 @@ function MarketplaceTab() {
     <div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p className="ds-section-title">Marketplace</p>
-          <p className="ds-section-sub">Manage products and ebooks</p>
+          <p className="ds-section-title">{t('admin.marketplaceTitle')}</p>
+          <p className="ds-section-sub">{t('admin.marketplaceSub')}</p>
         </div>
         <button className="ds-btn-gold" onClick={() => { setShowForm(!showForm); setEditProduct(null); setForm({ name: '', description: '', price_sar: '', type: 'supplement', image_url: '', is_active: true }); }}>
           <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          Add Product
+          {t('admin.addProduct')}
         </button>
       </div>
 
@@ -592,7 +596,7 @@ function MarketplaceTab() {
             <textarea className="ds-input" placeholder="Product description…" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} style={{ minHeight: 72, resize: 'vertical' }} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-            <label style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.55)' }}>Active (visible in store)</label>
+            <label style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.55)' }}>{t('admin.activeInStore')}</label>
             <button
               className="ds-toggle"
               style={{ background: form.is_active ? '#C9A84C' : 'rgba(255,255,255,0.1)' }}
@@ -602,14 +606,14 @@ function MarketplaceTab() {
             </button>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button className="ds-btn-gold" disabled={saving} onClick={saveProduct}>{saving ? 'Saving…' : 'Save'}</button>
-            <button className="ds-btn-outline" onClick={() => { setShowForm(false); setEditProduct(null); }}>Cancel</button>
+            <button className="ds-btn-gold" disabled={saving} onClick={saveProduct}>{saving ? t('admin.saving') : t('admin.save')}</button>
+            <button className="ds-btn-outline" onClick={() => { setShowForm(false); setEditProduct(null); }}>{t('admin.cancel')}</button>
           </div>
         </div>
       )}
 
       {loading ? (
-        <p className="ds-loading" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.35)' }}>Loading…</p>
+        <p dir="auto" className="ds-loading" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.35)' }}>{t('admin.loading')}</p>
       ) : products.length === 0 ? (
         <div className="ds-empty">
           <div className="ds-empty-icon">
@@ -663,6 +667,7 @@ const BLANK_PLAN: Partial<PricingPlan> = {
 };
 
 function PricingTab() {
+  const { t } = useLanguage();
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState<string | null>(null);
@@ -774,8 +779,8 @@ function PricingTab() {
 
   const planFormJsx = editId ? (
     <div className="ds-card-gold" style={{ padding: '1.75rem', marginBottom: '1.5rem' }}>
-      <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>
-        {editId === 'new' ? 'New Pricing Plan' : 'Edit Plan'}
+      <p dir="auto" className="ds-section-title" style={{ marginBottom: '1.25rem' }}>
+        {editId === 'new' ? t('admin.newPlan') : t('admin.editPlan')}
       </p>
       <div style={{ display: 'grid', gap: '0.85rem' }}>
 
@@ -878,9 +883,9 @@ function PricingTab() {
       )}
       <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
         <button className="ds-btn-gold" disabled={saving || !editForm.name || !editForm.price_sar} onClick={saveEdit}>
-          {saving ? 'Saving…' : editId === 'new' ? 'Create Plan' : 'Save Changes'}
+          {saving ? t('admin.saving') : editId === 'new' ? t('admin.addPlan') : t('admin.save')}
         </button>
-        <button className="ds-btn-outline" onClick={() => { setEditId(null); setSaveError(null); }}>Cancel</button>
+        <button className="ds-btn-outline" onClick={() => { setEditId(null); setSaveError(null); }}>{t('admin.cancel')}</button>
       </div>
     </div>
   ) : null;
@@ -889,15 +894,15 @@ function PricingTab() {
     <div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
         <div>
-          <p className="ds-section-title">Pricing Plans</p>
-          <p className="ds-section-sub">Create plans with Stripe Price IDs — publish to show them on the site.</p>
+          <p className="ds-section-title">{t('admin.pricingTitle')}</p>
+          <p className="ds-section-sub">{t('admin.pricingSubtitle')}</p>
         </div>
         {!editId && (
           <button className="ds-btn-gold" onClick={startNew}>
             <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            Add Plan
+            {t('admin.addPlan')}
           </button>
         )}
       </div>
@@ -905,7 +910,7 @@ function PricingTab() {
       {planFormJsx}
 
       {loading ? (
-        <p className="ds-loading" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.35)' }}>Loading…</p>
+        <p dir="auto" className="ds-loading" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.35)' }}>{t('admin.loading')}</p>
       ) : plans.length === 0 ? (
         <div className="ds-empty">
           <div className="ds-empty-icon">
@@ -979,7 +984,7 @@ function PricingTab() {
                   style={{ flex: 1, justifyContent: 'center', fontSize: '0.74rem' }}
                   onClick={() => togglePublish(plan)}
                 >
-                  {plan.is_published ? 'Unpublish' : 'Publish'}
+                  {plan.is_published ? t('admin.unpublish') : t('admin.publish')}
                 </button>
                 <button className="ds-btn-outline" style={{ padding: '0 0.75rem' }} onClick={() => startEdit(plan)} title="Edit">
                   <svg style={{ width: 13, height: 13 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" /></svg>
@@ -1012,6 +1017,7 @@ interface ChatThread {
 }
 
 function ChatThreadsTab() {
+  const { t } = useLanguage();
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<ChatThread | null>(null);
@@ -1117,8 +1123,8 @@ function ChatThreadsTab() {
   return (
     <div>
       <div style={{ marginBottom: '1.75rem' }}>
-        <p className="ds-section-title">Chat Threads</p>
-        <p className="ds-section-sub">All client–coach conversations</p>
+        <p className="ds-section-title">{t('admin.chatTitle')}</p>
+        <p className="ds-section-sub">{t('admin.chatSubtitle')}</p>
       </div>
       {loading ? (
         <p className="ds-loading" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.35)' }}>Loading…</p>
@@ -1129,24 +1135,24 @@ function ChatThreadsTab() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
             </svg>
           </div>
-          <p>No conversations yet</p>
-          <small>Chat threads appear here once clients and coaches start messaging.</small>
+          <p>{t('admin.noConversations')}</p>
+          <small>{t('admin.noConversationsSub')}</small>
         </div>
       ) : (
         <div className="ds-card" style={{ overflowX: 'auto' }}>
           <table className="ds-table">
             <thead>
-              <tr><th>Client</th><th>Coach</th><th>Started</th><th></th></tr>
+              <tr><th>{t('admin.colClient')}</th><th>{t('admin.colCoach')}</th><th>{t('admin.colStarted')}</th><th></th></tr>
             </thead>
             <tbody>
-              {threads.map(t => (
-                <tr key={t.id}>
-                  <td style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem' }}>{t.client_name ?? '—'}</td>
-                  <td style={{ color: 'rgba(255,255,255,0.65)' }}>{t.coach_name ?? '—'}</td>
-                  <td style={{ color: 'rgba(255,255,255,0.32)', fontSize: '0.75rem' }}>{new Date(t.created_at).toLocaleDateString()}</td>
+              {threads.map(thread => (
+                <tr key={thread.id}>
+                  <td style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem' }}>{thread.client_name ?? '—'}</td>
+                  <td style={{ color: 'rgba(255,255,255,0.65)' }}>{thread.coach_name ?? '—'}</td>
+                  <td style={{ color: 'rgba(255,255,255,0.32)', fontSize: '0.75rem' }}>{new Date(thread.created_at).toLocaleDateString()}</td>
                   <td>
-                    <button className="ds-btn-outline" style={{ padding: '0.35rem 0.8rem', fontSize: '0.72rem' }} onClick={() => openThread(t)}>
-                      View
+                    <button className="ds-btn-outline" style={{ padding: '0.35rem 0.8rem', fontSize: '0.72rem' }} onClick={() => openThread(thread)}>
+                      {t('admin.viewThread')}
                     </button>
                   </td>
                 </tr>
@@ -1179,6 +1185,7 @@ function getThumbUrl(public_id: string) {
 }
 
 function VideosTab() {
+  const { t } = useLanguage();
   const [videos, setVideos] = useState<WorkoutVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -1304,21 +1311,21 @@ function VideosTab() {
     <div>
       <div style={{ marginBottom: '1.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <p className="ds-section-title">Workout Videos</p>
+          <p className="ds-section-title">{t('admin.videosTitle')}</p>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <input ref={fileRef} type="file" accept="video/*" style={{ display: 'none' }} onChange={handleUpload} />
             <button className="ds-btn-gold" disabled={uploading} onClick={() => fileRef.current?.click()}>
               <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
               </svg>
-              {uploading ? (uploadProgress < 100 ? `Uploading ${uploadProgress}%` : 'Processing…') : 'Upload Video'}
+              {uploading ? (uploadProgress < 100 ? `${t('admin.uploading')} ${uploadProgress}%` : t('admin.processing')) : t('admin.uploadVideo')}
             </button>
           </div>
         </div>
         {uploading && (
           <div style={{ marginTop: '0.9rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.35rem' }}>
-              <span>{uploadProgress < 100 ? 'Uploading video…' : 'Processing on Cloudinary…'}</span>
+              <span>{uploadProgress < 100 ? t('admin.uploadingVideo') : t('admin.processingCloudinary')}</span>
               <span>{uploadProgress < 100 ? `${uploadProgress}%` : ''}</span>
             </div>
             <div style={{ height: 6, background: 'rgba(255,255,255,0.07)', borderRadius: 999, overflow: 'hidden' }}>
@@ -1420,6 +1427,7 @@ function VideosTab() {
 
 /* ─── Analytics Tab ───────────────────────────────────── */
 function AnalyticsTab({ users, subscriptions }: { users: AdminUser[]; subscriptions: AdminSubscription[] }) {
+  const { t } = useLanguage();
   const clients = users.filter(u => u.role === 'client');
   const activeSubs = subscriptions.filter(s => s.status === 'active');
   const cancelledSubs = subscriptions.filter(s => s.status === 'cancelled');
@@ -1452,12 +1460,12 @@ function AnalyticsTab({ users, subscriptions }: { users: AdminUser[]; subscripti
   }));
 
   const metrics = [
-    { label: 'Total Registered', value: String(clients.length), sub: 'All-time signups' },
-    { label: 'Active Subscribers', value: String(activeSubs.length), sub: 'Currently paying' },
-    { label: 'Churned', value: String(cancelledSubs.length), sub: 'Cancelled subscriptions' },
-    { label: 'Onboarding Rate', value: clients.length ? `${Math.round((onboarded.length / clients.length) * 100)}%` : '—', sub: 'Completed questionnaire' },
-    { label: 'Monthly Revenue', value: `SAR ${totalRevenue.toLocaleString()}`, sub: 'From active plans' },
-    { label: 'Avg Revenue/User', value: clients.length ? `SAR ${Math.round(totalRevenue / clients.length)}` : '—', sub: 'Per registered client' },
+    { label: t('admin.totalRegistered'), value: String(clients.length), sub: t('admin.allTimeSignups') },
+    { label: t('admin.activeSubscribers'), value: String(activeSubs.length), sub: t('admin.currentlyPaying') },
+    { label: t('admin.churned'), value: String(cancelledSubs.length), sub: t('admin.cancelledSubscriptions') },
+    { label: t('admin.onboardingRate'), value: clients.length ? `${Math.round((onboarded.length / clients.length) * 100)}%` : '—', sub: t('admin.completedQuestionnaire') },
+    { label: t('admin.monthlyRevenue'), value: `SAR ${totalRevenue.toLocaleString()}`, sub: t('admin.fromActivePlans') },
+    { label: t('admin.avgRevenueUser'), value: clients.length ? `SAR ${Math.round(totalRevenue / clients.length)}` : '—', sub: t('admin.perRegisteredClient') },
   ];
 
   const tooltipStyle = { background: '#111', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#fff' };
@@ -1465,8 +1473,8 @@ function AnalyticsTab({ users, subscriptions }: { users: AdminUser[]; subscripti
   return (
     <div>
       <div style={{ marginBottom: '1.75rem' }}>
-        <p className="ds-section-title">Analytics</p>
-        <p className="ds-section-sub">Platform performance summary</p>
+        <p className="ds-section-title">{t('admin.analyticsTitle')}</p>
+        <p className="ds-section-sub">{t('admin.analyticsSub')}</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: '1rem', marginBottom: '2rem' }}>
@@ -1482,8 +1490,8 @@ function AnalyticsTab({ users, subscriptions }: { users: AdminUser[]; subscripti
       {/* Charts */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
         <div className="ds-card" style={{ padding: '1.75rem' }}>
-          <p className="ds-section-title" style={{ marginBottom: '0.25rem' }}>New Members</p>
-          <p className="ds-section-sub" style={{ marginBottom: '1.25rem' }}>Last 6 months</p>
+          <p className="ds-section-title" style={{ marginBottom: '0.25rem' }}>{t('admin.newMembers')}</p>
+          <p className="ds-section-sub" style={{ marginBottom: '1.25rem' }}>{t('admin.last6Months')}</p>
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={signupData}>
               <defs>
@@ -1501,8 +1509,8 @@ function AnalyticsTab({ users, subscriptions }: { users: AdminUser[]; subscripti
         </div>
 
         <div className="ds-card" style={{ padding: '1.75rem' }}>
-          <p className="ds-section-title" style={{ marginBottom: '0.25rem' }}>Revenue (SAR)</p>
-          <p className="ds-section-sub" style={{ marginBottom: '1.25rem' }}>Last 6 months</p>
+          <p className="ds-section-title" style={{ marginBottom: '0.25rem' }}>{t('admin.revenueSAR')}</p>
+          <p className="ds-section-sub" style={{ marginBottom: '1.25rem' }}>{t('admin.last6Months')}</p>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={revenueData}>
               <XAxis dataKey="month" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
@@ -1515,15 +1523,21 @@ function AnalyticsTab({ users, subscriptions }: { users: AdminUser[]; subscripti
       </div>
 
       <div className="ds-card" style={{ padding: '1.75rem' }}>
-        <p className="ds-section-title" style={{ marginBottom: '0.5rem' }}>Subscription Breakdown</p>
-        <p className="ds-section-sub" style={{ marginBottom: '1.5rem' }}>Status distribution</p>
+        <p className="ds-section-title" style={{ marginBottom: '0.5rem' }}>{t('admin.subscriptionBreakdown')}</p>
+        <p className="ds-section-sub" style={{ marginBottom: '1.5rem' }}>{t('admin.statusDistribution')}</p>
         {['active', 'cancelled', 'expired', 'past_due'].map(status => {
           const count = subscriptions.filter(s => s.status === status).length;
           const pct = subscriptions.length ? (count / subscriptions.length) * 100 : 0;
+          const statusLabel: Record<string, string> = {
+            active: t('admin.filterActive'),
+            cancelled: t('admin.statusCancelled'),
+            expired: t('admin.statusExpired'),
+            past_due: t('admin.statusPastDue'),
+          };
           return (
             <div key={status} style={{ marginBottom: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.55)', textTransform: 'capitalize' }}>{status.replace('_', ' ')}</span>
+                <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.55)' }}>{statusLabel[status] ?? status}</span>
                 <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.38)' }}>{count}</span>
               </div>
               <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>

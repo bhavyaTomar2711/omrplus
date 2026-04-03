@@ -109,13 +109,14 @@ function OverviewTab({
   clients: ClientProfile[];
   onNavigate: (tab: string) => void;
 }) {
+  const { t } = useLanguage();
   const active = clients.filter(c => c.subscription_status === 'active').length;
 
   const stats = [
     {
-      label: 'Total Clients',
+      label: t('coach.stats.totalClients'),
       value: String(clients.length),
-      sub: 'Assigned to you',
+      sub: t('coach.stats.assignedToYou'),
       bg: 'rgba(201,168,76,0.06)',
       border: 'rgba(201,168,76,0.2)',
       icon: (
@@ -125,9 +126,9 @@ function OverviewTab({
       ),
     },
     {
-      label: 'Active Members',
+      label: t('coach.stats.activeMembers'),
       value: String(active),
-      sub: 'With active subscription',
+      sub: t('coach.stats.activeSubscription'),
       bg: 'rgba(74,222,128,0.04)',
       border: 'rgba(74,222,128,0.18)',
       icon: (
@@ -137,9 +138,9 @@ function OverviewTab({
       ),
     },
     {
-      label: 'Onboarded',
+      label: t('coach.stats.onboarded'),
       value: String(clients.filter(c => c.onboarding_completed).length),
-      sub: 'Completed questionnaire',
+      sub: t('coach.stats.completedQuestionnaire'),
       bg: 'rgba(255,255,255,0.03)',
       border: 'rgba(255,255,255,0.08)',
       icon: (
@@ -149,9 +150,9 @@ function OverviewTab({
       ),
     },
     {
-      label: 'Pending Setup',
+      label: t('coach.stats.pendingSetup'),
       value: String(clients.filter(c => !c.onboarding_completed).length),
-      sub: 'Need onboarding',
+      sub: t('coach.stats.needOnboarding'),
       bg: 'rgba(255,200,80,0.04)',
       border: 'rgba(255,200,80,0.18)',
       icon: (
@@ -167,13 +168,13 @@ function OverviewTab({
       <div className="mb-7">
         <div className="ds-gold-pill mb-3">
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C9A84C', flexShrink: 0, display: 'inline-block' }} />
-          Coach Portal
+          {t('dash.coachPortal')}
         </div>
-        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: 'white', marginBottom: '0.35rem' }}>
-          Welcome back
+        <h2 dir="auto" style={{ fontSize: '1.6rem', fontWeight: 700, color: 'white', marginBottom: '0.35rem' }}>
+          {t('coach.welcome')}
         </h2>
-        <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>
-          Here&apos;s a summary of your coaching activity.
+        <p dir="auto" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>
+          {t('coach.overview.summary')}
         </p>
       </div>
 
@@ -191,11 +192,11 @@ function OverviewTab({
       <div className="ds-card" style={{ padding: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
           <div>
-            <p className="ds-section-title">Assigned Clients</p>
-            <p className="ds-section-sub">Your current roster</p>
+            <p dir="auto" className="ds-section-title">{t('coach.assignedClients')}</p>
+            <p dir="auto" className="ds-section-sub">{t('coach.roster.sub')}</p>
           </div>
           <button className="ds-btn-gold" onClick={() => onNavigate('clients')}>
-            View All
+            {t('admin.viewAll')}
           </button>
         </div>
 
@@ -206,18 +207,17 @@ function OverviewTab({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z" />
               </svg>
             </div>
-            <p>No clients assigned yet</p>
-            <small>Ask the admin to assign clients to your profile.</small>
+            <p dir="auto">{t('coach.noClients')}</p>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table className="ds-table">
               <thead>
                 <tr>
-                  <th>Client</th>
-                  <th>Goal</th>
-                  <th>Status</th>
-                  <th>Assigned</th>
+                  <th>{t('admin.member')}</th>
+                  <th>{t('coach.table.goal')}</th>
+                  <th>{t('admin.status')}</th>
+                  <th>{t('admin.joined')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -235,7 +235,7 @@ function OverviewTab({
                           }}>{initials}</div>
                           <div>
                             <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.82rem', fontWeight: 500 }}>
-                              {c.full_name ?? 'Unnamed'}
+                              {c.full_name ?? t('coach.unnamed')}
                             </p>
                             <p style={{ color: 'rgba(255,255,255,0.28)', fontSize: '0.7rem' }}>{c.email}</p>
                           </div>
@@ -244,7 +244,7 @@ function OverviewTab({
                       <td style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>{c.goal ?? '—'}</td>
                       <td>
                         <span className={c.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'}>
-                          {c.subscription_status ?? 'no plan'}
+                          {c.subscription_status ?? t('coach.noPlan')}
                         </span>
                       </td>
                       <td style={{ color: 'rgba(255,255,255,0.32)', fontSize: '0.75rem' }}>
@@ -278,6 +278,7 @@ function ClientsTab({
   onBuildWorkout: (clientId: string) => void;
   onRefresh: () => void;
 }) {
+  const { t } = useLanguage();
   const [selected, setSelected] = useState<ClientProfile | null>(null);
   const [onboarding, setOnboarding] = useState<Record<string, string> | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -348,7 +349,7 @@ function ClientsTab({
           <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
-          Back to Clients
+          {t('coach.backToClients')}
         </button>
 
         <div className="ds-card" style={{ padding: '2rem', marginBottom: '1.25rem' }}>
@@ -360,10 +361,10 @@ function ClientsTab({
               fontSize: 18, fontWeight: 700, color: '#C9A84C', flexShrink: 0,
             }}>{initials}</div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'white' }}>{selected.full_name ?? 'Unnamed'}</h3>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'white' }}>{selected.full_name ?? t('coach.unnamed')}</h3>
               <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{selected.email}</p>
               <span className={selected.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'} style={{ marginTop: 6, display: 'inline-block' }}>
-                {selected.subscription_status ?? 'no subscription'}
+                {selected.subscription_status ?? t('coach.noSubscription')}
               </span>
             </div>
           </div>
@@ -373,13 +374,13 @@ function ClientsTab({
               <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
               </svg>
-              Message
+              {t('coach.actions.message')}
             </button>
             <button className="ds-btn-outline" onClick={() => { onBuildMeal(selected.id); setSelected(null); setOnboarding(null); }}>
-              Build Meal Plan
+              {t('coach.actions.buildMealPlan')}
             </button>
             <button className="ds-btn-outline" onClick={() => { onBuildWorkout(selected.id); setSelected(null); setOnboarding(null); }}>
-              Build Workout Plan
+              {t('coach.actions.buildWorkoutPlan')}
             </button>
           </div>
         </div>
@@ -393,12 +394,12 @@ function ClientsTab({
               </svg>
             </div>
             <div>
-              <p style={{ fontSize: '0.92rem', fontWeight: 700, color: 'white' }}>Questionnaire</p>
-              <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>Client onboarding responses</p>
+              <p style={{ fontSize: '0.92rem', fontWeight: 700, color: 'white' }}>{t('coach.questionnaire.title')}</p>
+              <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>{t('coach.questionnaire.sub')}</p>
             </div>
             {onboarding && (
               <span style={{ marginLeft: 'auto', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.65rem', borderRadius: 20, background: 'rgba(74,222,128,0.08)', color: 'rgba(74,222,128,0.85)', border: '1px solid rgba(74,222,128,0.18)' }}>
-                Completed
+                {t('coach.questionnaire.completed')}
               </span>
             )}
           </div>
@@ -465,8 +466,8 @@ function ClientsTab({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                 </svg>
               </div>
-              <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.3)' }}>Questionnaire not completed yet</p>
-              <p style={{ fontSize: '0.73rem', color: 'rgba(255,255,255,0.18)', marginTop: 4 }}>The client will fill this in on first login</p>
+              <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.3)' }}>{t('coach.questionnaire.notCompleted')}</p>
+              <p style={{ fontSize: '0.73rem', color: 'rgba(255,255,255,0.18)', marginTop: 4 }}>{t('coach.questionnaire.notCompletedSub')}</p>
             </div>
           )}
         </div>
@@ -478,27 +479,27 @@ function ClientsTab({
     <div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
-          <p className="ds-section-title">My Clients</p>
-          <p className="ds-section-sub">{clients.length} client{clients.length !== 1 ? 's' : ''} assigned to you</p>
+          <p dir="auto" className="ds-section-title">{t('coach.myClients')}</p>
+          <p dir="ltr" className="ds-section-sub">{clients.length} {t('admin.clients')}</p>
         </div>
         <button className="ds-btn-gold" onClick={() => { setShowAddForm(f => !f); setAddStatus('idle'); setAddMsg(''); }}>
           <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          Add Client
+          {t('coach.addClient')}
         </button>
       </div>
 
       {showAddForm && (
         <div className="ds-card-gold" style={{ padding: '1.25rem 1.5rem', marginBottom: '1.25rem' }}>
           <p style={{ fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: '0.75rem' }}>
-            Search client by email and add to your roster
+            {t('coach.addClientSearch')}
           </p>
           <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
             <input
               className="ds-input"
               style={{ flex: 1, minWidth: 200 }}
-              placeholder="client@example.com"
+              placeholder={t('coach.addClientPlaceholder')}
               type="email"
               value={addEmail}
               onChange={e => setAddEmail(e.target.value)}
@@ -509,13 +510,13 @@ function ClientsTab({
               disabled={addStatus === 'loading' || !addEmail.trim()}
               onClick={addClientByEmail}
             >
-              {addStatus === 'loading' ? 'Searching…' : 'Add Client'}
+              {addStatus === 'loading' ? t('coach.addClientSearching') : t('coach.addClient')}
             </button>
             <button
               className="ds-btn-outline"
               onClick={() => { setShowAddForm(false); setAddStatus('idle'); setAddMsg(''); setAddEmail(''); }}
             >
-              Cancel
+              {t('coach.cancelBtn')}
             </button>
           </div>
           {addMsg && (
@@ -533,8 +534,7 @@ function ClientsTab({
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z" />
             </svg>
           </div>
-          <p>No clients yet</p>
-          <small>The admin will assign clients to your account.</small>
+          <p dir="auto">{t('coach.noClients')}</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '0.85rem' }}>
@@ -555,16 +555,16 @@ function ClientsTab({
                 }}>{initials}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: '0.88rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
-                    {c.full_name ?? 'Unnamed Client'}
+                    {c.full_name ?? t('coach.unnamed')}
                   </p>
                   <p style={{ fontSize: '0.73rem', color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{c.email}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
                   {c.onboarding_completed
-                    ? <span className="ds-badge-green">Onboarded</span>
-                    : <span className="ds-badge-gray">Not onboarded</span>}
+                    ? <span className="ds-badge-green">{t('coach.onboarded')}</span>
+                    : <span className="ds-badge-gray">{t('coach.notOnboarded')}</span>}
                   <span className={c.subscription_status === 'active' ? 'ds-badge-green' : 'ds-badge-gold'}>
-                    {c.subscription_status ?? 'no plan'}
+                    {c.subscription_status ?? t('coach.noPlan')}
                   </span>
                 </div>
                 <svg style={{ width: 16, height: 16, color: 'rgba(255,255,255,0.2)', flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -581,6 +581,7 @@ function ClientsTab({
 
 /* ─── Meal Builder ────────────────────────────────────── */
 function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfile[]; preselectedClientId: string | null }) {
+  const { t } = useLanguage();
   const [selectedClientId, setSelectedClientId] = useState(preselectedClientId ?? '');
   const [plans, setPlans] = useState<MealPlan[]>([]);
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
@@ -664,20 +665,20 @@ function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfi
           <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
-          Back
+          {t('coach.back')}
         </button>
 
         <div className="ds-card" style={{ padding: '1.75rem', marginBottom: '1.25rem' }}>
           <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>
-            {view === 'create' ? 'New Meal Plan' : 'Edit Meal Plan'}
+            {view === 'create' ? t('coach.mealPlan.newTitle') : t('coach.mealPlan.editTitle')}
           </p>
           <div style={{ display: 'grid', gap: '1rem' }}>
             <div>
-              <label className="ds-label">Plan Title</label>
+              <label className="ds-label">{t('coach.mealPlan.planTitleLabel')}</label>
               <input className="ds-input" placeholder="e.g. Week 1 Cut Plan" value={title} onChange={e => setTitle(e.target.value)} />
             </div>
             <div>
-              <label className="ds-label">Description (optional)</label>
+              <label className="ds-label">{t('coach.mealPlan.description')}</label>
               <textarea className="ds-input" placeholder="Notes about this plan..." value={description}
                 onChange={e => setDescription(e.target.value)}
                 style={{ minHeight: 72, resize: 'vertical' }} />
@@ -686,7 +687,7 @@ function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfi
         </div>
 
         <div className="ds-card" style={{ padding: '1.75rem', marginBottom: '1.25rem' }}>
-          <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>Meal Items</p>
+          <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>{t('coach.mealPlan.mealItems')}</p>
           {items.map((item, idx) => (
             <div key={idx} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '0.5rem', padding: '0.7rem 1rem', background: 'rgba(255,255,255,0.025)', borderRadius: 10 }}>
               <span className="ds-badge-gold" style={{ textTransform: 'capitalize', whiteSpace: 'nowrap' }}>{item.meal_type.replace(/_/g, ' ')}</span>
@@ -713,12 +714,12 @@ function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfi
             <input className="ds-input" type="number" placeholder="kcal" value={newItem.calories ?? ''} onChange={e => setNewItem(p => ({ ...p, calories: e.target.value ? Number(e.target.value) : null }))} />
           </div>
           <button className="ds-btn-outline" style={{ marginTop: '0.75rem' }} onClick={addItem}>
-            + Add Item
+            {t('coach.mealPlan.addItem')}
           </button>
         </div>
 
         <button className="ds-btn-gold" disabled={saving || !title.trim()} onClick={savePlan}>
-          {saving ? 'Saving…' : 'Save Plan'}
+          {saving ? t('coach.mealPlan.saving') : t('coach.mealPlan.savePlan')}
         </button>
       </div>
     );
@@ -728,25 +729,25 @@ function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfi
     <div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p className="ds-section-title">Meal Plans</p>
-          <p className="ds-section-sub">Build and assign meal plans to clients</p>
+          <p className="ds-section-title">{t('coach.mealPlan.sectionTitle')}</p>
+          <p className="ds-section-sub">{t('coach.mealPlan.sectionSub')}</p>
         </div>
         {selectedClientId && (
           <button className="ds-btn-gold" onClick={() => setView('create')}>
             <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            New Plan
+            {t('coach.mealPlan.newPlan')}
           </button>
         )}
       </div>
 
       <div style={{ marginBottom: '1.5rem' }}>
-        <label className="ds-label">Select Client</label>
+        <label className="ds-label">{t('coach.mealPlan.selectClient')}</label>
         <Select
           value={selectedClientId}
           onChange={setSelectedClientId}
-          placeholder="— choose a client —"
+          placeholder={t('coach.mealPlan.chooseClient')}
           options={clients.map(c => ({ value: c.id, label: c.full_name ?? c.email }))}
         />
       </div>
@@ -758,8 +759,8 @@ function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfi
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513" />
             </svg>
           </div>
-          <p>No meal plans yet</p>
-          <small>Create the first plan for this client.</small>
+          <p>{t('coach.mealPlan.noPlans')}</p>
+          <small>{t('coach.mealPlan.noPlansCreate')}</small>
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '0.85rem' }}>
@@ -778,7 +779,7 @@ function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfi
                 </p>
               </div>
               <span className={plan.status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'}>{plan.status}</span>
-              <button className="ds-btn-outline" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => openEdit(plan)}>Edit</button>
+              <button className="ds-btn-outline" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => openEdit(plan)}>{t('coach.mealPlan.editBtn')}</button>
               <button
                 style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 4 }}
                 onClick={() => deletePlan(plan.id)}
@@ -797,6 +798,7 @@ function MealBuilderTab({ clients, preselectedClientId }: { clients: ClientProfi
 
 /* ─── Workout Builder ─────────────────────────────────── */
 function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientProfile[]; preselectedClientId: string | null }) {
+  const { t } = useLanguage();
   const [selectedClientId, setSelectedClientId] = useState(preselectedClientId ?? '');
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list');
@@ -925,20 +927,20 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
           <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
-          Back
+          {t('coach.back')}
         </button>
 
         <div className="ds-card" style={{ padding: '1.75rem', marginBottom: '1.25rem' }}>
           <p className="ds-section-title" style={{ marginBottom: '1.25rem' }}>
-            {view === 'create' ? 'New Workout Plan' : 'Edit Workout Plan'}
+            {view === 'create' ? t('coach.workout.newTitle') : t('coach.workout.editTitle')}
           </p>
           <div style={{ display: 'grid', gap: '1rem' }}>
             <div>
-              <label className="ds-label">Plan Title</label>
+              <label className="ds-label">{t('coach.workout.planTitleLabel')}</label>
               <input className="ds-input" placeholder="e.g. 4-Week Strength Program" value={title} onChange={e => setTitle(e.target.value)} />
             </div>
             <div>
-              <label className="ds-label">Description (optional)</label>
+              <label className="ds-label">{t('coach.workout.description')}</label>
               <textarea className="ds-input" placeholder="Overview of this program..." value={description}
                 onChange={e => setDescription(e.target.value)} style={{ minHeight: 72, resize: 'vertical' }} />
             </div>
@@ -953,7 +955,7 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
               <input className="ds-input" placeholder="Focus (e.g. Chest & Shoulders)" value={day.focus ?? ''}
                 onChange={e => updateDay(dayIdx, 'focus', e.target.value)} style={{ flex: 1, minWidth: 140 }} />
               <button onClick={() => setDays(prev => prev.filter((_, i) => i !== dayIdx))}
-                style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: '4px 8px' }}>Remove day</button>
+                style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: '4px 8px' }}>{t('coach.workout.removeDay')}</button>
             </div>
             {day.exercises.map((ex, exIdx) => (
               <div key={exIdx} style={{ marginBottom: '0.75rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '0.75rem' }}>
@@ -979,33 +981,33 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
                     <>
                       <span style={{ fontSize: '0.72rem', color: 'rgba(201,168,76,0.8)', display: 'flex', alignItems: 'center', gap: 4 }}>
                         <svg style={{ width: 12, height: 12 }} fill="currentColor" viewBox="0 0 24 24"><path d="M4 8H2v12a2 2 0 0 0 2 2h12v-2H4V8zm16-4H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 11V7l6 4-6 4z"/></svg>
-                        Video attached
+                        {t('coach.workout.videoAttached')}
                       </span>
                       <button onClick={() => updateExercise(dayIdx, exIdx, 'video_url', null)}
-                        style={{ background: 'none', border: 'none', fontSize: '0.68rem', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 0 }}>Remove</button>
+                        style={{ background: 'none', border: 'none', fontSize: '0.68rem', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 0 }}>{t('coach.workout.removeVideo')}</button>
                       <button onClick={() => setPickerTarget({ dayIdx, exIdx })}
-                        style={{ background: 'none', border: 'none', fontSize: '0.68rem', color: 'rgba(201,168,76,0.6)', cursor: 'pointer', padding: 0 }}>Change</button>
+                        style={{ background: 'none', border: 'none', fontSize: '0.68rem', color: 'rgba(201,168,76,0.6)', cursor: 'pointer', padding: 0 }}>{t('coach.workout.changeVideo')}</button>
                     </>
                   ) : (
                     <button onClick={() => setPickerTarget({ dayIdx, exIdx })}
                       style={{ background: 'none', border: '1px dashed rgba(201,168,76,0.25)', borderRadius: 6, padding: '0.25rem 0.6rem', fontSize: '0.7rem', color: 'rgba(201,168,76,0.5)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                       <svg style={{ width: 11, height: 11 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5 20.47 6m0 0-5.47.75M20.47 6l-3.53 5.25M3.53 18l5.47-.75M3.53 18l3.53-5.25M3.53 18 8.25 13.5m6-6L9.53 12m0 0 .75 5.47M9.53 12 4.5 16.5" /></svg>
-                      Attach video
+                      {t('coach.workout.attachVideo')}
                     </button>
                   )}
                 </div>
               </div>
             ))}
             <button className="ds-btn-outline" style={{ marginTop: '0.5rem', padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => addExercise(dayIdx)}>
-              + Add Exercise
+              {t('coach.workout.addExercise')}
             </button>
           </div>
         ))}
 
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-          <button className="ds-btn-outline" onClick={addDay}>+ Add Day</button>
+          <button className="ds-btn-outline" onClick={addDay}>{t('coach.workout.addDay')}</button>
           <button className="ds-btn-gold" disabled={saving || !title.trim()} onClick={savePlan}>
-            {saving ? 'Saving…' : 'Save Plan'}
+            {saving ? t('coach.workout.saving') : t('coach.workout.savePlan')}
           </button>
         </div>
       </div>
@@ -1017,11 +1019,11 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
           <div style={{ background: '#111', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 16, padding: '1.5rem', width: '100%', maxWidth: 640, maxHeight: '80vh', overflowY: 'auto' }}
             onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <p style={{ fontWeight: 700, color: 'white', fontSize: '0.95rem' }}>Select a Video</p>
+              <p style={{ fontWeight: 700, color: 'white', fontSize: '0.95rem' }}>{t('coach.workout.selectVideo')}</p>
               <button onClick={() => setPickerTarget(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '1.1rem' }}>✕</button>
             </div>
             {videos.length === 0 ? (
-              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '2rem 0' }}>No videos uploaded yet. Ask admin to upload workout videos.</p>
+              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '2rem 0' }}>{t('coach.workout.noVideos')}</p>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem' }}>
                 {videos.map(v => (
@@ -1055,25 +1057,25 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
     <div>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p className="ds-section-title">Workout Plans</p>
-          <p className="ds-section-sub">Create and manage workout programs</p>
+          <p className="ds-section-title">{t('coach.workout.sectionTitle')}</p>
+          <p className="ds-section-sub">{t('coach.workout.sectionSub')}</p>
         </div>
         {selectedClientId && (
           <button className="ds-btn-gold" onClick={() => setView('create')}>
             <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            New Plan
+            {t('coach.workout.newPlan')}
           </button>
         )}
       </div>
 
       <div style={{ marginBottom: '1.5rem' }}>
-        <label className="ds-label">Select Client</label>
+        <label className="ds-label">{t('coach.mealPlan.selectClient')}</label>
         <Select
           value={selectedClientId}
           onChange={setSelectedClientId}
-          placeholder="— choose a client —"
+          placeholder={t('coach.mealPlan.chooseClient')}
           options={clients.map(c => ({ value: c.id, label: c.full_name ?? c.email }))}
         />
       </div>
@@ -1085,8 +1087,8 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
             </svg>
           </div>
-          <p>No workout plans yet</p>
-          <small>Create the first program for this client.</small>
+          <p>{t('coach.workout.noPlans')}</p>
+          <small>{t('coach.workout.noPlansCreate')}</small>
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '0.85rem' }}>
@@ -1105,7 +1107,7 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
                 </p>
               </div>
               <span className={plan.status === 'active' ? 'ds-badge-green' : 'ds-badge-gray'}>{plan.status}</span>
-              <button className="ds-btn-outline" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => openEdit(plan)}>Edit</button>
+              <button className="ds-btn-outline" style={{ padding: '0.45rem 0.9rem', fontSize: '0.75rem' }} onClick={() => openEdit(plan)}>{t('coach.workout.editBtn')}</button>
               <button style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.5)', cursor: 'pointer', padding: 4 }} onClick={() => deletePlan(plan.id)}>
                 <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -1123,6 +1125,7 @@ function WorkoutBuilderTab({ clients, preselectedClientId }: { clients: ClientPr
 interface BodyCheck { id: string; file_url: string; file_type: string; uploaded_at: string; }
 
 function ProgressTab({ clients }: { clients: ClientProfile[] }) {
+  const { t } = useLanguage();
   const [selectedClientId, setSelectedClientId] = useState('');
   const [logs, setLogs] = useState<ProgressLog[]>([]);
   const [bodyChecks, setBodyChecks] = useState<BodyCheck[]>([]);
@@ -1146,21 +1149,21 @@ function ProgressTab({ clients }: { clients: ClientProfile[] }) {
   return (
     <div>
       <div style={{ marginBottom: '1.75rem' }}>
-        <p className="ds-section-title">Progress Monitor</p>
-        <p className="ds-section-sub">View client-submitted progress and check-ins</p>
+        <p className="ds-section-title">{t('coach.progress.title')}</p>
+        <p className="ds-section-sub">{t('coach.progress.sub')}</p>
       </div>
 
       <div style={{ marginBottom: '1.5rem' }}>
-        <label className="ds-label">Select Client</label>
+        <label className="ds-label">{t('coach.mealPlan.selectClient')}</label>
         <Select
           value={selectedClientId}
           onChange={setSelectedClientId}
-          placeholder="— choose a client —"
+          placeholder={t('coach.mealPlan.chooseClient')}
           options={clients.map(c => ({ value: c.id, label: c.full_name ?? c.email }))}
         />
       </div>
 
-      {loading && <p className="ds-loading" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.35)' }}>Loading…</p>}
+      {loading && <p className="ds-loading" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.35)' }}>{t('coach.loading')}</p>}
 
       {!loading && selectedClientId && logs.length === 0 && bodyChecks.length === 0 && (
         <div className="ds-empty">
@@ -1169,8 +1172,8 @@ function ProgressTab({ clients }: { clients: ClientProfile[] }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
             </svg>
           </div>
-          <p>No progress data yet</p>
-          <small>This client hasn&apos;t submitted any check-ins or uploads.</small>
+          <p>{t('coach.progress.noData')}</p>
+          <small>{t('coach.progress.noDataSub')}</small>
         </div>
       )}
 
@@ -1179,9 +1182,9 @@ function ProgressTab({ clients }: { clients: ClientProfile[] }) {
           <table className="ds-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Weight (kg)</th>
-                <th>Notes</th>
+                <th>{t('coach.progress.colDate')}</th>
+                <th>{t('coach.progress.colWeight')}</th>
+                <th>{t('coach.progress.colNotes')}</th>
               </tr>
             </thead>
             <tbody>
@@ -1200,7 +1203,7 @@ function ProgressTab({ clients }: { clients: ClientProfile[] }) {
       {bodyChecks.length > 0 && (
         <div className="ds-card" style={{ padding: '1.5rem' }}>
           <p style={{ fontWeight: 600, color: 'white', marginBottom: '1rem', fontSize: '0.9rem' }}>
-            Body Check Uploads
+            {t('coach.progress.bodyChecks')}
             <span style={{ marginLeft: 8, fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>{bodyChecks.length} file{bodyChecks.length !== 1 ? 's' : ''}</span>
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
@@ -1245,6 +1248,7 @@ function MessagesTab({
   clients: ClientProfile[];
   preselectedClientId: string | null;
 }) {
+  const { t } = useLanguage();
   const [selectedClientId, setSelectedClientId] = useState(preselectedClientId ?? '');
   const [threadId, setThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -1335,11 +1339,11 @@ function MessagesTab({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)', minHeight: 560, gap: '1rem' }}>
       <div style={{ flexShrink: 0 }}>
-        <p className="ds-section-title" style={{ marginBottom: '0.75rem' }}>Messages</p>
+        <p dir="auto" className="ds-section-title" style={{ marginBottom: '0.75rem' }}>{t('coach.messages')}</p>
         <Select
           value={selectedClientId}
           onChange={setSelectedClientId}
-          placeholder="— select a client —"
+          placeholder={t('coach.messages.selectClient')}
           options={clients.map(c => ({ value: c.id, label: c.full_name ?? c.email }))}
         />
       </div>
@@ -1367,10 +1371,10 @@ function MessagesTab({
 
           {/* Messages */}
           <div className="ds-no-scroll" style={{ flex: 1, overflowY: 'auto', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-            {loadingThread && <p className="ds-loading" style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>Loading messages…</p>}
+            {loadingThread && <p dir="auto" className="ds-loading" style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>{t('coach.loading')}</p>}
             {!loadingThread && messages.length === 0 && (
               <div style={{ textAlign: 'center', margin: 'auto' }}>
-                <p style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.28)' }}>No messages yet. Say hello!</p>
+                <p dir="auto" style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.28)' }}>{t('coach.noMessages')}</p>
               </div>
             )}
             {messages.map(msg => {
@@ -1400,7 +1404,7 @@ function MessagesTab({
           <div style={{ padding: '0.9rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '0.65rem' }}>
             <input
               className="ds-input"
-              placeholder="Type a message…"
+              placeholder={t('coach.messagePlaceholder')}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
@@ -1427,7 +1431,7 @@ function MessagesTab({
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
             </svg>
           </div>
-          <p>Select a client to start chatting</p>
+          <p dir="auto">{t('coach.selectClient')}</p>
         </div>
       )}
     </div>
@@ -1522,7 +1526,7 @@ export default function CoachDashboard() {
       <DashboardShell role="coach" navItems={navItems} activeTab={activeTab} onTabChange={setActiveTab}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
           <div style={{ textAlign: 'center' }}>
-            <div className="ds-loading" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>Loading dashboard…</div>
+            <div className="ds-loading" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>{t('coach.loadingDashboard')}</div>
           </div>
         </div>
       </DashboardShell>

@@ -35,6 +35,7 @@ interface Message { id:string; sender_id:string; content:string; created_at:stri
 
 /* ─── Onboarding Modal ───────────────────────────────── */
 function OnboardingModal({ onComplete }: { onComplete: () => void }) {
+  const { t } = useLanguage();
   const [step, setStep] = useState(1);
   const total = 4;
   const [form, setForm] = useState({ goal:'', currentWeight:'', targetWeight:'', height:'', age:'', gender:'', activityLevel:'', dietaryRestrictions:'', healthConditions:'', experience:'' });
@@ -88,22 +89,22 @@ function OnboardingModal({ onComplete }: { onComplete: () => void }) {
         </div>
 
         {step===1 && <div>
-          <h2 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginBottom:6 }}>Welcome to OMR+</h2>
-          <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', marginBottom:'1.5rem' }}>What&apos;s your primary goal?</p>
+          <h2 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginBottom:6 }}>{t('client.onboarding.welcome')}</h2>
+          <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', marginBottom:'1.5rem' }}>{t('client.onboarding.primaryGoal')}</p>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
             {['Muscle Building','Fat Loss','Summer Body','General Fitness','Workout Only','Meal Plan Only'].map(g => <Chip key={g} label={g} value={g} field="goal" />)}
           </div>
         </div>}
 
         {step===2 && <div>
-          <h2 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginBottom:6 }}>Your Body Stats</h2>
-          <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', marginBottom:'1.5rem' }}>Used to calculate your personalised plan</p>
+          <h2 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginBottom:6 }}>{t('client.onboarding.bodyStats')}</h2>
+          <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', marginBottom:'1.5rem' }}>{t('client.onboarding.bodyStatsSub')}</p>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
             {[{label:'Current Weight (kg)',key:'currentWeight',ph:'75'},{label:'Target Weight (kg)',key:'targetWeight',ph:'70'},{label:'Height (cm)',key:'height',ph:'175'},{label:'Age',key:'age',ph:'28'}].map(f=>(
               <div key={f.key}><label className="ds-label">{f.label}</label><input type="number" className="ds-input" placeholder={f.ph} value={(form as Record<string,string>)[f.key]} onChange={e=>set(f.key,e.target.value)} /></div>
             ))}
             <div style={{ gridColumn:'span 2' }}>
-              <label className="ds-label">Gender</label>
+              <label className="ds-label">{t('client.onboarding.gender')}</label>
               <div style={{ display:'flex', gap:10 }}>
                 {['Male','Female'].map(g=><Chip key={g} label={g} value={g} field="gender" />)}
               </div>
@@ -112,33 +113,33 @@ function OnboardingModal({ onComplete }: { onComplete: () => void }) {
         </div>}
 
         {step===3 && <div>
-          <h2 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginBottom:6 }}>Activity & Experience</h2>
-          <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', marginBottom:'1.25rem' }}>This shapes your workout intensity</p>
-          <label className="ds-label" style={{ marginBottom:10, display:'block' }}>Activity Level</label>
+          <h2 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginBottom:6 }}>{t('client.onboarding.activity')}</h2>
+          <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', marginBottom:'1.25rem' }}>{t('client.onboarding.activitySub')}</p>
+          <label className="ds-label" style={{ marginBottom:10, display:'block' }}>{t('client.onboarding.activityLevel')}</label>
           <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:'1.25rem' }}>
             {['Sedentary (desk job)','Lightly Active (1–3x/week)','Moderately Active (3–5x/week)','Very Active (6–7x/week)'].map(a=><Chip key={a} label={a} value={a} field="activityLevel" />)}
           </div>
-          <label className="ds-label" style={{ marginBottom:10, display:'block' }}>Training Experience</label>
+          <label className="ds-label" style={{ marginBottom:10, display:'block' }}>{t('client.onboarding.experience')}</label>
           <div style={{ display:'flex', gap:8 }}>
             {['Beginner','Intermediate','Advanced'].map(e=><Chip key={e} label={e} value={e} field="experience" />)}
           </div>
         </div>}
 
         {step===4 && <div>
-          <h2 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginBottom:6 }}>Health & Dietary Info</h2>
-          <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', marginBottom:'1.5rem' }}>Helps your coach personalise your meal plan safely</p>
+          <h2 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginBottom:6 }}>{t('client.onboarding.health')}</h2>
+          <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', marginBottom:'1.5rem' }}>{t('client.onboarding.healthSub')}</p>
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-            <div><label className="ds-label">Dietary Restrictions</label><input type="text" className="ds-input" placeholder="e.g. vegetarian, lactose intolerant, halal only…" value={form.dietaryRestrictions} onChange={e=>set('dietaryRestrictions',e.target.value)} /></div>
-            <div><label className="ds-label">Health Conditions</label><textarea className="ds-input" style={{ resize:'none', minHeight:80 }} placeholder="e.g. diabetes, knee injury, hypertension…" value={form.healthConditions} onChange={e=>set('healthConditions',e.target.value)} /></div>
-            <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.22)', lineHeight:1.7 }}>All information is private and only visible to your assigned coach.</p>
+            <div><label className="ds-label">{t('client.onboarding.dietaryLabel')}</label><input type="text" className="ds-input" placeholder={t('client.onboarding.dietaryPlaceholder')} value={form.dietaryRestrictions} onChange={e=>set('dietaryRestrictions',e.target.value)} /></div>
+            <div><label className="ds-label">{t('client.onboarding.healthLabel')}</label><textarea className="ds-input" style={{ resize:'none', minHeight:80 }} placeholder={t('client.onboarding.healthPlaceholder')} value={form.healthConditions} onChange={e=>set('healthConditions',e.target.value)} /></div>
+            <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.22)', lineHeight:1.7 }}>{t('client.onboarding.privacy')}</p>
           </div>
         </div>}
 
         <div style={{ display:'flex', justifyContent:'space-between', marginTop:'2rem' }}>
-          {step>1 ? <button onClick={()=>setStep(s=>s-1)} className="ds-btn-outline">Back</button> : <div />}
+          {step>1 ? <button onClick={()=>setStep(s=>s-1)} className="ds-btn-outline">{t('client.onboarding.back')}</button> : <div />}
           {step<total
-            ? <button onClick={()=>setStep(s=>s+1)} className="ds-btn-gold" disabled={step===1&&!form.goal}>Continue →</button>
-            : <button onClick={handleSubmit} className="ds-btn-gold">Complete Setup</button>}
+            ? <button onClick={()=>setStep(s=>s+1)} className="ds-btn-gold" disabled={step===1&&!form.goal}>{t('client.onboarding.continue')}</button>
+            : <button onClick={handleSubmit} className="ds-btn-gold">{t('client.onboarding.complete')}</button>}
         </div>
       </div>
     </div>
@@ -149,26 +150,27 @@ function OnboardingModal({ onComplete }: { onComplete: () => void }) {
 function OverviewTab({ progressLogs, mealPlan, workoutPlan, onNavigate }: {
   progressLogs: ProgressLog[]; mealPlan: MealPlan|null; workoutPlan: WorkoutPlan|null; onNavigate:(tab:string)=>void;
 }) {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const greeting = hour < 12 ? t('client.overview.greeting.morning') : hour < 17 ? t('client.overview.greeting.afternoon') : t('client.overview.greeting.evening');
 
   const weightChange = progressLogs.length >= 2
     ? (progressLogs[0].weight_kg ?? 0) - (progressLogs[progressLogs.length-1].weight_kg ?? 0)
     : null;
 
   const stats = [
-    { label:'Active Streak', value:'12 days', sub:'Keep it up', icon:Icons.fire, color:'rgba(251,146,60,0.12)', border:'rgba(251,146,60,0.22)' },
-    { label:'Meal Plan', value:mealPlan?'Assigned':'Pending', sub:mealPlan?mealPlan.title:'Awaiting coach', icon:Icons.meal, color:'rgba(201,168,76,0.08)', border:'rgba(201,168,76,0.2)' },
-    { label:'Weight Change', value:weightChange!=null?`${weightChange>0?'+':''}${weightChange.toFixed(1)} kg`:'No logs yet', sub:'From first entry', icon:Icons.chart, color:'rgba(74,222,128,0.07)', border:'rgba(74,222,128,0.18)' },
-    { label:'Workout Plan', value:workoutPlan?'Assigned':'Pending', sub:workoutPlan?workoutPlan.title:'Awaiting coach', icon:Icons.bolt, color:'rgba(100,180,255,0.07)', border:'rgba(100,180,255,0.18)' },
+    { label:t('client.stats.activeStreak'), value:'12 days', sub:t('client.stats.streakSub'), icon:Icons.fire, color:'rgba(251,146,60,0.12)', border:'rgba(251,146,60,0.22)' },
+    { label:t('client.stats.mealPlan'), value:mealPlan?t('client.stats.assigned'):t('client.stats.pending'), sub:mealPlan?mealPlan.title:t('client.stats.awaitingCoach'), icon:Icons.meal, color:'rgba(201,168,76,0.08)', border:'rgba(201,168,76,0.2)' },
+    { label:t('client.stats.weightChange'), value:weightChange!=null?`${weightChange>0?'+':''}${weightChange.toFixed(1)} kg`:t('client.stats.noLogs'), sub:t('client.stats.fromFirstEntry'), icon:Icons.chart, color:'rgba(74,222,128,0.07)', border:'rgba(74,222,128,0.18)' },
+    { label:t('client.stats.workoutPlan'), value:workoutPlan?t('client.stats.assigned'):t('client.stats.pending'), sub:workoutPlan?workoutPlan.title:t('client.stats.awaitingCoach'), icon:Icons.bolt, color:'rgba(100,180,255,0.07)', border:'rgba(100,180,255,0.18)' },
   ];
 
   const quick = [
-    { tab:'meal-plan',    label:"Today's Meals",    sub: mealPlan?`${mealPlan.meal_plan_items.length} items today`:'No plan assigned yet' },
-    { tab:'workout',      label:"Today's Workout",  sub: workoutPlan?workoutPlan.title:'No plan assigned yet' },
-    { tab:'progress',     label:'Log Progress',     sub:'Update your weight & stats' },
-    { tab:'messages',     label:'Message Coach',    sub:'Chat with your assigned coach' },
+    { tab:'meal-plan',    label:t('client.quick.todaysMeals'),    sub: mealPlan?`${mealPlan.meal_plan_items.length} items today`:t('client.quick.noItemsToday') },
+    { tab:'workout',      label:t('client.quick.todaysWorkout'),  sub: workoutPlan?workoutPlan.title:t('client.quick.noItemsToday') },
+    { tab:'progress',     label:t('client.quick.logProgress'),    sub:t('client.quick.updateStats') },
+    { tab:'messages',     label:t('client.quick.messageCoach'),   sub:t('client.quick.chatCoach') },
   ];
 
   return (
@@ -177,7 +179,7 @@ function OverviewTab({ progressLogs, mealPlan, workoutPlan, onNavigate }: {
         <h2 style={{ fontSize:'1.6rem', fontWeight:700, color:'white', marginBottom:4 }}>
           {greeting}, <span style={{ color:'#C9A84C' }}>{user?.profile?.full_name?.split(' ')[0] ?? 'there'}</span>
         </h2>
-        <p style={{ fontSize:'0.82rem', color:'rgba(255,255,255,0.32)' }}>Here&apos;s your daily summary.</p>
+        <p style={{ fontSize:'0.82rem', color:'rgba(255,255,255,0.32)' }}>{t('client.overview.summary')}</p>
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:16, marginBottom:20 }} className="lg:grid-cols-4">
@@ -210,10 +212,10 @@ function OverviewTab({ progressLogs, mealPlan, workoutPlan, onNavigate }: {
       <div className="ds-card-gold" style={{ padding:'1.35rem 1.5rem', display:'flex', alignItems:'center', gap:'1rem' }}>
         <div className="ds-icon-box">{Icons.card}</div>
         <div style={{ flex:1 }}>
-          <p style={{ fontSize:'0.85rem', fontWeight:600, color:'white' }}>Full Coaching — Active</p>
+          <p style={{ fontSize:'0.85rem', fontWeight:600, color:'white' }}>{t('client.sub.fullCoaching')}</p>
           <p style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.32)', marginTop:2 }}>Renews May 1, 2026 · 30 days remaining</p>
         </div>
-        <button onClick={()=>onNavigate('subscription')} className="ds-btn-gold" style={{ padding:'0.5rem 1rem', fontSize:'0.75rem' }}>Manage</button>
+        <button onClick={()=>onNavigate('subscription')} className="ds-btn-gold" style={{ padding:'0.5rem 1rem', fontSize:'0.75rem' }}>{t('client.sub.manage')}</button>
       </div>
     </div>
   );
@@ -221,15 +223,16 @@ function OverviewTab({ progressLogs, mealPlan, workoutPlan, onNavigate }: {
 
 /* ─── Meal Plan Tab ──────────────────────────────────── */
 function MealPlanTab({ mealPlan, loading, onNavigate }: { mealPlan:MealPlan|null; loading:boolean; onNavigate:(tab:string)=>void }) {
+  const { t } = useLanguage();
   if (loading) return <div className="ds-empty"><div className="ds-loading" style={{ height:200, background:'rgba(255,255,255,0.03)', borderRadius:16 }} /></div>;
 
   if (!mealPlan) return (
     <div>
-      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">Meal Plan</p><p className="ds-section-sub">View your personalised meal plan assigned by your coach</p></div>
+      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">{t('client.mealPlan.sectionTitle')}</p><p className="ds-section-sub">{t('client.mealPlan.sectionSub')}</p></div>
       <div className="ds-card ds-empty">
         <div className="ds-empty-icon">{Icons.meal}</div>
-        <p>No meal plan assigned yet</p>
-        <small>Your coach will assign a meal plan once your onboarding is reviewed.</small>
+        <p>{t('client.mealPlan.noItems')}</p>
+        <small>{t('client.mealPlan.noItemsSub')}</small>
       </div>
     </div>
   );
@@ -266,7 +269,7 @@ function MealPlanTab({ mealPlan, loading, onNavigate }: { mealPlan:MealPlan|null
   return (
     <div>
       <div style={{ display:'flex', alignItems:'start', justifyContent:'space-between', marginBottom:'1.5rem', flexWrap:'wrap', gap:12 }}>
-        <div><p className="ds-section-title">{mealPlan.title}</p><p className="ds-section-sub">Assigned by your coach · View-only</p></div>
+        <div><p className="ds-section-title">{mealPlan.title}</p><p className="ds-section-sub">{t('client.mealPlan.assignedBy')}</p></div>
         {totalCal > 0 && <span className="ds-gold-pill">{totalCal} kcal / day</span>}
       </div>
 
@@ -305,8 +308,8 @@ function MealPlanTab({ mealPlan, loading, onNavigate }: { mealPlan:MealPlan|null
 
       <div className="ds-card" style={{ padding:'1.25rem 1.5rem', marginTop:16, display:'flex', alignItems:'center', gap:'1rem' }}>
         <div className="ds-icon-box"><svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg></div>
-        <p style={{ fontSize:'0.82rem', color:'rgba(255,255,255,0.38)', flex:1 }}>Need changes to your meal plan? Message your coach directly.</p>
-        <button onClick={()=>onNavigate('messages')} className="ds-btn-gold" style={{ padding:'0.5rem 1rem', fontSize:'0.75rem' }}>Message Coach</button>
+        <p style={{ fontSize:'0.82rem', color:'rgba(255,255,255,0.38)', flex:1 }}>{t('client.mealPlan.requestChanges')}</p>
+        <button onClick={()=>onNavigate('messages')} className="ds-btn-gold" style={{ padding:'0.5rem 1rem', fontSize:'0.75rem' }}>{t('client.mealPlan.messageCoachBtn')}</button>
       </div>
     </div>
   );
@@ -314,16 +317,17 @@ function MealPlanTab({ mealPlan, loading, onNavigate }: { mealPlan:MealPlan|null
 
 /* ─── Workout Plan Tab ───────────────────────────────── */
 function WorkoutTab({ workoutPlan, loading }: { workoutPlan:WorkoutPlan|null; loading:boolean }) {
+  const { t } = useLanguage();
   const [activeDay, setActiveDay] = useState(0);
   if (loading) return <div className="ds-empty"><div className="ds-loading" style={{ height:200, background:'rgba(255,255,255,0.03)', borderRadius:16 }} /></div>;
 
   if (!workoutPlan) return (
     <div>
-      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">Workout Plan</p><p className="ds-section-sub">Your personalised workout schedule</p></div>
+      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">{t('client.workout.sectionTitle')}</p><p className="ds-section-sub">{t('client.workout.sectionSub')}</p></div>
       <div className="ds-card ds-empty">
         <div className="ds-empty-icon">{Icons.bolt}</div>
-        <p>No workout plan assigned yet</p>
-        <small>Your coach will assign a workout plan once your onboarding is reviewed.</small>
+        <p>{t('client.workout.noItems')}</p>
+        <small>{t('client.workout.noItemsSub')}</small>
       </div>
     </div>
   );
@@ -335,7 +339,7 @@ function WorkoutTab({ workoutPlan, loading }: { workoutPlan:WorkoutPlan|null; lo
     <div>
       <div style={{ marginBottom:'1.5rem' }}>
         <p className="ds-section-title">{workoutPlan.title}</p>
-        <p className="ds-section-sub">Assigned by your coach · Tap a day to view exercises</p>
+        <p className="ds-section-sub">{t('client.workout.assignedBy')}</p>
       </div>
 
       <div style={{ display:'flex', gap:8, marginBottom:20, overflowX:'auto', paddingBottom:4 }}>
@@ -358,7 +362,7 @@ function WorkoutTab({ workoutPlan, loading }: { workoutPlan:WorkoutPlan|null; lo
           {current.workout_exercises.length === 0 ? (
             <div className="ds-empty" style={{ padding:'2rem' }}>
               <div className="ds-empty-icon" style={{ margin:'0 auto 1rem' }}><svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg></div>
-              <p>Recovery day — rest, hydrate, sleep well</p>
+              <p>{t('client.workout.recovery')}</p>
             </div>
           ) : (
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
@@ -371,7 +375,7 @@ function WorkoutTab({ workoutPlan, loading }: { workoutPlan:WorkoutPlan|null; lo
                       {ex.notes && <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.28)', marginTop:2 }}>{ex.notes}</p>}
                     </div>
                     <div style={{ display:'flex', gap:20, textAlign:'center', flexShrink:0, alignItems:'center' }}>
-                      {[['Sets',ex.sets],['Reps',ex.reps],['Rest',ex.rest_seconds ? `${ex.rest_seconds}s` : null]].map(([label,val]) => val && (
+                      {[[t('client.workout.sets'),ex.sets],[t('client.workout.reps'),ex.reps],[t('client.workout.rest'),ex.rest_seconds ? `${ex.rest_seconds}s` : null]].map(([label,val]) => val && (
                         <div key={label as string}>
                           <p style={{ fontSize:'0.62rem', textTransform:'uppercase', letterSpacing:'0.1em', color:'rgba(255,255,255,0.22)' }}>{label}</p>
                           <p style={{ fontSize:'0.85rem', fontWeight:700, color:'white', marginTop:1 }}>{val}</p>
@@ -383,7 +387,7 @@ function WorkoutTab({ workoutPlan, loading }: { workoutPlan:WorkoutPlan|null; lo
                           <div style={{ width:32, height:32, borderRadius:8, background:'rgba(201,168,76,0.12)', border:'1px solid rgba(201,168,76,0.25)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                             <svg style={{ width:14, height:14, color:'#C9A84C' }} fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                           </div>
-                          <p style={{ fontSize:'0.6rem', textTransform:'uppercase', letterSpacing:'0.08em', color:'rgba(201,168,76,0.7)' }}>Watch</p>
+                          <p style={{ fontSize:'0.6rem', textTransform:'uppercase', letterSpacing:'0.08em', color:'rgba(201,168,76,0.7)' }}>{t('client.watchVideo')}</p>
                         </a>
                       )}
                     </div>
@@ -400,6 +404,7 @@ function WorkoutTab({ workoutPlan, loading }: { workoutPlan:WorkoutPlan|null; lo
 
 /* ─── Progress Tab ───────────────────────────────────── */
 function ProgressTab({ progressLogs, onLogged }: { progressLogs:ProgressLog[]; onLogged:()=>void }) {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const [form, setForm] = useState({ weight:'', notes:'' });
   const [submitted, setSubmitted] = useState(false);
@@ -450,33 +455,33 @@ function ProgressTab({ progressLogs, onLogged }: { progressLogs:ProgressLog[]; o
 
   return (
     <div>
-      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">Progress Tracking</p><p className="ds-section-sub">Log your stats, view timeline, upload body checks</p></div>
+      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">{t('client.progress.sectionTitle')}</p><p className="ds-section-sub">{t('client.progress.sectionSub')}</p></div>
 
       <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:16, marginBottom:20 }} className="lg:grid-cols-2">
         {/* Log form */}
         <div className="ds-card" style={{ padding:'1.75rem' }}>
-          <p style={{ fontWeight:600, color:'white', marginBottom:'1.25rem' }}>Log Today&apos;s Stats</p>
+          <p style={{ fontWeight:600, color:'white', marginBottom:'1.25rem' }}>{t('client.progress.logToday')}</p>
           {submitted ? (
             <div style={{ textAlign:'center', padding:'2rem 0' }}>
               <div style={{ width:48, height:48, borderRadius:12, background:'rgba(74,222,128,0.1)', border:'1px solid rgba(74,222,128,0.25)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1rem', color:'rgba(74,222,128,0.9)' }}>{Icons.check}</div>
-              <p style={{ color:'rgba(255,255,255,0.55)', fontSize:'0.85rem' }}>Stats saved successfully!</p>
+              <p style={{ color:'rgba(255,255,255,0.55)', fontSize:'0.85rem' }}>{t('client.progress.statsSaved')}</p>
             </div>
           ) : (
             <form onSubmit={handleLog} style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              <div><label className="ds-label">Weight (kg)</label><input type="number" step="0.1" className="ds-input" placeholder="82.5" value={form.weight} onChange={e=>setForm(f=>({...f,weight:e.target.value}))} required /></div>
-              <div><label className="ds-label">Notes (optional)</label><input className="ds-input" placeholder="How are you feeling today?" value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} /></div>
-              <button type="submit" className="ds-btn-gold" style={{ justifyContent:'center' }}>Save Entry</button>
+              <div><label className="ds-label">{t('client.weightKg')}</label><input type="number" step="0.1" className="ds-input" placeholder="82.5" value={form.weight} onChange={e=>setForm(f=>({...f,weight:e.target.value}))} required /></div>
+              <div><label className="ds-label">{t('client.notes')}</label><input className="ds-input" placeholder="How are you feeling today?" value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} /></div>
+              <button type="submit" className="ds-btn-gold" style={{ justifyContent:'center' }}>{t('client.saveEntry')}</button>
             </form>
           )}
         </div>
 
         {/* Chart */}
         <div className="ds-card" style={{ padding:'1.75rem' }}>
-          <p style={{ fontWeight:600, color:'white', marginBottom:'1.25rem' }}>Weight Timeline</p>
+          <p style={{ fontWeight:600, color:'white', marginBottom:'1.25rem' }}>{t('client.progress.weightTimeline')}</p>
           {progressLogs.length === 0 ? (
             <div className="ds-empty" style={{ padding:'2rem 0' }}>
               <div className="ds-empty-icon" style={{ margin:'0 auto 0.75rem' }}>{Icons.chart}</div>
-              <p style={{ fontSize:'0.8rem' }}>No logs yet — add your first entry</p>
+              <p style={{ fontSize:'0.8rem' }}>{t('client.progress.noLogs')}</p>
             </div>
           ) : (
             <>
@@ -495,7 +500,7 @@ function ProgressTab({ progressLogs, onLogged }: { progressLogs:ProgressLog[]; o
               {progressLogs.length >= 2 && (
                 <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:'0.75rem', color:'rgba(255,255,255,0.35)' }}>
                   <span style={{ width:8, height:8, borderRadius:'50%', background:'rgba(74,222,128,0.7)', flexShrink:0 }} />
-                  Total change: <span style={{ color:'rgba(74,222,128,0.9)', fontWeight:600 }}>
+                  {t('client.progress.totalChange')} <span style={{ color:'rgba(74,222,128,0.9)', fontWeight:600 }}>
                     {((progressLogs[0].weight_kg??0)-(progressLogs[progressLogs.length-1].weight_kg??0)).toFixed(1)} kg
                   </span>
                 </div>
@@ -508,10 +513,10 @@ function ProgressTab({ progressLogs, onLogged }: { progressLogs:ProgressLog[]; o
       {/* History */}
       {progressLogs.length > 0 && (
         <div className="ds-card" style={{ padding:'1.75rem', marginBottom:16 }}>
-          <p style={{ fontWeight:600, color:'white', marginBottom:'1rem' }}>Log History</p>
+          <p style={{ fontWeight:600, color:'white', marginBottom:'1rem' }}>{t('client.progress.logHistory')}</p>
           <div style={{ overflowX:'auto' }}>
             <table className="ds-table">
-              <thead><tr><th>Date</th><th>Weight</th><th>Change</th><th>Notes</th></tr></thead>
+              <thead><tr><th>{t('client.progress.colDate')}</th><th>{t('client.progress.colWeight')}</th><th>{t('client.progress.colChange')}</th><th>{t('client.progress.colNotes')}</th></tr></thead>
               <tbody>
                 {progressLogs.map((log,i) => {
                   const prev = progressLogs[i+1]?.weight_kg;
@@ -535,12 +540,12 @@ function ProgressTab({ progressLogs, onLogged }: { progressLogs:ProgressLog[]; o
       <div className="ds-card" style={{ padding:'1.75rem' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem' }}>
           <div>
-            <p style={{ fontWeight:600, color:'white' }}>Body Check Uploads</p>
-            <p style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.3)', marginTop:2 }}>Upload InBody scans, progress photos, or PDFs</p>
+            <p style={{ fontWeight:600, color:'white' }}>{t('client.progress.bodyChecks')}</p>
+            <p style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.3)', marginTop:2 }}>{t('client.progress.bodyChecksSub')}</p>
           </div>
           <label className="ds-btn-gold" style={{ cursor: uploading ? 'not-allowed' : 'pointer', fontSize:'0.78rem', opacity: uploading ? 0.6 : 1 }}>
             <span style={{ width:16, height:16, display:'inline-flex', alignItems:'center', justifyContent:'center' }}>{Icons.upload}</span>
-            {uploading ? 'Uploading…' : 'Upload File'}
+            {uploading ? t('client.progress.uploading') : t('client.progress.uploadFile')}
             <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={handleUpload} disabled={uploading} style={{ display:'none' }} />
           </label>
         </div>
@@ -554,7 +559,7 @@ function ProgressTab({ progressLogs, onLogged }: { progressLogs:ProgressLog[]; o
               <div key={i} style={{ display:'flex', alignItems:'center', gap:8, padding:'0.5rem 0.75rem', background:'rgba(74,222,128,0.05)', border:'1px solid rgba(74,222,128,0.15)', borderRadius:8 }}>
                 <span style={{ width:6, height:6, borderRadius:'50%', background:'rgba(74,222,128,0.8)', flexShrink:0 }} />
                 <a href={f.url} target="_blank" rel="noreferrer" style={{ fontSize:'0.78rem', color:'rgba(74,222,128,0.85)', textDecoration:'none', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{f.name}</a>
-                <span style={{ fontSize:'0.68rem', color:'rgba(255,255,255,0.2)', marginLeft:'auto', flexShrink:0 }}>Uploaded</span>
+                <span style={{ fontSize:'0.68rem', color:'rgba(255,255,255,0.2)', marginLeft:'auto', flexShrink:0 }}>{t('client.progress.uploaded')}</span>
               </div>
             ))}
           </div>
@@ -566,6 +571,7 @@ function ProgressTab({ progressLogs, onLogged }: { progressLogs:ProgressLog[]; o
 
 /* ─── Messages Tab ───────────────────────────────────── */
 function MessagesTab() {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [threadId, setThreadId] = useState<string|null>(null);
@@ -664,7 +670,7 @@ function MessagesTab() {
 
   return (
     <div>
-      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">Messages</p><p className="ds-section-sub">Direct chat with your assigned coach</p></div>
+      <div style={{ marginBottom:'1.5rem' }}><p className="ds-section-title">{t('client.messages.sectionTitle')}</p><p className="ds-section-sub">{t('client.messages.sectionSub')}</p></div>
 
       <div className="ds-card" style={{ display:'flex', flexDirection:'column', height:'clamp(520px, 70vh, 720px)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'1rem 1.25rem', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
@@ -675,7 +681,7 @@ function MessagesTab() {
             <p style={{ fontSize:'0.85rem', fontWeight:600, color:'white' }}>{trainerName}</p>
             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
               <span style={{ width:6, height:6, borderRadius:'50%', background:'rgba(74,222,128,0.9)' }} />
-              <span style={{ fontSize:'0.68rem', color:'rgba(255,255,255,0.3)' }}>Online</span>
+              <span style={{ fontSize:'0.68rem', color:'rgba(255,255,255,0.3)' }}>{t('client.online')}</span>
             </div>
           </div>
         </div>
@@ -685,15 +691,15 @@ function MessagesTab() {
           {noCoach && (
             <div className="ds-empty" style={{ margin:'auto' }}>
               <div className="ds-empty-icon" style={{ margin:'0 auto 1rem' }}>{Icons.user}</div>
-              <p>No coach assigned yet</p>
-              <small>You&apos;ll be able to message your coach once they&apos;re assigned by the admin.</small>
+              <p>{t('client.messages.noCoach')}</p>
+              <small>{t('client.messages.noCoachSub')}</small>
             </div>
           )}
           {!loading && !noCoach && messages.length===0 && (
             <div className="ds-empty" style={{ margin:'auto' }}>
               <div className="ds-empty-icon" style={{ margin:'0 auto 1rem' }}>{Icons.chat}</div>
-              <p>No messages yet</p>
-              <small>Send your first message to {trainerName}</small>
+              <p>{t('client.messages.noMessages')}</p>
+              <small>{t('client.messages.sendFirst')} {trainerName}</small>
             </div>
           )}
           {messages.map(msg => {
@@ -714,7 +720,7 @@ function MessagesTab() {
 
         {!noCoach && (
           <form onSubmit={send} style={{ display:'flex', gap:8, padding:'1rem 1.25rem', borderTop:'1px solid rgba(255,255,255,0.06)' }}>
-            <input className="ds-input" style={{ flex:1 }} placeholder="Type a message…" value={text} onChange={e=>setText(e.target.value)} />
+            <input className="ds-input" style={{ flex:1 }} placeholder={t('client.messagePlaceholder')} value={text} onChange={e=>setText(e.target.value)} />
             <button type="submit" className="ds-btn-gold" style={{ padding:'0.65rem 1rem', flexShrink:0 }}>
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
@@ -803,7 +809,7 @@ function SubscriptionTab({ userId }: { userId: string }) {
     <div>
       <div style={{ marginBottom:'1.5rem' }}>
         <p className="ds-section-title">{t('client.subscription')}</p>
-        <p className="ds-section-sub">Manage your plan, billing & invoices</p>
+        <p className="ds-section-sub">{t('client.sub.manageSub')}</p>
       </div>
 
       {loading ? (
@@ -814,20 +820,20 @@ function SubscriptionTab({ userId }: { userId: string }) {
           <div className="ds-card-gold" style={{ padding:'1.75rem', marginBottom:20 }}>
             <div style={{ display:'flex', alignItems:'start', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
               <div>
-                <span className="ds-badge-gold" style={{ marginBottom:12, display:'inline-flex' }}>Active Plan</span>
+                <span className="ds-badge-gold" style={{ marginBottom:12, display:'inline-flex' }}>{t('client.sub.activePlan')}</span>
                 <h3 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginTop:4, marginBottom:4 }}>{sub.plan_name as string}</h3>
               </div>
               <div style={{ textAlign:'right' }}>
                 <p style={{ fontSize:'2rem', fontWeight:700, color:'#C9A84C', lineHeight:1 }} dir="ltr">SAR {String(sub.price_sar)}</p>
-                <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.3)', marginTop:4 }}>/month</p>
+                <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.3)', marginTop:4 }}>{t('client.sub.perMonth')}</p>
               </div>
             </div>
             <div className="ds-divider" />
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:16 }}>
               {[
-                { label:'Status', value: String(sub.status).charAt(0).toUpperCase()+String(sub.status).slice(1), color: statusColors[sub.status as string] ?? 'rgba(255,255,255,0.7)' },
-                { label:'Next Billing', value: sub.expires_at ? new Date(sub.expires_at as string).toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'}) : '—', color:'rgba(255,255,255,0.7)' },
-                { label:'Member Since', value: sub.started_at ? new Date(sub.started_at as string).toLocaleDateString('en',{month:'short',year:'numeric'}) : '—', color:'rgba(255,255,255,0.7)' },
+                { label:t('client.sub.statusLabel'), value: String(sub.status).charAt(0).toUpperCase()+String(sub.status).slice(1), color: statusColors[sub.status as string] ?? 'rgba(255,255,255,0.7)' },
+                { label:t('client.sub.nextBilling'), value: sub.expires_at ? new Date(sub.expires_at as string).toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'}) : '—', color:'rgba(255,255,255,0.7)' },
+                { label:t('client.sub.memberSince'), value: sub.started_at ? new Date(sub.started_at as string).toLocaleDateString('en',{month:'short',year:'numeric'}) : '—', color:'rgba(255,255,255,0.7)' },
               ].map(i=>(
                 <div key={i.label}>
                   <p style={{ fontSize:'0.65rem', textTransform:'uppercase', letterSpacing:'0.12em', color:'rgba(255,255,255,0.25)', marginBottom:4 }}>{i.label}</p>
@@ -850,7 +856,7 @@ function SubscriptionTab({ userId }: { userId: string }) {
             {!isPendingCancel && !isCancelledButValid && cancelConfirm && (
               <div style={{ padding:'1rem 1.25rem', borderRadius:12, marginBottom:16, background:'rgba(248,113,113,0.06)', border:'1px solid rgba(248,113,113,0.2)' }}>
                 <p style={{ fontSize:'0.82rem', color:'rgba(248,113,113,0.9)', marginBottom:10, fontWeight:500 }}>
-                  Are you sure? Your access continues until the end of the current billing period.
+                  {t('client.sub.cancelConfirm')}
                 </p>
                 <div style={{ display:'flex', gap:8 }}>
                   <button
@@ -858,13 +864,13 @@ function SubscriptionTab({ userId }: { userId: string }) {
                     disabled={cancelLoading}
                     style={{ padding:'0.5rem 1rem', borderRadius:8, fontSize:'0.75rem', fontWeight:700, border:'1px solid rgba(248,113,113,0.4)', background:'rgba(248,113,113,0.1)', color:'rgba(248,113,113,0.9)', cursor:'pointer', letterSpacing:'0.05em', textTransform:'uppercase' }}
                   >
-                    {cancelLoading ? 'Cancelling…' : 'Yes, Cancel Subscription'}
+                    {cancelLoading ? t('client.sub.cancelling') : t('client.sub.yesCancelSub')}
                   </button>
                   <button
                     onClick={() => setCancelConfirm(false)}
                     style={{ padding:'0.5rem 1rem', borderRadius:8, fontSize:'0.75rem', fontWeight:600, border:'1px solid rgba(255,255,255,0.1)', background:'transparent', color:'rgba(255,255,255,0.5)', cursor:'pointer' }}
                   >
-                    Keep Subscription
+                    {t('client.sub.keepSub')}
                   </button>
                 </div>
               </div>
@@ -884,7 +890,7 @@ function SubscriptionTab({ userId }: { userId: string }) {
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.06)'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.4)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.25)'; }}
                 >
-                  Cancel Subscription
+                  {t('client.sub.cancelSub')}
                 </button>
               </div>
             )}
@@ -892,8 +898,8 @@ function SubscriptionTab({ userId }: { userId: string }) {
 
           {/* Invoices Section */}
           <div className="ds-card" style={{ padding:'1.5rem' }}>
-            <p style={{ fontSize:'0.88rem', fontWeight:700, color:'white', marginBottom:4 }}>Invoices</p>
-            <p style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.3)', marginBottom:16 }}>Download your payment receipts</p>
+            <p style={{ fontSize:'0.88rem', fontWeight:700, color:'white', marginBottom:4 }}>{t('client.sub.invoices')}</p>
+            <p style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.3)', marginBottom:16 }}>{t('client.sub.invoicesSub')}</p>
 
             {invoicesLoading ? (
               <div className="ds-loading" style={{ height:60, background:'rgba(255,255,255,0.03)', borderRadius:10 }} />
@@ -945,7 +951,7 @@ function SubscriptionTab({ userId }: { userId: string }) {
               </div>
             ) : (
               <p style={{ fontSize:'0.8rem', color:'rgba(255,255,255,0.25)', textAlign:'center', padding:'1rem 0' }}>
-                No invoices yet
+                {t('client.sub.noInvoices')}
               </p>
             )}
           </div>
@@ -953,16 +959,16 @@ function SubscriptionTab({ userId }: { userId: string }) {
       ) : (
         <div className="ds-card" style={{ padding:'2rem', marginBottom:20, textAlign:'center' }}>
           <div className="ds-empty-icon" style={{ margin:'0 auto 1rem' }}>{Icons.card}</div>
-          <p style={{ color:'white', fontWeight:600, marginBottom:6 }}>No active subscription</p>
+          <p style={{ color:'white', fontWeight:600, marginBottom:6 }}>{t('client.sub.noSubTitle')}</p>
           <p style={{ fontSize:'0.82rem', color:'rgba(255,255,255,0.35)', marginBottom:'1.25rem' }}>
-            Subscribe to unlock your coaching dashboard, meal plans, and direct trainer access.
+            {t('client.sub.noSubDesc')}
           </p>
           <a
             href="/checkout"
             className="ds-btn-gold"
             style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'0.7rem 1.5rem', fontSize:'0.8rem', textDecoration:'none' }}
           >
-            View Plans & Subscribe
+            {t('client.sub.viewPlansSubscribe')}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
@@ -975,6 +981,7 @@ function SubscriptionTab({ userId }: { userId: string }) {
 
 /* ─── Subscription Gate (locked screen) ─────────────── */
 function SubscriptionGate() {
+  const { t } = useLanguage();
   return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh', padding:'2rem' }}>
       <div style={{ maxWidth:420, width:'100%', textAlign:'center', background:'rgba(255,255,255,0.025)', border:'1px solid rgba(201,168,76,0.18)', borderRadius:24, padding:'3rem 2rem' }}>
@@ -983,15 +990,15 @@ function SubscriptionGate() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
           </svg>
         </div>
-        <h2 style={{ fontSize:'1.35rem', fontWeight:700, color:'white', marginBottom:8 }}>Subscription Required</h2>
+        <h2 style={{ fontSize:'1.35rem', fontWeight:700, color:'white', marginBottom:8 }}>{t('client.gate.title')}</h2>
         <p style={{ fontSize:'0.83rem', color:'rgba(255,255,255,0.38)', lineHeight:1.6, marginBottom:'1.75rem' }}>
-          Your subscription is inactive or has expired. Subscribe to unlock your full coaching dashboard — meal plans, workouts, progress tracking, and direct coach access.
+          {t('client.gate.desc')}
         </p>
         <a
           href="/checkout"
           style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'0.8rem 1.75rem', background:'linear-gradient(135deg,#C9A84C,#E8C76A)', color:'#0B0B0B', fontWeight:800, fontSize:'0.8rem', letterSpacing:'0.1em', textTransform:'uppercase', borderRadius:12, textDecoration:'none' }}
         >
-          View Plans
+          {t('client.gate.viewPlans')}
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
           </svg>

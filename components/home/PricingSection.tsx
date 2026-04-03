@@ -106,14 +106,14 @@ export default function PricingSection({ plans }: { plans: PublicPlan[] }) {
               </span>
             </div>
 
-            <h2 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]">
+            <h2 dir="auto" className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]">
               {t('pricing.title')}{' '}
               <span style={{ background: 'linear-gradient(135deg, #C9A84C 0%, #E8C76A 50%, #C9A84C 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 {t('pricing.titleHighlight')}
               </span>
             </h2>
 
-            <p className="text-white/40 max-w-md mx-auto text-base leading-relaxed tracking-wide">
+            <p dir="auto" className="text-white/40 max-w-md mx-auto text-base leading-relaxed tracking-wide">
               {t('pricing.subtitle')}
             </p>
 
@@ -147,7 +147,7 @@ export default function PricingSection({ plans }: { plans: PublicPlan[] }) {
                       {plan.tagline}
                     </p>
                   )}
-                  <h3 className="text-xl font-bold text-white tracking-tight">{plan.name}</h3>
+                  <h3 dir="auto" className="text-xl font-bold text-white tracking-tight">{plan.name}</h3>
                 </div>
 
                 <div className="relative z-10 mb-6 pb-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -165,7 +165,7 @@ export default function PricingSection({ plans }: { plans: PublicPlan[] }) {
                     </span>
                   </div>
                   {plan.description && (
-                    <p className="text-[13px] leading-relaxed mt-3" style={{ color: 'rgba(255,255,255,0.38)' }}>{plan.description}</p>
+                    <p dir="auto" className="text-[13px] leading-relaxed mt-3" style={{ color: 'rgba(255,255,255,0.38)' }}>{plan.description}</p>
                   )}
                 </div>
 
@@ -188,10 +188,10 @@ export default function PricingSection({ plans }: { plans: PublicPlan[] }) {
           </div>
 
           <div className="text-center">
-            <p className="text-xs tracking-wide" style={{ color: 'rgba(255,255,255,0.22)' }}>
+            <p dir="auto" className="text-xs tracking-wide" style={{ color: 'rgba(255,255,255,0.22)' }}>
               {t('pricing.footer1')}
               <br className="hidden sm:block" />
-              <span className="mt-1 inline-block" style={{ color: 'rgba(201,168,76,0.4)' }}>
+              <span dir="auto" className="mt-1 inline-block" style={{ color: 'rgba(201,168,76,0.4)' }}>
                 {t('pricing.footer2')}
               </span>
             </p>

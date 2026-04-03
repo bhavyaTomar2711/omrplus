@@ -1,46 +1,52 @@
 'use client';
 
 import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
+import { useLanguage } from '@/context/LanguageContext';
 
-const programs = [
-  {
-    id: 1,
-    name: 'Muscle Building',
-    nameAr: 'بناء العضلات',
-    description: 'Build lean muscle mass with progressive strength training and high-protein meal plans.',
-    image: 'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774869469/ChatGPT_Image_Mar_30_2026_04_47_36_PM_l244wh.png',
-  },
-  {
-    id: 2,
-    name: 'Fat Loss',
-    nameAr: 'فقدان الدهون',
-    description: 'Sustainable fat loss through structured nutrition and cardio-strength combination workouts.',
-    image: 'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774870969/ChatGPT_Image_Mar_30_2026_05_12_21_PM_jufpsc.png',
-  },
-  {
-    id: 3,
-    name: 'Summer Body',
-    nameAr: 'جسم صيفي',
-    description: 'Transform in 12 weeks with our scientifically-backed summer body program.',
-    image: 'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774871156/ChatGPT_Image_Mar_30_2026_05_15_20_PM_dmlvkg.png',
-  },
-  {
-    id: 4,
-    name: 'Workout Plan',
-    nameAr: 'خطة التمرين',
-    description: 'Structured workout plans without meal planning. Perfect for those with their own diet.',
-    image: 'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774871223/ChatGPT_Image_Mar_30_2026_05_16_44_PM_qz2cet.png',
-  },
-  {
-    id: 5,
-    name: 'Meal Plan',
-    nameAr: 'خطة الطعام',
-    description: 'Get personalized meal plans tailored to your goals and dietary preferences.',
-    image: 'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774871297/ChatGPT_Image_Mar_30_2026_05_17_57_PM_gnjys3.png',
-  },
+const programImages = [
+  'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774869469/ChatGPT_Image_Mar_30_2026_04_47_36_PM_l244wh.png',
+  'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774870969/ChatGPT_Image_Mar_30_2026_05_12_21_PM_jufpsc.png',
+  'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774871156/ChatGPT_Image_Mar_30_2026_05_15_20_PM_dmlvkg.png',
+  'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774871223/ChatGPT_Image_Mar_30_2026_05_16_44_PM_qz2cet.png',
+  'https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774871297/ChatGPT_Image_Mar_30_2026_05_17_57_PM_gnjys3.png',
 ];
 
 export default function ProgramsSection() {
+  const { t } = useLanguage();
+
+  const programs = [
+    {
+      id: 1,
+      nameKey: 'home.programs.muscleBuilding',
+      descKey: 'home.programs.muscleBuilding.desc',
+      image: programImages[0],
+    },
+    {
+      id: 2,
+      nameKey: 'home.programs.fatLoss',
+      descKey: 'home.programs.fatLoss.desc',
+      image: programImages[1],
+    },
+    {
+      id: 3,
+      nameKey: 'home.programs.summerBody',
+      descKey: 'home.programs.summerBody.desc',
+      image: programImages[2],
+    },
+    {
+      id: 4,
+      nameKey: 'home.programs.workoutPlan',
+      descKey: 'home.programs.workoutPlan.desc',
+      image: programImages[3],
+    },
+    {
+      id: 5,
+      nameKey: 'home.programs.mealPlan',
+      descKey: 'home.programs.mealPlan.desc',
+      image: programImages[4],
+    },
+  ];
+
   return (
     <section id="programs" className="py-24 bg-brand-black relative overflow-hidden">
       {/* Subtle background orb — gold, very faint */}
@@ -52,14 +58,14 @@ export default function ProgramsSection() {
 
         {/* Section Header */}
         <AnimateOnScroll className="text-center mb-16">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
-            Choose Your{' '}
+          <h2 dir="auto" className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+            {t('home.programs.title')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold font-black">
-              Path
+              {t('home.programs.titleHighlight')}
             </span>
           </h2>
-          <p className="text-base text-white/40 max-w-xl mx-auto font-light tracking-wide">
-            Pick the program that matches your goals. All plans include personalized support.
+          <p dir="auto" className="text-base text-white/40 max-w-xl mx-auto font-light tracking-wide">
+            {t('home.programs.subtitle')}
           </p>
         </AnimateOnScroll>
 
@@ -92,7 +98,7 @@ export default function ProgramsSection() {
                 <div className="relative h-72 overflow-hidden">
                   <img
                     src={program.image}
-                    alt={program.name}
+                    alt={t(program.nameKey)}
                     className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.03]"
                   />
                   {/* Cinematic gradient overlay */}
@@ -102,13 +108,12 @@ export default function ProgramsSection() {
                 {/* Details */}
                 <div className="p-6 pt-5">
                   <div className="mb-4">
-                    <p className="text-[11px] uppercase tracking-[0.15em] text-white/35 mb-2">{program.nameAr}</p>
-                    <h3 className="text-xl font-semibold text-white tracking-wide group-hover:text-brand-gold transition-colors duration-300">
-                      {program.name}
+                    <h3 dir="auto" className="text-xl font-semibold text-white tracking-wide group-hover:text-brand-gold transition-colors duration-300">
+                      {t(program.nameKey)}
                     </h3>
                   </div>
-                  <p className="text-sm text-white/45 leading-relaxed mb-6 font-light">
-                    {program.description}
+                  <p dir="auto" className="text-sm text-white/45 leading-relaxed mb-6 font-light">
+                    {t(program.descKey)}
                   </p>
                   <button
                     className="text-sm font-medium tracking-wide transition-all duration-300 px-5 py-2 rounded-lg"
@@ -126,7 +131,7 @@ export default function ProgramsSection() {
                       (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,168,76,0.6)';
                     }}
                   >
-                    Get Started
+                    {t('home.programs.getStarted')}
                   </button>
                 </div>
               </a>
@@ -163,7 +168,7 @@ export default function ProgramsSection() {
                 <div className="relative w-2/5 overflow-hidden flex-shrink-0">
                   <img
                     src={program.image}
-                    alt={program.name}
+                    alt={t(program.nameKey)}
                     className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.03]"
                   />
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, transparent 60%, rgba(0,0,0,0.5) 100%)' }} />
@@ -171,12 +176,11 @@ export default function ProgramsSection() {
 
                 {/* Content - Right */}
                 <div className="flex-1 p-7 flex flex-col justify-center">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-white/35 mb-2">{program.nameAr}</p>
-                  <h3 className="text-xl font-semibold text-white tracking-wide mb-3 group-hover:text-brand-gold transition-colors duration-300">
-                    {program.name}
+                  <h3 dir="auto" className="text-xl font-semibold text-white tracking-wide mb-3 group-hover:text-brand-gold transition-colors duration-300">
+                    {t(program.nameKey)}
                   </h3>
-                  <p className="text-sm text-white/45 leading-relaxed mb-6 font-light">
-                    {program.description}
+                  <p dir="auto" className="text-sm text-white/45 leading-relaxed mb-6 font-light">
+                    {t(program.descKey)}
                   </p>
                   <button
                     className="text-sm font-medium tracking-wide transition-all duration-300 px-5 py-2 rounded-lg w-fit"
@@ -194,7 +198,7 @@ export default function ProgramsSection() {
                       (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,168,76,0.6)';
                     }}
                   >
-                    Get Started
+                    {t('home.programs.getStarted')}
                   </button>
                 </div>
               </a>
@@ -204,7 +208,7 @@ export default function ProgramsSection() {
 
         {/* CTA */}
         <AnimateOnScroll className="text-center">
-          <p className="text-white/30 text-sm mb-5 font-light tracking-wide">Want to see all programs in detail?</p>
+          <p dir="auto" className="text-white/30 text-sm mb-5 font-light tracking-wide">{t('home.programs.viewAllSub')}</p>
           <a
             href="/programs"
             className="inline-flex items-center gap-2.5 text-sm font-medium tracking-wide px-7 py-3 rounded-lg transition-all duration-300"
@@ -222,7 +226,7 @@ export default function ProgramsSection() {
               (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,168,76,0.5)';
             }}
           >
-            View All Programs
+            {t('home.programs.viewAll')}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>

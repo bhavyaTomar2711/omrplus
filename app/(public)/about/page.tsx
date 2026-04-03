@@ -131,13 +131,13 @@ export default function AboutPage() {
                 {t('about.badge')}
               </span>
             </div>
-            <h1 className="text-5xl sm:text-6xl font-bold text-white mb-6 tracking-tight leading-[1.1]">
+            <h1 dir="auto" className="text-5xl sm:text-6xl font-bold text-white mb-6 tracking-tight leading-[1.1]">
               {t('about.title')}{' '}
               <span style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C76A, #C9A84C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 {t('about.titleHighlight')}
               </span>
             </h1>
-            <p className="text-white/42 text-base leading-[1.9] max-w-2xl mx-auto">
+            <p dir="auto" className="text-white/42 text-base leading-[1.9] max-w-2xl mx-auto">
               {t('about.subtitle')}
             </p>
           </div>
@@ -161,7 +161,7 @@ export default function AboutPage() {
 
             {/* Mission */}
             <div className="about-glass p-10 lg:p-14 mb-16 max-w-4xl mx-auto text-center">
-              <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-5" style={{ color: 'rgba(201,168,76,0.5)' }}>
+              <p dir="auto" className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-5" style={{ color: 'rgba(201,168,76,0.5)' }}>
                 {t('about.mission.title')}
               </p>
               <blockquote className="text-2xl lg:text-3xl font-bold text-white leading-[1.4] tracking-tight mb-6">
@@ -171,7 +171,7 @@ export default function AboutPage() {
                 </span>
                 {' '}— for everyone."
               </blockquote>
-              <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)' }}>
+              <p dir="auto" className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)' }}>
                 {t('about.mission.body')}
               </p>
             </div>

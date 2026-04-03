@@ -140,13 +140,13 @@ export default function ContactPage() {
                 {t('contact.badge')}
               </span>
             </div>
-            <h1 className="text-5xl sm:text-6xl font-bold text-white mb-5 tracking-tight leading-[1.1]">
+            <h1 dir="auto" className="text-5xl sm:text-6xl font-bold text-white mb-5 tracking-tight leading-[1.1]">
               {t('contact.title')}{' '}
               <span style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C76A, #C9A84C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 {t('contact.titleHighlight')}
               </span>
             </h1>
-            <p className="text-white/40 text-base leading-relaxed">
+            <p dir="auto" className="text-white/40 text-base leading-relaxed">
               {t('contact.subtitle')}
             </p>
           </div>
@@ -173,8 +173,8 @@ export default function ContactPage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">{t('contact.whatsapp.btn')}</p>
-                    <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.38)' }}>{t('contact.whatsapp.desc')}</p>
+                    <p dir="auto" className="text-sm font-semibold text-white">{t('contact.whatsapp.btn')}</p>
+                    <p dir="auto" className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.38)' }}>{t('contact.whatsapp.desc')}</p>
                   </div>
                 </a>
 
@@ -243,19 +243,19 @@ export default function ContactPage() {
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-5">
                       <div className="mb-6">
-                        <h2 className="text-xl font-bold text-white mb-1">{t('contact.form.title')}</h2>
-                        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                        <h2 dir="auto" className="text-xl font-bold text-white mb-1">{t('contact.form.title')}</h2>
+                        <p dir="auto" className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
                           {t('contact.subtitle')}
                         </p>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                          <label className="contact-label">{t('contact.form.name')}</label>
+                          <label dir="auto" className="contact-label">{t('contact.form.name')}</label>
                           <input className="contact-input" type="text" placeholder={t('contact.form.namePlaceholder')} value={form.name} onChange={update('name')} required />
                         </div>
                         <div>
-                          <label className="contact-label">{t('contact.form.email')}</label>
+                          <label dir="auto" className="contact-label">{t('contact.form.email')}</label>
                           <input className="contact-input" type="email" placeholder={t('contact.form.emailPlaceholder')} value={form.email} onChange={update('email')} required />
                         </div>
                       </div>
@@ -283,7 +283,7 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="contact-label">{t('contact.form.message')}</label>
+                        <label dir="auto" className="contact-label">{t('contact.form.message')}</label>
                         <textarea
                           className="contact-input"
                           placeholder={t('contact.form.messagePlaceholder')}

@@ -188,7 +188,7 @@ export default function ConsultationCTA() {
 
             {/* Headline */}
             <AnimateOnScroll delay={80}>
-              <h2 className="text-4xl sm:text-5xl lg:text-[3.2rem] font-bold text-white leading-[1.1] tracking-tight mb-6">
+              <h2 dir="auto" className="text-4xl sm:text-5xl lg:text-[3.2rem] font-bold text-white leading-[1.1] tracking-tight mb-6">
                 {t('cta.title')}
               </h2>
             </AnimateOnScroll>
@@ -196,6 +196,7 @@ export default function ConsultationCTA() {
             {/* Subtitle */}
             <AnimateOnScroll delay={150}>
               <p
+                dir="auto"
                 className="text-base leading-[1.9] tracking-wide mb-10 max-w-lg mx-auto"
                 style={{ color: 'rgba(255,255,255,0.42)' }}
               >
@@ -212,6 +213,7 @@ export default function ConsultationCTA() {
                       <CheckIcon />
                     </span>
                     <span
+                      dir="auto"
                       className="text-[13px] tracking-wide"
                       style={{ color: 'rgba(255,255,255,0.5)' }}
                     >

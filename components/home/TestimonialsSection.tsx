@@ -2,53 +2,18 @@
 
 import { useEffect, useRef } from 'react';
 import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
+import { useLanguage } from '@/context/LanguageContext';
 
 const VIDEO_URL =
   'https://res.cloudinary.com/dqiuwzvfb/video/upload/v1774890621/Video_Project_d73r7c.mp4';
 const VIDEO_URL_MOBILE =
   'https://res.cloudinary.com/dqiuwzvfb/video/upload/v1775201565/5752503-uhd_2160_3840_25fps_1_tgqdr9.mp4';
 
-const testimonials = [
-  {
-    id: 1,
-    number: '01',
-    quote:
-      'OMR+ completely transformed my journey. The personalized meal plans and trainer support made every week feel structured and achievable. Lost 20kg and gained a completely different relationship with my body.',
-    name: 'Member 01',
-    role: 'Fat Loss Program',
-    duration: '12 weeks',
-    rating: 5,
-  },
-  {
-    id: 2,
-    number: '02',
-    quote:
-      'The professionalism here is unmatched. My trainer adjusted my program every single week based on real data. It never felt like a generic plan — it felt built just for me.',
-    name: 'Member 02',
-    role: 'Muscle Building Program',
-    duration: '16 weeks',
-    rating: 5,
-  },
-  {
-    id: 3,
-    number: '03',
-    quote:
-      'Skeptical at first, but within six weeks the results were undeniable. The coaching, the accountability, and the precision of the nutrition plan — nothing else compares.',
-    name: 'Member 03',
-    role: 'Summer Body Program',
-    duration: '12 weeks',
-    rating: 5,
-  },
-  {
-    id: 4,
-    number: '04',
-    quote:
-      "Worth every riyal. When I wanted to quit at week four, my coach was there with the right adjustment and the right words. Best investment I've made in myself.",
-    name: 'Member 04',
-    role: 'Elite Coaching',
-    duration: '20 weeks',
-    rating: 5,
-  },
+const TESTIMONIAL_DATA = [
+  { id: 1, number: '01', quoteKey: 'testimonials.m1.quote', name: 'Member 01', roleKey: 'testimonials.m1.role', duration: '12 weeks', rating: 5 },
+  { id: 2, number: '02', quoteKey: 'testimonials.m2.quote', name: 'Member 02', roleKey: 'testimonials.m2.role', duration: '16 weeks', rating: 5 },
+  { id: 3, number: '03', quoteKey: 'testimonials.m3.quote', name: 'Member 03', roleKey: 'testimonials.m3.role', duration: '12 weeks', rating: 5 },
+  { id: 4, number: '04', quoteKey: 'testimonials.m4.quote', name: 'Member 04', roleKey: 'testimonials.m4.role', duration: '20 weeks', rating: 5 },
 ];
 
 const StarIcon = () => (
@@ -58,6 +23,12 @@ const StarIcon = () => (
 );
 
 export default function TestimonialsSection() {
+  const { t } = useLanguage();
+  const testimonials = TESTIMONIAL_DATA.map(item => ({
+    ...item,
+    quote: t(item.quoteKey),
+    role: t(item.roleKey),
+  }));
   const bgRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -268,12 +239,12 @@ export default function TestimonialsSection() {
                 className="text-xs font-semibold tracking-[0.2em] uppercase"
                 style={{ color: '#C9A84C' }}
               >
-                Member Stories
+                {t('testimonials.badge')}
               </span>
             </div>
 
-            <h2 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]">
-              What Our{' '}
+            <h2 dir="auto" className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white mb-5 tracking-tight leading-[1.1]">
+              {t('testimonials.title')}{' '}
               <span
                 style={{
                   background:
@@ -283,13 +254,12 @@ export default function TestimonialsSection() {
                   backgroundClip: 'text',
                 }}
               >
-                Members Say
+                {t('testimonials.titleHighlight')}
               </span>
             </h2>
 
-            <p className="text-white/38 max-w-md mx-auto text-base leading-relaxed tracking-wide">
-              Real feedback from members who committed to the process
-              and came out the other side transformed.
+            <p dir="auto" className="text-white/38 max-w-md mx-auto text-base leading-relaxed tracking-wide">
+              {t('testimonials.subtitle')}
             </p>
           </AnimateOnScroll>
 
@@ -313,6 +283,7 @@ export default function TestimonialsSection() {
 
                   {/* Quote */}
                   <p
+                    dir="auto"
                     className="text-sm leading-[1.85] mb-6 tracking-wide"
                     style={{ color: 'rgba(255,255,255,0.62)', fontStyle: 'italic' }}
                   >
@@ -331,10 +302,11 @@ export default function TestimonialsSection() {
                   {/* Author */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-white/80 tracking-tight">
+                      <p dir="auto" className="text-sm font-semibold text-white/80 tracking-tight">
                         {t.name}
                       </p>
                       <p
+                        dir="auto"
                         className="text-[11px] mt-0.5 tracking-wide"
                         style={{ color: 'rgba(201,168,76,0.55)' }}
                       >

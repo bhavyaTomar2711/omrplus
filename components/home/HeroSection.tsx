@@ -73,7 +73,7 @@ export default function HeroSection() {
               </div>
 
               {/* Subtext */}
-              <p className="text-[15px] leading-relaxed max-w-[300px]" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 300 }}>
+              <p dir="auto" className="text-[15px] leading-relaxed max-w-[300px]" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 300 }}>
                 {t('hero.subtext')}
               </p>
 
@@ -100,14 +100,14 @@ export default function HeroSection() {
             {/* ── DESKTOP HERO (unchanged) ── */}
             <div className="hidden sm:flex flex-col space-y-6">
               <div className="space-y-1">
-                <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium text-white leading-tight">
+                <h1 dir="auto" className="text-6xl md:text-7xl lg:text-8xl font-medium text-white leading-tight">
                   {t('hero.headline1')}
                 </h1>
-                <h2 className="text-7xl md:text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold leading-tight">
+                <h2 dir="auto" className="text-7xl md:text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-gold-light to-brand-gold leading-tight">
                   {t('hero.headline2')}
                 </h2>
               </div>
-              <p className="text-sm text-white/60 max-w-lg font-light leading-relaxed">
+              <p dir="auto" className="text-sm text-white/60 max-w-lg font-light leading-relaxed">
                 {t('hero.subtext')}
               </p>
               <div className="pt-2">

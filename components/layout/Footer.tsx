@@ -144,7 +144,7 @@ export default function Footer() {
                   alt="OMR+ Logo"
                   className="h-20 w-auto object-contain"
                 />
-                <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)' }}>
+                <p dir="auto" className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)' }}>
                   {t('footer.tagline')}
                 </p>
                 {/* Socials */}
@@ -175,7 +175,7 @@ export default function Footer() {
 
               {/* Quick Links */}
               <div>
-                <p className="footer-heading">{t('footer.quickLinks')}</p>
+                <p dir="auto" className="footer-heading">{t('footer.quickLinks')}</p>
                 <ul className="space-y-3">
                   {[
                     { labelKey: 'nav.programs', href: '/programs' },
@@ -193,7 +193,7 @@ export default function Footer() {
 
               {/* Programs */}
               <div>
-                <p className="footer-heading">{t('footer.ourPrograms')}</p>
+                <p dir="auto" className="footer-heading">{t('footer.ourPrograms')}</p>
                 <ul className="space-y-3">
                   {[
                     'footer.muscleBuilding',
@@ -211,16 +211,16 @@ export default function Footer() {
 
               {/* Contact */}
               <div>
-                <p className="footer-heading">{t('footer.getInTouch')}</p>
+                <p dir="auto" className="footer-heading">{t('footer.getInTouch')}</p>
                 <div className="space-y-4 mb-5">
                   <div>
-                    <p className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('footer.email')}</p>
+                    <p dir="auto" className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('footer.email')}</p>
                     <a href="mailto:support@omrplus.com" className="footer-link text-[13px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
                       support@omrplus.com
                     </a>
                   </div>
                   <div>
-                    <p className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('footer.whatsapp')}</p>
+                    <p dir="auto" className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('footer.whatsapp')}</p>
                     <a
                       href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
                       target="_blank" rel="noopener noreferrer"
@@ -250,7 +250,7 @@ export default function Footer() {
             {/* Bottom bar */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-5">
               <div className="flex flex-wrap items-center gap-5">
-                <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                <p dir="auto" className="text-[11px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
                   © {currentYear} OMR+. {t('footer.allRightsReserved')}
                 </p>
                 {[
@@ -284,7 +284,7 @@ export default function Footer() {
 
             {/* Premium tagline */}
             <div className="mt-5 text-center">
-              <p className="text-[10px] tracking-[0.18em] uppercase" style={{ color: 'rgba(255,255,255,0.15)' }}>
+              <p dir="auto" className="text-[10px] tracking-[0.18em] uppercase" style={{ color: 'rgba(255,255,255,0.15)' }}>
                 <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> {t('footer.premiumCoaching')} &nbsp;·&nbsp;
                 <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> {t('footer.noFreeTrials')} &nbsp;·&nbsp;
                 <span style={{ color: 'rgba(201,168,76,0.4)' }}>✓</span> {t('footer.transparentPricing')} &nbsp;·&nbsp;
