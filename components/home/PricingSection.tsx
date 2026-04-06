@@ -57,11 +57,14 @@ export default function PricingSection({ plans }: { plans: PublicPlan[] }) {
           backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%);
           border: 1px solid rgba(201,168,76,0.22);
           box-shadow: inset 0 1px 0 rgba(201,168,76,0.1), inset 0 -1px 0 rgba(0,0,0,0.2), 0 12px 50px rgba(0,0,0,0.55), 0 0 0 1px rgba(201,168,76,0.05);
-          border-radius: 24px; transform: scale(1.04);
+          border-radius: 24px;
           transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), border-color 0.4s ease, box-shadow 0.4s ease;
         }
+        @media (min-width: 768px) {
+          .pricing-card-featured { transform: scale(1.04); }
+          .pricing-card-featured:hover { transform: scale(1.04) translateY(-7px); }
+        }
         .pricing-card-featured:hover {
-          transform: scale(1.04) translateY(-7px);
           border-color: rgba(201,168,76,0.35);
           box-shadow: inset 0 1px 0 rgba(201,168,76,0.12), 0 24px 64px rgba(0,0,0,0.65), 0 0 0 1px rgba(201,168,76,0.08);
         }
@@ -126,7 +129,7 @@ export default function PricingSection({ plans }: { plans: PublicPlan[] }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center mb-20" style={{ rowGap: '3.5rem', columnGap: '1.5rem' }}>
             {plans.map(plan => (
               <div key={plan.id} className={`relative p-8 flex flex-col h-full ${plan.is_featured ? 'pricing-card-featured' : 'pricing-card'}`}>
                 <div className="pricing-card-inner-glow" />

@@ -160,7 +160,7 @@ export default function PricingPage() {
             )}
 
             {!loading && plans.length > 0 && (
-              <div className={`grid items-start ${plans.length === 1 ? 'max-w-md mx-auto' : plans.length === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`} style={{ rowGap: '7rem', columnGap: '2.5rem' }}>
+              <div className={`grid items-start ${plans.length === 1 ? 'max-w-md mx-auto' : plans.length === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`} style={{ rowGap: '3rem', columnGap: '2rem' }}>
                 {plans.map(plan => (
                   <div key={plan.id} className="relative" style={{ paddingTop: plan.is_featured ? '1.4rem' : '0' }}>
 
