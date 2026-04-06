@@ -152,7 +152,7 @@ export default function PricingSection({ plans }: { plans: PublicPlan[] }) {
 
                 <div className="relative z-10 mb-6 pb-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                   <div className="flex items-start gap-1.5">
-                    <span className="text-sm font-medium mt-3" style={{ color: 'rgba(201,168,76,0.6)' }}>SAR</span>
+                    <span className="text-sm font-medium mt-3" style={{ color: 'rgba(201,168,76,0.6)' }}>AED</span>
                     <span className="text-6xl font-black leading-none tracking-tight"
                       style={{
                         background: plan.is_featured ? 'linear-gradient(135deg, #C9A84C, #E8C76A)' : 'rgba(255,255,255,0.85)',

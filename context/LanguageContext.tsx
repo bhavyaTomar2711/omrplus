@@ -53,14 +53,15 @@ const en: Record<string, string> = {
   'footer.realResults': 'Real results',
 
   // Hero
-  'hero.headline1': 'UNLEASH YOUR',
-  'hero.headline2': 'POTENTIAL',
-  'hero.subtext': 'Join a community where goals are crushed, strength is built, and potential becomes power.',
-  'hero.cta': 'Get Started',
-  'hero.badge': 'Premium Fitness Coaching',
+  'hero.headline1': 'This is not fitness.',
+  'hero.headline2': 'Performance Engineering.',
+  'hero.subtext': 'Precision training. Built for elite results. A private system designed for high-performance individuals in the UAE.',
+  'hero.cta': 'Apply for Access',
+  'hero.secondary': 'See The System',
+  'hero.badge': 'AthloCode Performance System',
   'hero.mobileHeadline1': 'UNLEASH',
   'hero.mobileHeadline2': 'YOUR',
-  'hero.trust': 'Trusted by hundreds of members',
+  'hero.trust': 'Limited onboarding slots available — application-based access only',
 
   // Programs page
   'programs.badge': 'Our Programs',
@@ -125,10 +126,10 @@ const en: Record<string, string> = {
   'program.mealOnly.i5': 'Monthly meal plan refreshes',
 
   // About page
-  'about.badge': 'About OMR+',
+  'about.badge': 'What is AthloCode',
   'about.title': 'Premium Coaching,',
   'about.titleHighlight': 'Real Results',
-  'about.subtitle': 'OMR+ is a premium fitness coaching platform built for people who are serious about transforming their bodies — with expert guidance, not guesswork.',
+  'about.subtitle': 'AthloCode is a luxury performance optimization system — not a coaching service. It combines structured nutrition, precision training, and continuous optimization into one controlled system built for UAE high-performers.',
   'about.mission.title': 'Our Mission',
   'about.mission.body': 'To deliver world-class fitness coaching that\'s accessible, personalized, and built around real results — not empty promises.',
   'about.approach.title': 'Our Approach',
@@ -172,17 +173,18 @@ const en: Record<string, string> = {
   'marketplace.notifyBtn': 'Notify Me',
 
   // How It Works section
-  'hiw.badge': 'How It Works',
-  'hiw.title': 'Your Journey to',
-  'hiw.titleHighlight': 'Transformation',
-  'hiw.step1.title': 'Free Consultation',
-  'hiw.step1.desc': 'Book a free consultation with our team. We\'ll assess your goals, lifestyle, and fitness level to match you with the right program.',
-  'hiw.step2.title': 'Get Your Plan',
-  'hiw.step2.desc': 'Receive a fully customized workout and meal plan, tailored specifically to your body, goals, and schedule.',
-  'hiw.step3.title': 'Coach Support',
-  'hiw.step3.desc': 'Stay connected with your dedicated coach. Weekly check-ins, plan adjustments, and real-time messaging keep you on track.',
-  'hiw.step4.title': 'Track Progress',
-  'hiw.step4.desc': 'Log your progress, upload body checks, and watch your transformation unfold with data-driven insights.',
+  'hiw.badge': 'The System',
+  'hiw.title': 'How The',
+  'hiw.titleHighlight': 'System Works',
+  'hiw.subtitle': 'Four precise steps. No randomness. No guesswork. A controlled system engineered for measurable elite results.',
+  'hiw.step1.title': 'Apply for Access',
+  'hiw.step1.desc': 'Submit your application. We review your profile, goals, and lifestyle to determine if AthloCode is the right fit.',
+  'hiw.step2.title': 'Receive Your System',
+  'hiw.step2.desc': 'Get your fully personalized nutrition and training system — engineered precisely for your body and goals.',
+  'hiw.step3.title': 'Execute Daily',
+  'hiw.step3.desc': 'Follow your daily plan with precision. Every meal, every session — structured, clear, and optimized for results.',
+  'hiw.step4.title': 'Weekly Optimization',
+  'hiw.step4.desc': 'Your coach reviews your data every week and refines your system. Continuous improvement, not static plans.',
 
   // Transformations section
   'trans.badge': 'Transformations',
@@ -219,7 +221,7 @@ const en: Record<string, string> = {
   'pricing.getStarted': 'Get Started',
   'pricing.popular': 'Most Popular',
   'pricing.consultation': 'Book Free Consultation',
-  'pricing.footer1': 'All prices listed in Saudi Riyal (SAR). Pricing is managed by the admin and subject to change.',
+  'pricing.footer1': 'All prices listed in UAE Dirham (AED). Pricing is managed by the admin and subject to change.',
   'pricing.footer2': 'Not sure which plan? Book your free consultation — no commitment required.',
   'pricing.plan1.name': 'Plan Only',
   'pricing.plan1.tagline': 'Self-paced structure',
@@ -243,7 +245,7 @@ const en: Record<string, string> = {
   'pricing.plan2.f7': 'Priority plan updates',
   'pricing.plan3.name': 'Elite',
   'pricing.plan3.tagline': 'Maximum results',
-  'pricing.plan3.desc': 'The full OMR+ experience — elite coaching with premium add-ons for those who want the best.',
+  'pricing.plan3.desc': 'The full AthloCode experience — elite coaching with premium add-ons for those who want the best.',
   'pricing.plan3.cta': 'Go Elite',
   'pricing.plan3.f1': 'Everything in Full Coaching',
   'pricing.plan3.f2': 'Unlimited coach messages',
@@ -253,9 +255,14 @@ const en: Record<string, string> = {
   'pricing.plan3.f6': 'Priority onboarding',
 
   // Consultation CTA
-  'cta.title': 'Ready to Transform?',
-  'cta.subtitle': 'Book your free consultation today and take the first step toward the body you deserve.',
-  'cta.btn': 'Book Free Consultation',
+  'cta.title': 'Apply for Access.',
+  'cta.subtitle': 'AthloCode accepts a limited number of members per cycle. If you are serious about elite results, submit your application today.',
+  'cta.btn': 'Apply for Access',
+  'cta.secondary': 'Join the Waitlist',
+  'cta.point1': 'Limited onboarding slots',
+  'cta.point2': 'Application-based access only',
+  'cta.point3': 'Private system for selected members',
+  'cta.point4': 'Built for UAE high-performers',
 
   // Testimonials
   'testimonials.badge': 'Testimonials',
@@ -280,7 +287,7 @@ const en: Record<string, string> = {
   // Signup page
   'signup.memberPortal': 'New Member',
   'signup.title': 'Create Your Account',
-  'signup.subtitle': 'Join OMR+ and start your transformation',
+  'signup.subtitle': 'Join AthloCode and start your transformation',
   'signup.fullName': 'Full Name',
   'signup.fullNamePlaceholder': 'Your full name',
   'signup.email': 'Email Address',
@@ -343,7 +350,7 @@ const en: Record<string, string> = {
 
   // Admin Dashboard — extended labels
   'admin.platformOverview': 'Platform Overview',
-  'admin.platformSubtitle': 'Full control of the OMR+ platform.',
+  'admin.platformSubtitle': 'Full control of the AthloCode platform.',
   'admin.totalMembers': 'Total Members',
   'admin.registeredClients': 'Registered clients',
   'admin.activeCoaches': 'Active Coaches',
@@ -372,7 +379,7 @@ const en: Record<string, string> = {
   'admin.saving': 'Saving…',
   'admin.save': 'Save',
   'admin.cancel': 'Cancel',
-  'admin.addPlan': '+ Add Plan',
+  'admin.addPlan': 'Add Plan',
   'admin.editPlan': 'Edit Plan',
   'admin.newPlan': 'New Plan',
   'admin.delete': 'Delete',
@@ -436,7 +443,7 @@ const en: Record<string, string> = {
 
   // Testimonials Section — extended
   'testimonials.subtitle': 'Real feedback from members who committed to the process and came out the other side transformed.',
-  'testimonials.m1.quote': 'OMR+ completely transformed my journey. The personalized meal plans and trainer support made every week feel structured and achievable. Lost 20kg and gained a completely different relationship with my body.',
+  'testimonials.m1.quote': 'AthloCode completely transformed my journey. The personalized meal plans and trainer support made every week feel structured and achievable. Lost 20kg and gained a completely different relationship with my body.',
   'testimonials.m1.role': 'Fat Loss Program',
   'testimonials.m2.quote': 'The professionalism here is unmatched. My trainer adjusted my program every single week based on real data. It never felt like a generic plan — it felt built just for me.',
   'testimonials.m2.role': 'Muscle Building Program',
@@ -461,7 +468,7 @@ const en: Record<string, string> = {
   // Admin — Marketplace tab
   'admin.marketplaceTitle': 'Marketplace',
   'admin.marketplaceSub': 'Manage products and ebooks',
-  'admin.addProduct': '+ Add Product',
+  'admin.addProduct': 'Add Product',
   'admin.activeInStore': 'Active (visible in store)',
 
   // Admin — Pricing tab
@@ -502,7 +509,7 @@ const en: Record<string, string> = {
   'admin.perRegisteredClient': 'Per registered client',
   'admin.newMembers': 'New Members',
   'admin.last6Months': 'Last 6 months',
-  'admin.revenueSAR': 'Revenue (SAR)',
+  'admin.revenueSAR': 'Revenue (AED)',
   'admin.subscriptionBreakdown': 'Subscription Breakdown',
   'admin.statusDistribution': 'Status distribution',
   'admin.statusCancelled': 'Cancelled',
@@ -588,7 +595,7 @@ const en: Record<string, string> = {
   'coach.messages.selectClient': '— select a client —',
 
   // Client Dashboard — Onboarding Modal
-  'client.onboarding.welcome': 'Welcome to OMR+',
+  'client.onboarding.welcome': 'Welcome to AthloCode',
   'client.onboarding.primaryGoal': "What's your primary goal?",
   'client.onboarding.bodyStats': 'Your Body Stats',
   'client.onboarding.bodyStatsSub': 'Used to calculate your personalised plan',
@@ -743,14 +750,15 @@ const ar: Record<string, string> = {
   'footer.realResults': 'نتائج حقيقية',
 
   // Hero
-  'hero.headline1': 'اكشف',
-  'hero.headline2': 'إمكاناتك',
-  'hero.subtext': 'انضم إلى مجتمع يُحقق الأهداف ويبني القوة ويحوّل الإمكانات إلى قوة حقيقية.',
-  'hero.cta': 'ابدأ الآن',
-  'hero.badge': 'تدريب لياقة بدنية متميز',
+  'hero.headline1': 'هذا ليس لياقة.',
+  'hero.headline2': 'هندسة الأداء.',
+  'hero.subtext': 'تدريب دقيق. مبني لنتائج نخبوية. منظومة خاصة مصممة للأفراد عالي الأداء في الإمارات.',
+  'hero.cta': 'تقدم للوصول',
+  'hero.secondary': 'اكتشف المنظومة',
+  'hero.badge': 'منظومة AthloCode للأداء',
   'hero.mobileHeadline1': 'اكشف',
   'hero.mobileHeadline2': '',
-  'hero.trust': 'موثوق به من مئات الأعضاء',
+  'hero.trust': 'مقاعد التأهيل محدودة — الوصول عبر الطلب فقط',
 
   // Programs page
   'programs.badge': 'برامجنا',
@@ -815,10 +823,10 @@ const ar: Record<string, string> = {
   'program.mealOnly.i5': 'تجديد شهري لخطة الوجبات',
 
   // About page
-  'about.badge': 'عن OMR+',
+  'about.badge': 'ما هو AthloCode',
   'about.title': 'تدريب متميز،',
   'about.titleHighlight': 'نتائج حقيقية',
-  'about.subtitle': 'OMR+ منصة تدريب رياضي متميزة مبنية لمن هم جادون في تحويل أجسامهم — بتوجيه احترافي، لا بالتخمين.',
+  'about.subtitle': 'AthloCode منظومة تحسين أداء فاخرة — وليست خدمة تدريب تقليدية. تجمع بين التغذية المنظمة، التدريب الدقيق، والتحسين المستمر في منظومة واحدة متكاملة مُصممة لأصحاب الأداء العالي في الإمارات.',
   'about.mission.title': 'مهمتنا',
   'about.mission.body': 'تقديم تدريب رياضي عالمي المستوى يكون متاحاً ومخصصاً ومبنياً على نتائج حقيقية — لا وعود فارغة.',
   'about.approach.title': 'نهجنا',
@@ -862,17 +870,18 @@ const ar: Record<string, string> = {
   'marketplace.notifyBtn': 'أعلمني',
 
   // How It Works section
-  'hiw.badge': 'كيف يعمل',
-  'hiw.title': 'رحلتك نحو',
-  'hiw.titleHighlight': 'التحول',
-  'hiw.step1.title': 'استشارة مجانية',
-  'hiw.step1.desc': 'احجز استشارة مجانية مع فريقنا. سنقيّم أهدافك وأسلوب حياتك ومستواك الرياضي لمطابقتك مع البرنامج المناسب.',
-  'hiw.step2.title': 'احصل على خطتك',
-  'hiw.step2.desc': 'احصل على خطة تمرين وتغذية مخصصة بالكامل، مُصممة خصيصاً لجسمك وأهدافك وجدولك.',
-  'hiw.step3.title': 'دعم المدرب',
-  'hiw.step3.desc': 'ابق على تواصل مع مدربك المخصص. متابعة أسبوعية وتعديلات على الخطة ومراسلة فورية لإبقائك على المسار.',
-  'hiw.step4.title': 'تتبع التقدم',
-  'hiw.step4.desc': 'سجّل تقدمك، ارفع فحوصات الجسم، وشاهد تحولك يتكشف بأفكار مبنية على البيانات.',
+  'hiw.badge': 'المنظومة',
+  'hiw.title': 'كيف تعمل',
+  'hiw.titleHighlight': 'المنظومة',
+  'hiw.subtitle': 'أربع خطوات دقيقة. لا عشوائية. لا تخمين. منظومة متحكمة مُهندسة لنتائج نخبوية قابلة للقياس.',
+  'hiw.step1.title': 'تقدم للوصول',
+  'hiw.step1.desc': 'قدّم طلبك. نراجع ملفك وأهدافك وأسلوب حياتك لتحديد مدى ملاءمة AthloCode لك.',
+  'hiw.step2.title': 'استلم منظومتك',
+  'hiw.step2.desc': 'احصل على منظومة تغذية وتدريب مخصصة بالكامل — مُهندسة بدقة لجسمك وأهدافك.',
+  'hiw.step3.title': 'نفّذ يومياً',
+  'hiw.step3.desc': 'اتبع خطتك اليومية بدقة. كل وجبة، كل جلسة — منظمة وواضحة ومُحسّنة للنتائج.',
+  'hiw.step4.title': 'تحسين أسبوعي',
+  'hiw.step4.desc': 'يراجع مدربك بياناتك كل أسبوع ويُحسّن منظومتك. تحسين مستمر، لا خطط ثابتة.',
 
   // Transformations section
   'trans.badge': 'قبل وبعد',
@@ -933,7 +942,7 @@ const ar: Record<string, string> = {
   'pricing.plan2.f7': 'تحديثات ذات أولوية للخطة',
   'pricing.plan3.name': 'النخبة',
   'pricing.plan3.tagline': 'أقصى النتائج',
-  'pricing.plan3.desc': 'تجربة OMR+ الكاملة — تدريب نخبوي مع إضافات متميزة لمن يريد الأفضل.',
+  'pricing.plan3.desc': 'تجربة AthloCode الكاملة — تدريب نخبوي مع إضافات متميزة لمن يريد الأفضل.',
   'pricing.plan3.cta': 'انضم للنخبة',
   'pricing.plan3.f1': 'كل مزايا التدريب الكامل',
   'pricing.plan3.f2': 'رسائل غير محدودة مع المدرب',
@@ -943,9 +952,14 @@ const ar: Record<string, string> = {
   'pricing.plan3.f6': 'تأهيل ذو أولوية',
 
   // Consultation CTA
-  'cta.title': 'مستعد للتحول؟',
-  'cta.subtitle': 'احجز استشارتك المجانية اليوم واخطُ أولى خطواتك نحو الجسم الذي تستحقه.',
-  'cta.btn': 'احجز استشارة مجانية',
+  'cta.title': 'تقدم للوصول.',
+  'cta.subtitle': 'تقبل AthloCode عدداً محدوداً من الأعضاء في كل دورة. إذا كنت جاداً في تحقيق نتائج نخبوية، قدّم طلبك اليوم.',
+  'cta.btn': 'تقدم للوصول',
+  'cta.secondary': 'انضم لقائمة الانتظار',
+  'cta.point1': 'مقاعد تأهيل محدودة',
+  'cta.point2': 'الوصول عبر الطلب فقط',
+  'cta.point3': 'منظومة خاصة للأعضاء المختارين',
+  'cta.point4': 'مبني لأصحاب الأداء العالي في الإمارات',
 
   // Testimonials
   'testimonials.badge': 'آراء العملاء',
@@ -970,7 +984,7 @@ const ar: Record<string, string> = {
   // Signup page
   'signup.memberPortal': 'عضو جديد',
   'signup.title': 'أنشئ حسابك',
-  'signup.subtitle': 'انضم إلى OMR+ وابدأ تحولك',
+  'signup.subtitle': 'انضم إلى AthloCode وابدأ تحولك',
   'signup.fullName': 'الاسم الكامل',
   'signup.fullNamePlaceholder': 'اسمك الكامل',
   'signup.email': 'البريد الإلكتروني',
@@ -1033,7 +1047,7 @@ const ar: Record<string, string> = {
 
   // Admin Dashboard — extended labels
   'admin.platformOverview': 'نظرة عامة على المنصة',
-  'admin.platformSubtitle': 'تحكم كامل في منصة OMR+.',
+  'admin.platformSubtitle': 'تحكم كامل في منصة AthloCode.',
   'admin.totalMembers': 'إجمالي الأعضاء',
   'admin.registeredClients': 'عملاء مسجلون',
   'admin.activeCoaches': 'المدربون النشطون',
@@ -1062,7 +1076,7 @@ const ar: Record<string, string> = {
   'admin.saving': 'جارٍ الحفظ…',
   'admin.save': 'حفظ',
   'admin.cancel': 'إلغاء',
-  'admin.addPlan': '+ إضافة خطة',
+  'admin.addPlan': 'إضافة خطة',
   'admin.editPlan': 'تعديل الخطة',
   'admin.newPlan': 'خطة جديدة',
   'admin.delete': 'حذف',
@@ -1126,7 +1140,7 @@ const ar: Record<string, string> = {
 
   // Testimonials Section — extended
   'testimonials.subtitle': 'آراء حقيقية من أعضاء التزموا بالعملية وخرجوا متحولين.',
-  'testimonials.m1.quote': 'OMR+ غيّر مسيرتي تماماً. الخطط الغذائية المخصصة ودعم المدرب جعل كل أسبوع منظماً وقابلاً للتحقيق. فقدت 20 كيلو واكتسبت علاقة مختلفة تماماً مع جسدي.',
+  'testimonials.m1.quote': 'AthloCode غيّر مسيرتي تماماً. الخطط الغذائية المخصصة ودعم المدرب جعل كل أسبوع منظماً وقابلاً للتحقيق. فقدت 20 كيلو واكتسبت علاقة مختلفة تماماً مع جسدي.',
   'testimonials.m1.role': 'برنامج حرق الدهون',
   'testimonials.m2.quote': 'الاحترافية هنا لا مثيل لها. عدّل مدربي برنامجي كل أسبوع بناءً على بيانات حقيقية. لم أشعر أنه خطة عامة — بل شعرت أنها مبنية خصيصاً لي.',
   'testimonials.m2.role': 'برنامج بناء العضلات',
@@ -1151,7 +1165,7 @@ const ar: Record<string, string> = {
   // Admin — Marketplace tab
   'admin.marketplaceTitle': 'المتجر',
   'admin.marketplaceSub': 'إدارة المنتجات والكتب الإلكترونية',
-  'admin.addProduct': '+ إضافة منتج',
+  'admin.addProduct': 'إضافة منتج',
   'admin.activeInStore': 'نشط (مرئي في المتجر)',
 
   // Admin — Pricing tab
@@ -1192,7 +1206,7 @@ const ar: Record<string, string> = {
   'admin.perRegisteredClient': 'لكل عميل مسجل',
   'admin.newMembers': 'الأعضاء الجدد',
   'admin.last6Months': 'آخر 6 أشهر',
-  'admin.revenueSAR': 'الإيراد (ريال)',
+  'admin.revenueSAR': 'الإيراد (درهم)',
   'admin.subscriptionBreakdown': 'توزيع الاشتراكات',
   'admin.statusDistribution': 'توزيع الحالات',
   'admin.statusCancelled': 'ملغي',
@@ -1278,7 +1292,7 @@ const ar: Record<string, string> = {
   'coach.messages.selectClient': '— اختر عميلاً —',
 
   // Client Dashboard — Onboarding Modal
-  'client.onboarding.welcome': 'مرحباً بك في OMR+',
+  'client.onboarding.welcome': 'مرحباً بك في AthloCode',
   'client.onboarding.primaryGoal': 'ما هو هدفك الرئيسي؟',
   'client.onboarding.bodyStats': 'إحصائيات جسمك',
   'client.onboarding.bodyStatsSub': 'تُستخدم لحساب خطتك الشخصية',

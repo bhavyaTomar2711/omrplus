@@ -343,7 +343,7 @@ export default function ProgramsPage() {
               {t('programs.notSure')}
             </p>
             <a
-              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
+              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20AthloCode"
               target="_blank" rel="noopener noreferrer"
               className="prog-btn"
             >

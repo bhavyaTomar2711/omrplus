@@ -82,18 +82,19 @@ export default function PricingPage() {
           pointer-events: none;
         }
         .price-card {
-          background: rgba(255,255,255,0.025);
-          border: 1px solid rgba(255,255,255,0.07);
+          background: #161616;
+          border: 1px solid rgba(255,255,255,0.1);
           border-radius: 24px; overflow: hidden;
           transition: border-color 0.35s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+          box-shadow: 0 8px 40px rgba(0,0,0,0.6);
         }
-        .price-card:hover { transform: translateY(-6px); border-color: rgba(201,168,76,0.2); }
+        .price-card:hover { transform: translateY(-6px); border-color: rgba(201,168,76,0.25); }
         .price-card-featured {
-          background: rgba(255,255,255,0.035);
-          border-color: rgba(201,168,76,0.3);
-          box-shadow: 0 0 60px rgba(201,168,76,0.06);
+          background: #191510;
+          border-color: rgba(201,168,76,0.4);
+          box-shadow: 0 0 60px rgba(201,168,76,0.08), 0 8px 40px rgba(0,0,0,0.6);
         }
-        .price-card-featured:hover { border-color: rgba(201,168,76,0.55); }
+        .price-card-featured:hover { border-color: rgba(201,168,76,0.65); }
         .price-btn {
           display: block; width: 100%; padding: 1rem;
           font-size: 0.75rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
@@ -132,7 +133,7 @@ export default function PricingPage() {
             </div>
             <h1 className="text-5xl sm:text-6xl font-bold text-white mb-5 tracking-tight">
               {t('pricing.title')}{' '}
-              <span style={{ background: 'linear-gradient(135deg,#C9A84C,#E8C76A,#C9A84C)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
+              <span style={{ background: 'linear-gradient(135deg,#C9A84C,#E8C76A,#C9A84C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 {t('pricing.titleHighlight')}
               </span>
             </h1>
@@ -143,8 +144,8 @@ export default function PricingPage() {
         </div>
 
         {/* Plan Cards */}
-        <section className="py-16" style={{ background: '#0B0B0B' }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-12 sm:py-20" style={{ background: '#0B0B0B' }}>
+          <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
 
             {loading && (
               <div className="flex justify-center py-16">
@@ -159,20 +160,21 @@ export default function PricingPage() {
             )}
 
             {!loading && plans.length > 0 && (
-              <div className={`grid gap-6 items-start ${plans.length === 1 ? 'max-w-md mx-auto' : plans.length === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`}>
+              <div className={`grid items-start ${plans.length === 1 ? 'max-w-md mx-auto' : plans.length === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`} style={{ rowGap: '7rem', columnGap: '2.5rem' }}>
                 {plans.map(plan => (
-                  <div key={plan.id} className={`price-card ${plan.is_featured ? 'price-card-featured' : ''}`}>
+                  <div key={plan.id} className="relative" style={{ paddingTop: plan.is_featured ? '1.4rem' : '0' }}>
 
                     {plan.is_featured && (
-                      <div className="px-6 pt-5 pb-0 flex justify-start">
-                        <span className="text-[10px] font-bold tracking-[0.18em] uppercase px-3 py-1 rounded-full"
-                          style={{ background: 'rgba(201,168,76,0.12)', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.3)' }}>
+                      <div className="absolute top-0 left-0 right-0 flex justify-center" style={{ zIndex: 10 }}>
+                        <span className="text-[10px] font-bold tracking-[0.18em] uppercase px-4 py-1.5 rounded-full"
+                          style={{ background: '#0B0B0B', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.45)', boxShadow: '0 0 16px rgba(201,168,76,0.12)' }}>
                           ● {isRTL ? 'الأكثر شعبية' : 'Most Popular'}
                         </span>
                       </div>
                     )}
 
-                    <div className="p-6 sm:p-8">
+                  <div className={`price-card ${plan.is_featured ? 'price-card-featured' : ''}`}>
+                    <div className="p-7 sm:p-9">
                       {/* Header */}
                       {plan.tagline && (
                         <p className="text-[10px] tracking-[0.22em] uppercase mb-2 font-semibold" style={{ color: 'rgba(201,168,76,0.5)' }}>
@@ -183,7 +185,7 @@ export default function PricingPage() {
 
                       {/* Price */}
                       <div className="flex items-baseline gap-1.5 mb-4" dir="ltr">
-                        <span className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>SAR</span>
+                        <span className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>AED</span>
                         <span className="text-5xl font-black" style={{ color: plan.is_featured ? '#C9A84C' : 'white' }}>{plan.price_sar}</span>
                         <span className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>{isRTL ? '/شهر' : '/month'}</span>
                       </div>
@@ -218,6 +220,7 @@ export default function PricingPage() {
                         ))}
                       </ul>
                     </div>
+                  </div>
                   </div>
                 ))}
               </div>
@@ -268,10 +271,10 @@ export default function PricingPage() {
                 : "Book a free consultation and we'll guide you to the right plan for your goals and budget."}
             </p>
             <a
-              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
+              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20AthloCode"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ display:'inline-flex', alignItems:'center', gap:10, padding:'0.9rem 2rem', border:'1px solid rgba(201,168,76,0.4)', color:'#C9A84C', fontWeight:700, fontSize:'0.78rem', letterSpacing:'0.14em', textTransform:'uppercase', borderRadius:14, textDecoration:'none', transition:'background 0.25s ease' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '0.9rem 2rem', border: '1px solid rgba(201,168,76,0.4)', color: '#C9A84C', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.14em', textTransform: 'uppercase', borderRadius: 14, textDecoration: 'none', transition: 'background 0.25s ease' }}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(201,168,76,0.07)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >

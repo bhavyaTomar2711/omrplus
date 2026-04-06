@@ -133,7 +133,7 @@ export default function MarketplacePage() {
 
             {/* Notify CTA */}
             <a
-              href="https://wa.me/?text=I%20want%20to%20be%20notified%20when%20the%20OMR%2B%20marketplace%20launches"
+              href="https://wa.me/?text=I%20want%20to%20be%20notified%20when%20the%20AthloCode%20marketplace%20launches"
               target="_blank" rel="noopener noreferrer"
               className="mkt-notify-btn"
             >

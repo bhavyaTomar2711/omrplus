@@ -83,16 +83,6 @@ export default function TestimonialsSection() {
           z-index: 1;
         }
 
-        /* ── Grain ── */
-        .tm-grain {
-          position: absolute;
-          inset: 0;
-          z-index: 2;
-          opacity: 0.025;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 200px 200px;
-          pointer-events: none;
-        }
 
         /* ── Testimonial card ── */
         .tm-card {
@@ -141,6 +131,17 @@ export default function TestimonialsSection() {
           font-weight: 700;
           letter-spacing: 0.04em;
           color: #C9A84C;
+        }
+
+        /* ── Grain ── */
+        .tm-grain {
+          position: absolute;
+          inset: 0;
+          z-index: 2;
+          opacity: 0.025;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+          background-size: 200px 200px;
+          pointer-events: none;
         }
 
         /* ── CTA button ── */

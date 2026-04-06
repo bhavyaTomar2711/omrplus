@@ -319,8 +319,8 @@ export default function DashboardShell({ role, navItems, activeTab, onTabChange,
           <div className="dsh-sidebar-top">
             <Link href="/" onClick={() => setSidebarOpen(false)}>
               <img
-                src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774866904/B9EBAC3E-ECDA-4CA9-81C7-F14DCC3E7A9D_1_-Photoroom_s5ro4z.png"
-                alt="OMR+" className="h-9 w-auto object-contain"
+                src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1775457344/079EE7CF-DD0C-4756-97BA-61F6D5B0B7DB-Photoroom_plczlp.png"
+                alt="AthloCode" className="h-16 w-auto object-contain"
               />
             </Link>
             <div className="dsh-role-pill">

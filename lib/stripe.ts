@@ -16,21 +16,21 @@ export const PLANS = {
     nameAr: 'الخطة فقط',
     priceId: process.env.STRIPE_PRICE_PLAN_ONLY!,
     price: 149,
-    currency: 'SAR',
+    currency: 'AED',
   },
   full_coaching: {
     name: 'Full Coaching',
     nameAr: 'التدريب الكامل',
     priceId: process.env.STRIPE_PRICE_FULL_COACHING!,
     price: 349,
-    currency: 'SAR',
+    currency: 'AED',
   },
   elite: {
     name: 'Elite',
     nameAr: 'النخبة',
     priceId: process.env.STRIPE_PRICE_ELITE!,
     price: 549,
-    currency: 'SAR',
+    currency: 'AED',
   },
 } as const;
 

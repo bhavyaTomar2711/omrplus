@@ -116,6 +116,7 @@ export default function TransformationsSection() {
           pointer-events: none;
         }
 
+
         /* Grain */
         .tf-grain {
           position: absolute;
@@ -153,7 +154,7 @@ export default function TransformationsSection() {
 
         /* Transformation cards */
         .tf-card {
-          background: rgba(0,0,0,0.52);
+          background: rgba(0,0,0,0.12);
           backdrop-filter: blur(20px) saturate(150%);
           -webkit-backdrop-filter: blur(20px) saturate(150%);
           border: 1px solid rgba(255,255,255,0.09);

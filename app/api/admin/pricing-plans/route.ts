@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { stripe } from '@/lib/stripe';
 
 // Uses service role key — bypasses RLS. Admin-only operations.
 const supabaseAdmin = createClient(
@@ -55,11 +56,32 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// DELETE — remove plan
+// DELETE — archive on Stripe then remove from DB
 export async function DELETE(req: NextRequest) {
   try {
     const { id } = await req.json();
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+
+    // Fetch the plan to get its Stripe price ID
+    const { data: plan } = await supabaseAdmin
+      .from('pricing_plans')
+      .select('stripe_price_id')
+      .eq('id', id)
+      .single();
+
+    // Archive on Stripe if a price ID exists
+    if (plan?.stripe_price_id) {
+      try {
+        const price = await stripe.prices.retrieve(plan.stripe_price_id);
+        await stripe.prices.update(plan.stripe_price_id, { active: false });
+        if (price.product && typeof price.product === 'string') {
+          await stripe.products.update(price.product, { active: false });
+        }
+      } catch (stripeErr) {
+        // Log but don't block — DB delete still proceeds
+        console.error('Stripe archive failed:', stripeErr);
+      }
+    }
 
     const { error } = await supabaseAdmin
       .from('pricing_plans')

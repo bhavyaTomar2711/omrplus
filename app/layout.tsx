@@ -15,11 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OMR+ | Premium Fitness Coaching & AI-Powered Meal Plans",
+  title: "AthloCode | Premium Fitness Coaching & AI-Powered Meal Plans",
   description: "Transform your body with personalized coaching, AI-customized meal plans, and real-time trainer support. Join 500+ members today.",
   keywords: ["fitness coaching", "meal plans", "personal trainer", "weight loss", "muscle building"],
   openGraph: {
-    title: "OMR+ | Premium Fitness Coaching",
+    title: "AthloCode | Premium Fitness Coaching",
     description: "Transform your body with personalized coaching and AI meal plans",
     type: "website",
   },

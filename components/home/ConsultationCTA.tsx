@@ -12,10 +12,10 @@ const CheckIcon = () => (
 export default function ConsultationCTA() {
   const { t } = useLanguage();
   const points = [
-    t('footer.freeConsultation'),
-    t('hiw.step2.title'),
-    t('hiw.step3.title'),
-    t('hiw.step4.title'),
+    t('cta.point1'),
+    t('cta.point2'),
+    t('cta.point3'),
+    t('cta.point4'),
   ];
   return (
     <>
@@ -79,15 +79,6 @@ export default function ConsultationCTA() {
           background: linear-gradient(90deg, transparent, rgba(201,168,76,0.35), transparent);
         }
 
-        /* ── Grain ── */
-        .cta-grain {
-          position: absolute;
-          inset: 0;
-          opacity: 0.022;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 200px 200px;
-          pointer-events: none;
-        }
 
         /* ── Glass container ── */
         .cta-glass {
@@ -104,6 +95,16 @@ export default function ConsultationCTA() {
         }
 
         /* ── CTA button ── */
+        /* ── Grain ── */
+        .cta-grain {
+          position: absolute;
+          inset: 0;
+          opacity: 0.022;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+          background-size: 200px 200px;
+          pointer-events: none;
+        }
+
         .cta-btn {
           display: inline-flex;
           align-items: center;
@@ -201,19 +202,47 @@ export default function ConsultationCTA() {
               </div>
             </AnimateOnScroll>
 
-            {/* CTA */}
+            {/* CTAs */}
             <AnimateOnScroll delay={300}>
-              <a
-                href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cta-btn"
-              >
-                {t('cta.btn')}
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </a>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a
+                  href="https://wa.me/?text=I%20want%20to%20apply%20for%20access%20to%20AthloCode"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 font-bold tracking-widest uppercase"
+                  style={{
+                    padding: '1.1rem 2.5rem',
+                    fontSize: '0.72rem',
+                    background: 'linear-gradient(135deg, #C9A84C, #E5C76B)',
+                    color: '#0A0A0A',
+                    borderRadius: 10,
+                    textDecoration: 'none',
+                    boxShadow: '0 8px 28px rgba(201,168,76,0.2)',
+                  }}
+                >
+                  {t('cta.btn')}
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                  </svg>
+                </a>
+                <a
+                  href="https://wa.me/?text=I%20want%20to%20join%20the%20AthloCode%20waitlist"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 font-semibold tracking-widest uppercase"
+                  style={{
+                    padding: '1.1rem 2rem',
+                    fontSize: '0.72rem',
+                    color: 'rgba(201,168,76,0.7)',
+                    border: '1px solid rgba(201,168,76,0.25)',
+                    borderRadius: 10,
+                    textDecoration: 'none',
+                    background: 'transparent',
+                  }}
+                >
+                  {t('cta.secondary')}
+                </a>
+              </div>
             </AnimateOnScroll>
 
             {/* Footnote */}
@@ -224,7 +253,7 @@ export default function ConsultationCTA() {
               >
                 Questions? Reach us on{' '}
                 <a
-                  href="https://wa.me/?text=Hi%20OMR%2B"
+                  href="https://wa.me/?text=Hi%20AthloCode"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: 'rgba(201,168,76,0.5)' }}
@@ -234,11 +263,11 @@ export default function ConsultationCTA() {
                 </a>
                 {' '}or email{' '}
                 <a
-                  href="mailto:support@omrplus.com"
+                  href="mailto:support@athlocode.com"
                   style={{ color: 'rgba(201,168,76,0.5)' }}
                   className="hover:opacity-80 transition-opacity"
                 >
-                  support@omrplus.com
+                  support@athlocode.com
                 </a>
               </p>
             </AnimateOnScroll>

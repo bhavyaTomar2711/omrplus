@@ -39,11 +39,11 @@ export default function Navbar() {
         <div className="flex items-center h-20 gap-8">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2 group flex-shrink-0">
-            <div className="w-30 h-20 flex items-center justify-center">
+            <div className="flex items-center justify-center">
               <img
-                src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774866904/B9EBAC3E-ECDA-4CA9-81C7-F14DCC3E7A9D_1_-Photoroom_s5ro4z.png"
-                alt="OMR+ Logo"
-                className="h-15 w-auto object-contain group-hover:opacity-80 transition-opacity"
+                src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1775457344/079EE7CF-DD0C-4756-97BA-61F6D5B0B7DB-Photoroom_plczlp.png"
+                alt="AthloCode Logo"
+                className="h-16 w-auto object-contain group-hover:opacity-80 transition-opacity"
               />
             </div>
           </a>

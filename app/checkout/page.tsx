@@ -231,7 +231,7 @@ function CheckoutContent() {
 
                     <div className="mb-4" dir="ltr">
                       <span className="text-3xl font-black text-white">{plan.price_sar}</span>
-                      <span className="text-white/40 text-sm ml-1">SAR{isRTL ? '/شهر' : '/mo'}</span>
+                      <span className="text-white/40 text-sm ml-1">AED{isRTL ? '/شهر' : '/mo'}</span>
                     </div>
 
                     <ul className="space-y-2">
@@ -262,7 +262,7 @@ function CheckoutContent() {
                     <div className="h-px my-3" style={{ background: 'rgba(255,255,255,0.06)' }} />
                     <div className="flex justify-between items-center">
                       <span className="text-white/70 font-medium">{isRTL ? 'الإجمالي' : 'Total today'}</span>
-                      <span className="text-amber-400 font-black text-lg" dir="ltr">{selectedPlan.price_sar} SAR</span>
+                      <span className="text-amber-400 font-black text-lg" dir="ltr">{selectedPlan.price_sar} AED</span>
                     </div>
                   </div>
                 )}

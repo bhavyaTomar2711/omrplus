@@ -49,8 +49,7 @@ export default function HowItWorksSection() {
     { number: '01', titleKey: 'hiw.step1.title', descKey: 'hiw.step1.desc', icon: <CalendarIcon /> },
     { number: '02', titleKey: 'hiw.step2.title', descKey: 'hiw.step2.desc', icon: <ClipboardIcon /> },
     { number: '03', titleKey: 'hiw.step3.title', descKey: 'hiw.step3.desc', icon: <TargetIcon /> },
-    { number: '04', titleKey: 'hiw.step4.title', descKey: 'hiw.step4.desc', icon: <MessageIcon /> },
-    { number: '05', titleKey: 'hiw.step1.title', descKey: 'hiw.step4.desc', icon: <AwardIcon /> },
+    { number: '04', titleKey: 'hiw.step4.title', descKey: 'hiw.step4.desc', icon: <AwardIcon /> },
   ];
   return (
     <>
@@ -191,12 +190,12 @@ export default function HowItWorksSection() {
             </h2>
 
             <p dir="auto" className="text-white/45 max-w-lg mx-auto text-base leading-relaxed tracking-wide">
-              {t('hiw.step1.desc')}
+              {t('hiw.subtitle')}
             </p>
           </AnimateOnScroll>
 
           {/* Steps */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 mb-20 relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-20 relative">
             {steps.map((step, idx) => (
               <AnimateOnScroll key={idx} delay={idx * 110} className="relative">
                 <div className="hiw-card rounded-2xl p-8 h-full relative overflow-hidden group">
@@ -266,7 +265,7 @@ export default function HowItWorksSection() {
               {t('cta.title')}
             </p>
             <a
-              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
+              href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20AthloCode"
               target="_blank"
               rel="noopener noreferrer"
               className="hiw-cta-btn inline-flex items-center gap-3 px-10 py-4 text-xs font-semibold tracking-[0.16em] uppercase rounded-lg"

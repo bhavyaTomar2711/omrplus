@@ -203,7 +203,7 @@ export default function AboutPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
                   <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-4" style={{ color: 'rgba(201,168,76,0.5)' }}>
-                    Why OMR+
+                    Why AthloCode
                   </p>
                   <h2 className="text-3xl font-bold text-white mb-5 tracking-tight leading-tight">
                     Not a subscription.{' '}
@@ -213,7 +213,7 @@ export default function AboutPage() {
                   </h2>
                   <p className="text-sm leading-[1.9]" style={{ color: 'rgba(255,255,255,0.42)' }}>
                     Most coaching apps give you a plan and leave you to figure it out.
-                    OMR+ pairs you with a dedicated coach who knows your name, tracks your progress,
+                    AthloCode pairs you with a dedicated coach who knows your name, tracks your progress,
                     and adjusts your plan every single week based on real results.
                     No algorithm. No automation. Real human expertise.
                   </p>
@@ -244,7 +244,7 @@ export default function AboutPage() {
                 Ready to start your transformation?
               </p>
               <a
-                href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
+                href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20AthloCode"
                 target="_blank" rel="noopener noreferrer"
                 className="about-btn"
               >

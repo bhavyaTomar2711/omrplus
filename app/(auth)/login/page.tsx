@@ -178,8 +178,8 @@ export default function LoginPage() {
             {/* Header */}
             <div className="text-center mb-9">
               <img
-                src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774866904/B9EBAC3E-ECDA-4CA9-81C7-F14DCC3E7A9D_1_-Photoroom_s5ro4z.png"
-                alt="OMR+"
+                src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1775457344/079EE7CF-DD0C-4756-97BA-61F6D5B0B7DB-Photoroom_plczlp.png"
+                alt="AthloCode"
                 className="h-14 w-auto object-contain mx-auto mb-6"
               />
 

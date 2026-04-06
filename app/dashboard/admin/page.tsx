@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import DashboardShell, { NavItem } from '@/components/dashboard/DashboardShell';
 import Select from '@/components/ui/Select';
 import { supabase } from '@/lib/supabase';
@@ -107,7 +107,7 @@ function AdminOverview({
       icon: <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>,
     },
     {
-      label: t('admin.monthlyRevenue'), value: `$${revenue.toLocaleString()}`, sub: t('admin.activeSubscriptionsLabel'),
+      label: t('admin.monthlyRevenue'), value: `AED ${revenue.toLocaleString()}`, sub: t('admin.activeSubscriptionsLabel'),
       bg: 'rgba(255,200,80,0.04)', border: 'rgba(255,200,80,0.18)',
       icon: <svg style={{ width: 18, height: 18 }} fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>,
     },
@@ -371,7 +371,7 @@ function CoachesTab({ coaches, onRefresh }: { coaches: AdminCoach[]; onRefresh: 
             </div>
             <div>
               <label className="ds-label">Email</label>
-              <input className="ds-input" type="email" placeholder="coach@omrplus.com" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} />
+              <input className="ds-input" type="email" placeholder="coach@athlocode.com" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} />
             </div>
             <div>
               <label className="ds-label">Password</label>
@@ -471,7 +471,7 @@ function SubscriptionsTab({ subscriptions }: { subscriptions: AdminSubscription[
                 <tr key={s.id}>
                   <td style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem' }}>{s.user_name ?? s.user_id.slice(0, 8)}</td>
                   <td style={{ color: 'rgba(255,255,255,0.65)' }}>{s.plan_name}</td>
-                  <td style={{ color: '#C9A84C', fontWeight: 600 }}>SAR {s.price_sar ?? '—'}</td>
+                  <td style={{ color: '#C9A84C', fontWeight: 600 }}>AED {s.price_sar ?? '—'}</td>
                   <td>
                     <span className={s.status === 'active' ? 'ds-badge-green' : s.status === 'cancelled' ? 'ds-badge-red' : 'ds-badge-gray'}>
                       {s.status}
@@ -501,13 +501,21 @@ function MarketplaceTab() {
 
   const categories = ['supplement', 'snack', 'ebook', 'equipment', 'other'];
 
+  // Safety net — if Supabase hangs, stop spinning after 5s
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      if (error) console.error('MarketplaceTab load error:', error.message);
       setProducts(data ?? []);
     } catch (err) {
       console.error('MarketplaceTab load error:', err);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -673,9 +681,11 @@ function PricingTab() {
   const [editId, setEditId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<PricingPlan>>({});
   const [saving, setSaving] = useState(false);
+  const [savingStep, setSavingStep] = useState('');
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [featuresText, setFeaturesText] = useState('');
+  const originalPrice = useRef<number>(0);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -695,6 +705,7 @@ function PricingTab() {
   const startEdit = (plan: PricingPlan) => {
     setEditId(plan.id);
     setFeaturesText((plan.features ?? []).join('\n'));
+    originalPrice.current = plan.price_sar;
     setEditForm({
       name: plan.name,
       description: plan.description ?? '',
@@ -719,14 +730,60 @@ function PricingTab() {
     if (!editId) return;
     setSaving(true);
     setSaveError(null);
+    setSavingStep('');
     const features = featuresText.split('\n').map(s => s.trim()).filter(Boolean);
+    const isNew = editId === 'new';
+    const priceChanged = !isNew && editForm.price_sar !== originalPrice.current;
+
+    let stripe_price_id = editForm.stripe_price_id || null;
+
+    // Auto-create on Stripe when: new plan, OR price changed on existing plan
+    if (isNew || priceChanged) {
+      try {
+        setSavingStep(isNew ? 'Creating on Stripe...' : 'Updating Stripe price...');
+
+        // If price changed and old price exists, archive the old one first
+        if (priceChanged && stripe_price_id) {
+          await fetch('/api/admin/stripe-sync', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stripe_price_id }),
+          });
+        }
+
+        const stripeRes = await fetch('/api/admin/stripe-sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: editForm.name,
+            price_sar: editForm.price_sar,
+            description: editForm.description,
+          }),
+        });
+        const stripeJson = await stripeRes.json();
+        if (!stripeRes.ok) {
+          setSaveError(`Stripe error: ${stripeJson.error}`);
+          setSaving(false);
+          setSavingStep('');
+          return;
+        }
+        stripe_price_id = stripeJson.price_id;
+      } catch (err) {
+        setSaveError('Failed to sync with Stripe. Check your Stripe key.');
+        setSaving(false);
+        setSavingStep('');
+        return;
+      }
+    }
+
+    setSavingStep('Saving plan...');
     const payload = {
       name: editForm.name,
       description: editForm.description || null,
       tagline: editForm.tagline || null,
       cta_text: editForm.cta_text || 'Get Started',
       price_sar: editForm.price_sar ?? 0,
-      stripe_price_id: editForm.stripe_price_id || null,
+      stripe_price_id,
       features,
       is_published: editForm.is_published ?? false,
       is_featured: editForm.is_featured ?? false,
@@ -735,25 +792,27 @@ function PricingTab() {
 
     try {
       const res = await fetch('/api/admin/pricing-plans', {
-        method: editId === 'new' ? 'POST' : 'PUT',
+        method: isNew ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editId === 'new' ? payload : { id: editId, ...payload }),
+        body: JSON.stringify(isNew ? payload : { id: editId, ...payload }),
       });
       const json = await res.json();
       if (!res.ok) {
         setSaveError(json.error ?? 'Save failed');
         return;
       }
-      await load();
       setEditId(null);
+      window.location.href = window.location.pathname + '?tab=pricing';
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Network error');
     } finally {
       setSaving(false);
+      setSavingStep('');
     }
   };
 
-  const deletePlan = async (id: string) => {
+  const deletePlan = async (id: string, name: string) => {
+    if (!confirm(`Delete "${name}"? This will also archive it on Stripe and cannot be undone.`)) return;
     setDeleting(id);
     try {
       await fetch('/api/admin/pricing-plans', {
@@ -808,27 +867,25 @@ function PricingTab() {
           </div>
         </div>
 
-        {/* Row 3: Price + Stripe Price ID */}
+        {/* Row 3: Price */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem' }}>
           <div>
-            <label className="ds-label">Price (SAR/mo) *</label>
+            <label className="ds-label">Price (AED/mo) *</label>
             <input className="ds-input" type="number" min="0" placeholder="349" value={editForm.price_sar ?? ''} onChange={e => setEditForm(p => ({ ...p, price_sar: Number(e.target.value) }))} />
           </div>
-          <div>
-            <label className="ds-label">Stripe Price ID *</label>
-            <input
-              className="ds-input"
-              placeholder="price_1Xyz..."
-              value={editForm.stripe_price_id ?? ''}
-              onChange={e => setEditForm(p => ({ ...p, stripe_price_id: e.target.value }))}
-              style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}
-            />
+          <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 2 }}>
+            <div style={{ padding: '0.55rem 0.85rem', background: 'rgba(201,168,76,0.05)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: 10, width: '100%' }}>
+              <p style={{ fontSize: '0.6rem', color: 'rgba(201,168,76,0.45)', marginBottom: 3, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Stripe Price ID</p>
+              <p style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: editForm.stripe_price_id ? 'rgba(201,168,76,0.8)' : 'rgba(255,255,255,0.25)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {editForm.stripe_price_id || (editId === 'new' ? 'Auto-generated on save' : 'Will be updated on save')}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Stripe help note */}
+        {/* Stripe auto-sync note */}
         <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.28)', marginTop: -4, lineHeight: 1.5 }}>
-          Get the Price ID from your Stripe Dashboard → Products → select a product → copy the Price ID (starts with <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 4px', borderRadius: 3 }}>price_</code>).
+          ✦ Stripe product &amp; price are created automatically when you save. If you change the price, a new Stripe price is created and the old one archived.
         </p>
 
         {/* Features */}
@@ -881,11 +938,11 @@ function PricingTab() {
           Error: {saveError}
         </div>
       )}
-      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
         <button className="ds-btn-gold" disabled={saving || !editForm.name || !editForm.price_sar} onClick={saveEdit}>
-          {saving ? t('admin.saving') : editId === 'new' ? t('admin.addPlan') : t('admin.save')}
+          {saving ? (savingStep || t('admin.saving')) : editId === 'new' ? t('admin.addPlan') : t('admin.save')}
         </button>
-        <button className="ds-btn-outline" onClick={() => { setEditId(null); setSaveError(null); }}>{t('admin.cancel')}</button>
+        <button className="ds-btn-outline" disabled={saving} onClick={() => { setEditId(null); setSaveError(null); setSavingStep(''); }}>{t('admin.cancel')}</button>
       </div>
     </div>
   ) : null;
@@ -953,7 +1010,7 @@ function PricingTab() {
               {/* Price */}
               <div style={{ marginBottom: '0.85rem' }}>
                 <span style={{ fontSize: '1.6rem', fontWeight: 700, color: '#C9A84C' }}>{plan.price_sar}</span>
-                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', marginLeft: 4 }}>SAR/mo</span>
+                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', marginLeft: 4 }}>AED/mo</span>
               </div>
 
               {/* Stripe Price ID */}
@@ -992,7 +1049,7 @@ function PricingTab() {
                 <button
                   style={{ background: 'none', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 10, color: 'rgba(248,113,113,0.55)', cursor: 'pointer', padding: '0 0.65rem' }}
                   disabled={deleting === plan.id}
-                  onClick={() => deletePlan(plan.id)}
+                  onClick={() => deletePlan(plan.id, plan.name)}
                   title="Delete"
                 >
                   <svg style={{ width: 13, height: 13 }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
@@ -1025,10 +1082,16 @@ function ChatThreadsTab() {
   const [profileNames, setProfileNames] = useState<Record<string, string>>({});
   const [msgLoading, setMsgLoading] = useState(false);
 
+  // Safety net — if Supabase hangs, stop spinning after 5s
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 5000);
+    return () => clearTimeout(t);
+  }, []);
+
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('message_threads')
           .select(`
             id, client_id, coach_id, created_at,
@@ -1036,6 +1099,7 @@ function ChatThreadsTab() {
             coach:profiles!message_threads_coach_id_fkey(full_name)
           `)
           .order('created_at', { ascending: false });
+        if (error) console.error('ChatThreadsTab load error:', error.message);
         if (data) {
           setThreads(data.map(t => ({
             id: t.id,
@@ -1048,6 +1112,7 @@ function ChatThreadsTab() {
         }
       } catch (err) {
         console.error('ChatThreadsTab load error:', err);
+        setThreads([]);
       } finally {
         setLoading(false);
       }
@@ -1464,8 +1529,8 @@ function AnalyticsTab({ users, subscriptions }: { users: AdminUser[]; subscripti
     { label: t('admin.activeSubscribers'), value: String(activeSubs.length), sub: t('admin.currentlyPaying') },
     { label: t('admin.churned'), value: String(cancelledSubs.length), sub: t('admin.cancelledSubscriptions') },
     { label: t('admin.onboardingRate'), value: clients.length ? `${Math.round((onboarded.length / clients.length) * 100)}%` : '—', sub: t('admin.completedQuestionnaire') },
-    { label: t('admin.monthlyRevenue'), value: `SAR ${totalRevenue.toLocaleString()}`, sub: t('admin.fromActivePlans') },
-    { label: t('admin.avgRevenueUser'), value: clients.length ? `SAR ${Math.round(totalRevenue / clients.length)}` : '—', sub: t('admin.perRegisteredClient') },
+    { label: t('admin.monthlyRevenue'), value: `AED ${totalRevenue.toLocaleString()}`, sub: t('admin.fromActivePlans') },
+    { label: t('admin.avgRevenueUser'), value: clients.length ? `AED ${Math.round(totalRevenue / clients.length)}` : '—', sub: t('admin.perRegisteredClient') },
   ];
 
   const tooltipStyle = { background: '#111', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, fontSize: 12, color: '#fff' };
@@ -1566,6 +1631,11 @@ export default function AdminDashboard() {
     { id: 'videos',        label: t('admin.videos'),        icon: AdminNavIcons.videos },
   ];
   const [activeTab, setActiveTab] = useState('overview');
+
+  useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab) setActiveTab(tab);
+  }, []);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [coaches, setCoaches] = useState<AdminCoach[]>([]);
   const [subscriptions, setSubscriptions] = useState<AdminSubscription[]>([]);

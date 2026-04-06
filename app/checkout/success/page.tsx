@@ -101,8 +101,8 @@ function CheckoutSuccessContent() {
           </h1>
           <p className="text-white/45 text-sm mb-6 leading-relaxed">
             {isRTL
-              ? 'مرحباً بك في OMR+. سيتصل بك مدربك قريباً. في غضون ذلك، أكمل تسجيل البيانات في لوحة التحكم.'
-              : 'Welcome to OMR+. Your coach will reach out shortly. In the meantime, complete your onboarding in the dashboard.'}
+              ? 'مرحباً بك في AthloCode. سيتصل بك مدربك قريباً. في غضون ذلك، أكمل تسجيل البيانات في لوحة التحكم.'
+              : 'Welcome to AthloCode. Your coach will reach out shortly. In the meantime, complete your onboarding in the dashboard.'}
           </p>
 
           {/* What happens next */}

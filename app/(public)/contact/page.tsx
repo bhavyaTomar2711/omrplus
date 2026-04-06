@@ -161,7 +161,7 @@ export default function ContactPage() {
 
                 {/* WhatsApp CTA */}
                 <a
-                  href="https://wa.me/?text=Hi%20OMR%2B%2C%20I%20have%20a%20question"
+                  href="https://wa.me/?text=Hi%20AthloCode%2C%20I%20have%20a%20question"
                   target="_blank" rel="noopener noreferrer"
                   className="wa-btn block"
                 >
@@ -182,9 +182,9 @@ export default function ContactPage() {
                 {[
                   {
                     label: 'Email',
-                    value: 'support@omrplus.com',
+                    value: 'support@athlocode.com',
                     sub: 'We reply within 24 hours',
-                    href: 'mailto:support@omrplus.com',
+                    href: 'mailto:support@athlocode.com',
                     icon: (
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
@@ -195,7 +195,7 @@ export default function ContactPage() {
                     label: 'Free Consultation',
                     value: 'Book a call',
                     sub: 'No commitment required',
-                    href: 'https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B',
+                    href: 'https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20AthloCode',
                     icon: (
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />

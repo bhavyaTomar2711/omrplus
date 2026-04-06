@@ -140,8 +140,8 @@ export default function Footer() {
               {/* Brand column */}
               <div className="space-y-5">
                 <img
-                  src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1774866904/B9EBAC3E-ECDA-4CA9-81C7-F14DCC3E7A9D_1_-Photoroom_s5ro4z.png"
-                  alt="OMR+ Logo"
+                  src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1775457344/079EE7CF-DD0C-4756-97BA-61F6D5B0B7DB-Photoroom_plczlp.png"
+                  alt="AthloCode Logo"
                   className="h-20 w-auto object-contain"
                 />
                 <p dir="auto" className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)' }}>
@@ -164,7 +164,7 @@ export default function Footer() {
                     </svg>
                   </a>
                   {/* WhatsApp */}
-                  <a href="https://wa.me/?text=Hi%20OMR%2B" target="_blank" rel="noopener noreferrer" className="footer-social">
+                  <a href="https://wa.me/?text=Hi%20AthloCode" target="_blank" rel="noopener noreferrer" className="footer-social">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                       <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.854L.057 23.535a.5.5 0 0 0 .608.608l5.765-1.506A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.799 9.799 0 0 1-5.003-1.373l-.357-.214-3.713.97.997-3.624-.234-.374A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
@@ -215,14 +215,14 @@ export default function Footer() {
                 <div className="space-y-4 mb-5">
                   <div>
                     <p dir="auto" className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('footer.email')}</p>
-                    <a href="mailto:support@omrplus.com" className="footer-link text-[13px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                      support@omrplus.com
+                    <a href="mailto:support@athlocode.com" className="footer-link text-[13px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                      support@athlocode.com
                     </a>
                   </div>
                   <div>
                     <p dir="auto" className="text-[10px] tracking-[0.14em] uppercase mb-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('footer.whatsapp')}</p>
                     <a
-                      href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
+                      href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20AthloCode"
                       target="_blank" rel="noopener noreferrer"
                       className="footer-link text-[13px]"
                       style={{ color: 'rgba(255,255,255,0.55)' }}
@@ -232,7 +232,7 @@ export default function Footer() {
                   </div>
                 </div>
                 <a
-                  href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20OMR%2B"
+                  href="https://wa.me/?text=I%20want%20to%20book%20a%20free%20consultation%20for%20AthloCode"
                   target="_blank" rel="noopener noreferrer"
                   className="footer-btn"
                 >
@@ -251,7 +251,7 @@ export default function Footer() {
             <div className="flex flex-col md:flex-row justify-between items-center gap-5">
               <div className="flex flex-wrap items-center gap-5">
                 <p dir="auto" className="text-[11px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                  © {currentYear} OMR+. {t('footer.allRightsReserved')}
+                  © {currentYear} AthloCode. {t('footer.allRightsReserved')}
                 </p>
                 {[
                   { key: 'footer.privacyPolicy' },

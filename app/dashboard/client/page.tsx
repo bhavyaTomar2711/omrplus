@@ -824,7 +824,7 @@ function SubscriptionTab({ userId }: { userId: string }) {
                 <h3 style={{ fontSize:'1.5rem', fontWeight:700, color:'white', marginTop:4, marginBottom:4 }}>{sub.plan_name as string}</h3>
               </div>
               <div style={{ textAlign:'right' }}>
-                <p style={{ fontSize:'2rem', fontWeight:700, color:'#C9A84C', lineHeight:1 }} dir="ltr">SAR {String(sub.price_sar)}</p>
+                <p style={{ fontSize:'2rem', fontWeight:700, color:'#C9A84C', lineHeight:1 }} dir="ltr">AED {String(sub.price_sar)}</p>
                 <p style={{ fontSize:'0.72rem', color:'rgba(255,255,255,0.3)', marginTop:4 }}>{t('client.sub.perMonth')}</p>
               </div>
             </div>
