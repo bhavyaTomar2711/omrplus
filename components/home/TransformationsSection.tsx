@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -43,23 +42,6 @@ export default function TransformationsSection() {
     { label: '12+',  description: t('trans.stat3') },
     { label: '50K+', description: t('trans.stat4') },
   ];
-  const bgRef = useRef<HTMLDivElement>(null);
-
-  // Subtle parallax on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!bgRef.current) return;
-      if (window.innerWidth < 640) return; // disable parallax on mobile
-      const section = bgRef.current.closest('section') as HTMLElement;
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      const progress = -rect.top / (section.offsetHeight + window.innerHeight);
-      const offset = progress * 80;
-      bgRef.current.style.transform = `translateY(${offset}px) scale(1.12)`;
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <>
@@ -73,21 +55,17 @@ export default function TransformationsSection() {
         /* Background photo layer */
         .tf-bg {
           position: absolute;
-          inset: -10%;
+          inset: 0;
           background-image: url('${BG_IMAGE}');
           background-size: cover;
           background-position: center 30%;
           filter: brightness(0.28) saturate(0.6) blur(1px);
-          will-change: transform;
-          transform: scale(1.12);
         }
         @media (max-width: 640px) {
           .tf-bg {
             background-image: url('${BG_IMAGE_MOBILE}');
             background-position: center top;
             background-size: cover;
-            inset: 0;
-            transform: scale(1);
             filter: brightness(0.38) saturate(0.7) blur(0.5px);
           }
           .tf-overlay-left {
@@ -248,7 +226,7 @@ export default function TransformationsSection() {
 
       <section id="transformations" className="tf-section">
         {/* Background layers */}
-        <div ref={bgRef} className="tf-bg" />
+        <div className="tf-bg" />
         <div className="tf-overlay-left" />
         <div className="tf-overlay-bottom" />
         <div className="tf-vignette" />

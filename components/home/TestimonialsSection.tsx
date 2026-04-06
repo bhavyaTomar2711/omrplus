@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -29,22 +29,7 @@ export default function TestimonialsSection() {
     quote: t(item.quoteKey),
     role: t(item.roleKey),
   }));
-  const bgRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Subtle parallax on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!bgRef.current) return;
-      const section = bgRef.current.closest('section') as HTMLElement;
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      const progress = -rect.top / (section.offsetHeight + window.innerHeight);
-      bgRef.current.style.transform = `translateY(${progress * 70}px) scale(1.1)`;
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <>
@@ -60,9 +45,7 @@ export default function TestimonialsSection() {
         /* ── Video layer ── */
         .tm-video-wrap {
           position: absolute;
-          inset: -10%;
-          will-change: transform;
-          transform: scale(1.1);
+          inset: 0;
         }
         .tm-video {
           width: 100%;
@@ -138,10 +121,6 @@ export default function TestimonialsSection() {
         }
 
         /* ── Number badge ── */
-        @keyframes badgeIn {
-          from { opacity: 0; transform: scale(0.6); }
-          to   { opacity: 1; transform: scale(1); }
-        }
         .tm-badge {
           position: absolute;
           top: -14px;
@@ -162,7 +141,6 @@ export default function TestimonialsSection() {
           font-weight: 700;
           letter-spacing: 0.04em;
           color: #C9A84C;
-          animation: badgeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
         }
 
         /* ── CTA button ── */
@@ -192,7 +170,7 @@ export default function TestimonialsSection() {
 
       <section className="tm-section">
         {/* Video background — desktop */}
-        <div ref={bgRef} className="tm-video-wrap hidden sm:block">
+        <div className="tm-video-wrap hidden sm:block">
           <video
             ref={videoRef}
             className="tm-video"

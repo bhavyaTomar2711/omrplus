@@ -140,29 +140,6 @@
   animation: countUp 0.6s ease-out forwards;
 }
 
-/* Scroll Reveal State */
-.scroll-reveal {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.scroll-reveal.is-visible {
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-/* Already in viewport on mount — show without hiding first */
-.is-visible-instant {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Stagger animation delays */
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
-.delay-600 { animation-delay: 0.6s; }
 
 /* ===== CUSTOM COMPONENTS ===== */
 

@@ -55,24 +55,6 @@ export default function HowItWorksSection() {
   return (
     <>
       <style>{`
-        @keyframes floatOrb1 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33%       { transform: translate(28px, -18px) scale(1.06); }
-          66%       { transform: translate(-18px, 14px) scale(0.95); }
-        }
-        @keyframes floatOrb2 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          40%       { transform: translate(-22px, 26px) scale(1.08); }
-          70%       { transform: translate(18px, -12px) scale(0.93); }
-        }
-        @keyframes floatOrb3 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50%       { transform: translate(12px, 22px) scale(1.05); }
-        }
-        .hiw-orb-1 { animation: floatOrb1 20s ease-in-out infinite; }
-        .hiw-orb-2 { animation: floatOrb2 26s ease-in-out infinite; }
-        .hiw-orb-3 { animation: floatOrb3 22s ease-in-out infinite; }
-
         .hiw-card {
           background: rgba(255, 255, 255, 0.055);
           backdrop-filter: blur(24px) saturate(160%);
@@ -136,7 +118,7 @@ export default function HowItWorksSection() {
 
         {/* Floating gold orbs */}
         <div
-          className="hiw-orb-1 absolute top-[18%] left-[8%] w-72 h-72 rounded-full pointer-events-none z-0"
+          className="absolute top-[18%] left-[8%] w-72 h-72 rounded-full pointer-events-none z-0"
           style={{
             background:
               'radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)',
@@ -144,7 +126,7 @@ export default function HowItWorksSection() {
           }}
         />
         <div
-          className="hiw-orb-2 absolute top-[45%] right-[10%] w-96 h-96 rounded-full pointer-events-none z-0"
+          className="absolute top-[45%] right-[10%] w-96 h-96 rounded-full pointer-events-none z-0"
           style={{
             background:
               'radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%)',
@@ -152,7 +134,7 @@ export default function HowItWorksSection() {
           }}
         />
         <div
-          className="hiw-orb-3 absolute bottom-[20%] left-[42%] w-56 h-56 rounded-full pointer-events-none z-0"
+          className="absolute bottom-[20%] left-[42%] w-56 h-56 rounded-full pointer-events-none z-0"
           style={{
             background:
               'radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%)',

@@ -28,22 +28,11 @@ export default function ConsultationCTA() {
           background: #0B0B0B;
         }
 
-        /* ── Animated gradient shift ── */
-        @keyframes gradientShift {
-          0%   { opacity: 1; }
-          50%  { opacity: 0.6; }
-          100% { opacity: 1; }
-        }
+        /* ── Background ── */
         .cta-bg-shift {
           position: absolute;
           inset: 0;
-          background: linear-gradient(
-            120deg,
-            rgba(0,0,0,1) 0%,
-            rgba(0,0,0,0.92) 50%,
-            rgba(0,0,0,1) 100%
-          );
-          animation: gradientShift 8s ease-in-out infinite;
+          background: #0B0B0B;
           pointer-events: none;
         }
 
@@ -55,17 +44,7 @@ export default function ConsultationCTA() {
           pointer-events: none;
         }
 
-        /* ── Floating orbs ── */
-        @keyframes orbDrift1 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          40%       { transform: translate(24px, -18px) scale(1.06); }
-          70%       { transform: translate(-16px, 12px) scale(0.94); }
-        }
-        @keyframes orbDrift2 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          35%       { transform: translate(-20px, 22px) scale(1.07); }
-          65%       { transform: translate(18px, -14px) scale(0.93); }
-        }
+        /* ── Static orbs ── */
         .cta-orb-1 {
           position: absolute;
           top: 20%;
@@ -76,7 +55,6 @@ export default function ConsultationCTA() {
           background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
           filter: blur(50px);
           pointer-events: none;
-          animation: orbDrift1 22s ease-in-out infinite;
         }
         .cta-orb-2 {
           position: absolute;
@@ -88,7 +66,6 @@ export default function ConsultationCTA() {
           background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%);
           filter: blur(44px);
           pointer-events: none;
-          animation: orbDrift2 26s ease-in-out infinite;
         }
 
         /* ── Top gold divider ── */
