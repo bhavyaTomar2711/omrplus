@@ -40,14 +40,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Get initial session
+    // Get initial session — set loading false immediately after session check,
+    // then fetch profile in background so the navbar renders without waiting.
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
+        // Show logged-in state immediately with basic info
+        setUser({ id: session.user.id, email: session.user.email!, profile: null });
+        setLoading(false);
+        // Then load full profile in background
         const authUser = await fetchProfile(session.user.id, session.user.email!);
         setUser(authUser);
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     // Listen for auth changes
@@ -109,6 +115,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+    window.location.href = '/login';
   };
 
   return (

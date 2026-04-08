@@ -130,7 +130,14 @@ export default function PricingSection({ plans }: { plans: PublicPlan[] }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 items-center mb-20" style={{ rowGap: '3.5rem', columnGap: '1.5rem' }}>
-            {plans.map(plan => (
+            {(() => {
+              // Always put featured plan in the middle slot
+              const featured = plans.filter(p => p.is_featured);
+              const nonFeatured = plans.filter(p => !p.is_featured);
+              const mid = Math.floor(nonFeatured.length / 2);
+              const ordered = [...nonFeatured.slice(0, mid), ...featured, ...nonFeatured.slice(mid)];
+              return ordered;
+            })().map(plan => (
               <div key={plan.id} className={`relative p-8 flex flex-col h-full ${plan.is_featured ? 'pricing-card-featured' : 'pricing-card'}`}>
                 <div className="pricing-card-inner-glow" />
 

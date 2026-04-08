@@ -82,27 +82,26 @@ export default function PricingPage() {
           pointer-events: none;
         }
         .price-card {
-          background: #161616;
-          border: 1px solid rgba(255,255,255,0.1);
+          background: #191510;
+          border: 1px solid rgba(201,168,76,0.35);
           border-radius: 24px; overflow: hidden;
           transition: border-color 0.35s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
-          box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+          box-shadow: 0 0 40px rgba(201,168,76,0.06), 0 8px 40px rgba(0,0,0,0.6);
         }
-        .price-card:hover { transform: translateY(-6px); border-color: rgba(201,168,76,0.25); }
+        .price-card:hover { transform: translateY(-6px); border-color: rgba(201,168,76,0.65); box-shadow: 0 0 60px rgba(201,168,76,0.1), 0 8px 40px rgba(0,0,0,0.6); }
         .price-card-featured {
-          background: #191510;
-          border-color: rgba(201,168,76,0.4);
-          box-shadow: 0 0 60px rgba(201,168,76,0.08), 0 8px 40px rgba(0,0,0,0.6);
+          border-color: rgba(201,168,76,0.55);
+          box-shadow: 0 0 60px rgba(201,168,76,0.12), 0 8px 40px rgba(0,0,0,0.6);
         }
-        .price-card-featured:hover { border-color: rgba(201,168,76,0.65); }
+        .price-card-featured:hover { border-color: rgba(201,168,76,0.8); }
         .price-btn {
           display: block; width: 100%; padding: 1rem;
           font-size: 0.75rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
           text-align: center; text-decoration: none; border-radius: 14px;
-          border: 1px solid rgba(201,168,76,0.4); color: #C9A84C; background: transparent;
-          transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+          background: linear-gradient(135deg,#C9A84C,#E8C76A); color: #0B0B0B; border: none;
+          transition: opacity 0.25s ease, transform 0.25s ease;
         }
-        .price-btn:hover { background: rgba(201,168,76,0.07); border-color: rgba(201,168,76,0.7); transform: translateY(-1px); }
+        .price-btn:hover { opacity: 0.88; transform: translateY(-1px); }
         .price-btn-featured {
           display: block; width: 100%; padding: 1rem;
           font-size: 0.75rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
@@ -160,9 +159,14 @@ export default function PricingPage() {
             )}
 
             {!loading && plans.length > 0 && (
-              <div className={`grid items-start ${plans.length === 1 ? 'max-w-md mx-auto' : plans.length === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`} style={{ rowGap: '3rem', columnGap: '2rem' }}>
-                {plans.map(plan => (
-                  <div key={plan.id} className="relative" style={{ paddingTop: plan.is_featured ? '1.4rem' : '0' }}>
+              <div className={`grid items-stretch ${plans.length === 1 ? 'max-w-md mx-auto' : plans.length === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`} style={{ rowGap: '3rem', columnGap: '2rem' }}>
+                {(() => {
+                  const featured = plans.filter(p => p.is_featured);
+                  const nonFeatured = plans.filter(p => !p.is_featured);
+                  const mid = Math.floor(nonFeatured.length / 2);
+                  return [...nonFeatured.slice(0, mid), ...featured, ...nonFeatured.slice(mid)];
+                })().map(plan => (
+                  <div key={plan.id} className="relative flex flex-col h-full" style={{ paddingTop: '1.4rem' }}>
 
                     {plan.is_featured && (
                       <div className="absolute top-0 left-0 right-0 flex justify-center" style={{ zIndex: 10 }}>
@@ -173,8 +177,8 @@ export default function PricingPage() {
                       </div>
                     )}
 
-                  <div className={`price-card ${plan.is_featured ? 'price-card-featured' : ''}`}>
-                    <div className="p-7 sm:p-9">
+                  <div className={`price-card flex flex-col h-full ${plan.is_featured ? 'price-card-featured' : ''}`}>
+                    <div className="p-7 sm:p-9 flex flex-col flex-1">
                       {/* Header */}
                       {plan.tagline && (
                         <p className="text-[10px] tracking-[0.22em] uppercase mb-2 font-semibold" style={{ color: 'rgba(201,168,76,0.5)' }}>
@@ -186,7 +190,7 @@ export default function PricingPage() {
                       {/* Price */}
                       <div className="flex items-baseline gap-1.5 mb-4" dir="ltr">
                         <span className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>AED</span>
-                        <span className="text-5xl font-black" style={{ color: plan.is_featured ? '#C9A84C' : 'white' }}>{plan.price_sar}</span>
+                        <span className="text-5xl font-black" style={{ color: '#C9A84C' }}>{plan.price_sar}</span>
                         <span className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>{isRTL ? '/شهر' : '/month'}</span>
                       </div>
 
@@ -211,7 +215,7 @@ export default function PricingPage() {
                       <p className="text-[10px] font-semibold tracking-[0.16em] uppercase mb-4" style={{ color: 'rgba(255,255,255,0.22)' }}>
                         {isRTL ? 'ما يشمله البرنامج' : "What's included"}
                       </p>
-                      <ul className="space-y-2.5">
+                      <ul className="space-y-2.5 flex-1">
                         {plan.features.map((f, i) => (
                           <li key={i} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>
                             <span style={{ color: '#C9A84C', marginTop: '1px' }}><CheckIcon /></span>

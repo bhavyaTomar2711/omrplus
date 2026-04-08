@@ -92,56 +92,19 @@ export default function Navbar() {
               >AR</button>
             </div>
 
-            {/* Account / Dashboard Button */}
-            {!loading && (
-              user ? (
-                <Link
-                  href={`/dashboard/${user.profile?.role ?? 'client'}`}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300"
-                  style={{
-                    color: '#C9A84C',
-                    border: '1px solid rgba(201,168,76,0.38)',
-                    background: 'transparent',
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(201,168,76,0.08)';
-                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.65)';
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.38)';
-                  }}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                  </svg>
-                  {t('nav.dashboard')}
-                </Link>
-              ) : (
-                <Link
-                  href="/login"
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300"
-                  style={{
-                    color: '#C9A84C',
-                    border: '1px solid rgba(201,168,76,0.38)',
-                    background: 'transparent',
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(201,168,76,0.08)';
-                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.65)';
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.38)';
-                  }}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                  </svg>
-                  {t('nav.account')}
-                </Link>
-              )
-            )}
+            {/* Account / Dashboard Button — always visible, swaps once session resolves */}
+            <Link
+              href={user ? `/dashboard/${user.profile?.role ?? 'client'}` : '/login'}
+              className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300"
+              style={{ color: '#C9A84C', border: '1px solid rgba(201,168,76,0.38)', background: 'transparent' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(201,168,76,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.65)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(201,168,76,0.38)'; }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+              {user ? t('nav.dashboard') : t('nav.account')}
+            </Link>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -232,19 +195,10 @@ export default function Navbar() {
                   style={lang === 'ar' ? { background: 'rgba(201,168,76,0.1)' } : {}}
                 >AR</button>
               </div>
-              {!loading && (
-                user ? (
-                  <Link href={`/dashboard/${user.profile?.role ?? 'client'}`}
-                    className="flex-1 text-center text-xs font-bold py-3 rounded-lg tracking-widest uppercase transition-all"
-                    style={{ background: 'linear-gradient(135deg, #C9A84C, #E5C76B)', color: '#0A0A0A' }}
-                  >{t('nav.dashboard')}</Link>
-                ) : (
-                  <Link href="/login"
-                    className="flex-1 text-center text-xs font-bold py-3 rounded-lg tracking-widest uppercase transition-all"
-                    style={{ background: 'linear-gradient(135deg, #C9A84C, #E5C76B)', color: '#0A0A0A' }}
-                  >{t('nav.account')}</Link>
-                )
-              )}
+              <Link href={user ? `/dashboard/${user.profile?.role ?? 'client'}` : '/login'}
+                className="flex-1 text-center text-xs font-bold py-3 rounded-lg tracking-widest uppercase transition-all"
+                style={{ background: 'linear-gradient(135deg, #C9A84C, #E5C76B)', color: '#0A0A0A' }}
+              >{user ? t('nav.dashboard') : t('nav.account')}</Link>
             </div>
           </div>
         )}

@@ -1078,6 +1078,10 @@ export default function ClientDashboard() {
   const openTabs = new Set(['subscription']);
 
   const render = () => {
+    // While auth/subscription is still resolving, show a neutral loader
+    if (subscriptionStatus === 'loading') {
+      return <div className="ds-loading" style={{ height: 200, borderRadius: 16, background: 'rgba(255,255,255,0.03)', margin: '2rem 0' }} />;
+    }
     // Show gate for locked tabs if subscription is inactive
     if (subscriptionStatus === 'inactive' && !openTabs.has(tab)) {
       return <SubscriptionGate />;
@@ -1088,7 +1092,7 @@ export default function ClientDashboard() {
       case 'workout':      return <WorkoutTab workoutPlan={workoutPlan} loading={loading} />;
       case 'progress':     return <ProgressTab progressLogs={progressLogs} onLogged={loadData} />;
       case 'messages':     return <MessagesTab />;
-      case 'subscription': return user ? <SubscriptionTab userId={user.id} /> : null;
+      case 'subscription': return user ? <SubscriptionTab userId={user.id} /> : <div className="ds-loading" style={{ height: 200, borderRadius: 16, background: 'rgba(255,255,255,0.03)' }} />;
       default: return null;
     }
   };
