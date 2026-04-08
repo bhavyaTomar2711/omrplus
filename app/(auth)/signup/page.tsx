@@ -160,7 +160,7 @@ export default function SignUpPage() {
           {/* Logo */}
           <div className="text-center mb-7">
             <img
-              src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1775457344/079EE7CF-DD0C-4756-97BA-61F6D5B0B7DB-Photoroom_plczlp.png"
+              src="https://res.cloudinary.com/dqiuwzvfb/image/upload/v1775629677/69007823-DC7E-42E1-AF8E-E57E11810549-Photoroom_nluyul.png"
               alt="AthloCode"
               className="h-12 w-auto object-contain mx-auto mb-5"
             />
